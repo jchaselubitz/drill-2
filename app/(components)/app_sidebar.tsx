@@ -16,6 +16,9 @@ import { Home, Inbox, Search, Sparkles } from 'lucide-react';
 import { NavMain } from './nav_main';
 import UserMenu from './user-menu';
 import { User } from '@supabase/supabase-js';
+import LanguageMenu from './language_selector';
+import { updateUserLanguage } from '@/lib/actions/userActions';
+import { Iso639LanguageCode } from 'kysely-codegen';
 
 const pages = [
   {
@@ -46,9 +49,32 @@ type AppSidebarProps = {
   user: User;
   username: string | null | undefined;
   imageUrl: string | null | undefined;
+  userLanguage: Iso639LanguageCode | null | undefined;
+  prefLanguage: Iso639LanguageCode | null | undefined;
 };
 
-export function AppSidebar({ user, username, imageUrl }: AppSidebarProps) {
+export function AppSidebar({
+  user,
+  username,
+  imageUrl,
+  userLanguage,
+  prefLanguage,
+}: AppSidebarProps) {
+  const setUserLanguages = async ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => {
+    if (name === 'userLanguage') {
+      await updateUserLanguage({
+        userLanguage: lang,
+        prefLanguage: prefLanguage ?? null,
+      });
+    }
+    if (name === 'prefLanguage') {
+      await updateUserLanguage({
+        userLanguage: userLanguage ?? null,
+        prefLanguage: lang,
+      });
+    }
+  };
+
   return (
     <Sidebar>
       <SidebarHeader />
@@ -57,7 +83,24 @@ export function AppSidebar({ user, username, imageUrl }: AppSidebarProps) {
       </div>{' '}
       <NavMain items={pages} />
       <SidebarContent>
-        <SidebarGroup />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <LanguageMenu
+              label="User Language"
+              name="userLanguage"
+              language={userLanguage}
+              onClick={setUserLanguages}
+            />
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <LanguageMenu
+              label="Study Language"
+              name="prefLanguage"
+              language={prefLanguage}
+              onClick={setUserLanguages}
+            />
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

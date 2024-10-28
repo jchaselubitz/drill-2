@@ -74,7 +74,13 @@ export default async function RootLayout({
         >
           <SidebarProvider>
             {user.data.user ? (
-              <AppSidebar user={user.data.user} username={username} imageUrl={imageUrl} />
+              <AppSidebar
+                user={user.data.user}
+                username={username}
+                imageUrl={imageUrl}
+                userLanguage={profile?.userLanguage}
+                prefLanguage={profile?.prefLanguage}
+              />
             ) : (
               <Link href="/login">
                 <Button className="absolute top-4 right-4">Login</Button>

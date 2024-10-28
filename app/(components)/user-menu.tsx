@@ -52,7 +52,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>
-          <span>{name ?? userEmail}</span>
+          <span>{userEmail}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 

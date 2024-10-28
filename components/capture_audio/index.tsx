@@ -88,7 +88,7 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
     setRecordingButtonState('transcribing');
     setTranscriptionLoading(true);
     const formData = new FormData();
-    formData.append('userApiKey', process.env.PersonalKey as string);
+    // formData.append('userApiKey', undefined);
     formData.append('audioFile', audioResponse.blob, 'recording.mp4');
     const { data: transcription } = await supabase.functions.invoke('speech-to-text', {
       body: formData,
@@ -97,6 +97,7 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
     setRecordingButtonState('disabled');
     setTranscript(transcription.data);
   };
+
   const saveRecording = async () => {
     setIsSaving(true);
     const fileName = `${Date.now()}-recording`;
@@ -161,6 +162,8 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
           isTranscript={transcript !== ''}
         />
       ) : null}
+
+      {transcript && <div className="flex mt-6 rounded-lg bg-gray-200 p-6">{transcript}</div>}
     </div>
   );
 };

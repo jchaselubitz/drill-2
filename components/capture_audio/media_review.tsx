@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Button } from '../ui/button';
 
 interface MediaReviewProps {
   audioResponse: { blob: Blob; url: string };
@@ -52,7 +53,7 @@ const MediaReview: React.FC<MediaReviewProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2">
       <div className="flex gap-2 items-center">
         {origAudioURL && (
           <>
@@ -64,9 +65,9 @@ const MediaReview: React.FC<MediaReviewProps> = ({
       </div>
 
       {isTranscript ? (
-        <button onClick={saveRecording}>Save Recording</button>
+        <Button onClick={saveRecording}>Save Recording</Button>
       ) : (
-        <button
+        <Button
           className="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={audioDuration > maxDuration}
           onClick={transcribeRecording}
@@ -76,9 +77,9 @@ const MediaReview: React.FC<MediaReviewProps> = ({
             : audioDuration > maxDuration
               ? `Transcribe (max ${maxDuration} minutes)`
               : 'Transcribe'}
-        </button>
+        </Button>
       )}
-      <button onClick={resetRecordingButtonState}>Reset</button>
+      <Button onClick={resetRecordingButtonState}>Reset</Button>
     </div>
   );
 };
