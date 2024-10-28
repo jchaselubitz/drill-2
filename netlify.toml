@@ -1,0 +1,45 @@
+
+[context.production]
+command = "yarn generate-deploy && next build"
+publish = ".next"
+[context.production.environment]
+NEXT_PUBLIC_SUPABASE_URL = 'https://kmevogjapirgcganztkz.supabase.co'
+NEXT_PUBLIC_SUPABASE_PROJECT_ID = "kmevogjapirgcganztkz"
+NEXT_PUBLIC_SITE_URL = 'https://nyca.netlify.app/'
+NEXT_PUBLIC_CONTEXT = "prod"
+
+
+[context.staging]
+command = "yarn generate-deploy && next build"
+publish = ".next"
+[context.staging.environment]
+NEXT_PUBLIC_SUPABASE_URL = 'https://staging.nyca.netlify.app/'
+NEXT_PUBLIC_CONTEXT = "staging"
+
+
+[context.branch-deploy]
+command = "yarn generate-deploy && next build"
+publish = ".next"
+[context.branch-deploy.environment]
+NEXT_PUBLIC_SUPABASE_URL = 'https://kmevogjapirgcganztkz.supabase.co'
+NEXT_PUBLIC_SUPABASE_PROJECT_ID = "kmevogjapirgcganztkz"
+NEXT_PUBLIC_SITE_URL = 'https://main--nyca.netlify.app/'
+NEXT_PUBLIC_CONTEXT = "branch-deploy"
+
+
+[context.development]
+command = "yarn generate && next build"
+publish = ".next"
+[context.development.environment]
+NEXT_PUBLIC_SUPABASE_URL = 'https://kmevogjapirgcganztkz.supabase.co'
+NEXT_PUBLIC_SUPABASE_PROJECT_ID = "kmevogjapirgcganztkz"
+# NEXT_PUBLIC_SITE_URL = 'https://main--nyca.netlify.app/'
+NEXT_PUBLIC_CONTEXT = "development"
+
+
+[dev]
+command = "next dev"
+port = 3000
+targetPort = 3000
+context = "dev"
+

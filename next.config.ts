@@ -12,7 +12,7 @@ const pwaConfig = withPWA({
 
 const nextConfig = {
   ...pwaConfig,
-  swcMinify: true,
+
   // reactStrictMode: false,
   // logging: {
   //   fetches: {
