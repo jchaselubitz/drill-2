@@ -2,8 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-import Link from 'next/link';
-import { Building2Icon, ChevronsUpDown, LogOut, MessageSquareDiff, Settings } from 'lucide-react';
+import { ChevronsUpDown, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,9 +15,10 @@ import { signOut } from '@/lib/actions/userActions';
 
 import { FC } from 'react';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { User } from '@supabase/supabase-js';
 
 type UserMenuProps = {
-  user: any;
+  user: User | null | undefined;
   username?: string | null;
   imageUrl?: string | null | undefined;
 };
@@ -71,7 +71,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
         <DropdownMenuSeparator /> */}
 
         <DropdownMenuItem
-          onClick={(e: any) => {
+          onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.preventDefault();
             signOut();
           }}

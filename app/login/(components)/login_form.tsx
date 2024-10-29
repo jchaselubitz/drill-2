@@ -12,12 +12,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
+import { signIn, signInWithEmail, signUp, updatePassword } from '@/lib/actions/userActions';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
-import { signIn, signInWithEmail, signUp, updatePassword } from '@/lib/actions/userActions';
 
 interface LoginFormProps {
   token?: string | null;
@@ -35,14 +35,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
     email: z.string().email(),
   } as { [key: string]: any };
 
-  !isMagicLink &&
-    (zObject['password'] = z
-      .string()
-      .min(6, { message: 'Password must be at least 6 characters.' }));
+  if (!isMagicLink) {
+    zObject['password'] = z.string().min(6, { message: 'Password must be at least 6 characters.' });
+  }
 
-  isCreateAccount &&
-    (zObject['name'] = z.string().min(3, { message: 'Name must be at least 2 characters.' }));
-
+  if (isCreateAccount) {
+    zObject['name'] = z.string().min(3, { message: 'Name must be at least 2 characters.' });
+  }
   const FormSchema = z.object(zObject);
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -53,7 +52,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
 
   const handleSubmission = async (formInputs: z.infer<typeof FormSchema>) => {
     const { email, password, name } = formInputs;
-    let submission = {
+    const submission = {
       email,
       password,
       token,
@@ -69,8 +68,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
         await signInWithEmail({ email, shouldCreateUser: isCreateAccount, name });
         setSignInButtonState('success');
       } else {
-        isCreateAccount ? await signUp(submission) : await signIn(submission);
-        setSignInButtonState('default');
+        if (!isCreateAccount && !password) {
+          setSignInButtonState('error');
+          return;
+        }
+        if (isCreateAccount) {
+          await signUp(submission);
+          setSignInButtonState('default');
+        }
+        if (!isCreateAccount) {
+          await signIn({ email, password });
+          setSignInButtonState('default');
+        }
       }
     } catch (error) {
       setSignInButtonState('error');

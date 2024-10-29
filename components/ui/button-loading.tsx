@@ -41,6 +41,7 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         size={size}
         className={className}
         ref={ref}
+        asChild={asChild}
         {...props}
       >
         {buttonState === 'loading' ? (

@@ -5,8 +5,6 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import userPanelSetting from '@/lib/utils/userPanelSetting';
 import { cn } from '@/lib/utils';
 import { ImperativePanelHandle } from 'react-resizable-panels';
-import { useRef, useState } from 'react';
-import { useWindowSize } from 'react-use';
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +12,8 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from '@/components/ui/sidebar';
+import { useRef, useState } from 'react';
+import { useWindowSize } from 'react-use';
 interface ResizableLayoutProps {
   organizationId: string;
   children: React.ReactNode;

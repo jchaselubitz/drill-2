@@ -9,7 +9,7 @@ type UserButtonProps = {
   organizationId: string;
 };
 
-const UserButton: FC<UserButtonProps> = async ({ organizationId }) => {
+const UserButton: FC<UserButtonProps> = async () => {
   const supabase = createClient();
   const user = await supabase.auth.getUser();
   const profile = await getProfile({ userId: user.data.user?.id });

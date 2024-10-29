@@ -1,9 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { signOut } from '@/lib/actions/userActions';
-import { createClient } from '@/utils/supabase/server';
-import Image from 'next/image';
-import TopNav from './(components)/top_nav';
 import CaptureAudio from '@/components/capture_audio';
+import CaptureText from '@/components/capture_text';
+import { createClient } from '@/utils/supabase/server';
 
 export default async function Home() {
   const supabase = createClient();
@@ -16,7 +13,7 @@ export default async function Home() {
     <div className="grid grid-rows-[20px_1fr_20px]  justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         {user && <CaptureAudio userId={user.id} />}
-        <div className="flex flex-col items-center gap-4">Capture text</div>
+        {user && <CaptureText prefLanguage="de" />}
         <div className="flex flex-col items-center gap-4">Capture Image</div>
         <div className="flex flex-col items-center gap-4">Recent Content</div>
       </main>

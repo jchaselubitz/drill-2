@@ -25,32 +25,28 @@ const MediaReview: React.FC<MediaReviewProps> = ({
 
   useEffect(() => {
     if (origAudioURL) {
-      loadAudioDuration();
+      const audio = new Audio(origAudioURL);
+      audio.onloadedmetadata = () => {
+        if (audio.duration === Infinity) {
+          audio.addEventListener(
+            'durationchange',
+            function () {
+              if (this.duration) {
+                setAudioDuration(this.duration);
+                audio.remove();
+              }
+            },
+            false
+          );
+          audio.currentTime = 24 * 60 * 60;
+          audio.volume = 0;
+          audio.play();
+        } else {
+          setAudioDuration(audio.duration);
+        }
+      };
     }
-  }, [origAudioURL]);
-
-  const loadAudioDuration = () => {
-    const audio = new Audio(origAudioURL);
-    audio.onloadedmetadata = () => {
-      if (audio.duration === Infinity) {
-        audio.addEventListener(
-          'durationchange',
-          function () {
-            if (this.duration) {
-              setAudioDuration(this.duration);
-              audio.remove();
-            }
-          },
-          false
-        );
-        audio.currentTime = 24 * 60 * 60;
-        audio.volume = 0;
-        audio.play();
-      } else {
-        setAudioDuration(audio.duration);
-      }
-    };
-  };
+  }, [origAudioURL, setAudioDuration]);
 
   return (
     <div className="flex flex-col gap-2">

@@ -1,14 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
-import { PodcastIcon } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
 import PodcastListItem from './podcast_list_item';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { PodcastIcon } from 'lucide-react';
 
-const ImportPodcast = ({ importPodcast }) => {
+type ImportPodcastProps = {
+  importPodcast: (url: string) => void;
+};
+
+const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [episodes, setEpisodes] = useState([]);
+  const [episodes, setEpisodes] = useState<any[]>([]);
   const modalRef = useRef(null);
 
   const openModal = () => {
@@ -59,7 +63,7 @@ const ImportPodcast = ({ importPodcast }) => {
     return () => {
       window.removeEventListener('click', handleClickOutside);
     };
-  }, []);
+  });
 
   return (
     <>

@@ -14,7 +14,7 @@ interface PodcastListItemProps {
 }
 
 const PodcastListItem: React.FC<PodcastListItemProps> = ({ episode, setEpisodeURL }) => {
-  const { title, description, imageURL, date, audioURL } = episode;
+  const { title, imageURL, date, audioURL } = episode;
 
   const setURL = () => {
     setEpisodeURL(audioURL);

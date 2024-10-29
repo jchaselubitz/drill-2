@@ -1,11 +1,11 @@
 // Import the necessary modules
-import withPWA from "next-pwa";
+import withPWA from 'next-pwa';
 /** @type {NextConfig} */
 
 const pwaConfig = withPWA({
-  dest: "public",
+  dest: 'public',
   register: true,
-  disable: process.env.NEXT_PUBLIC_CONTEXT === "development",
+  disable: process.env.NEXT_PUBLIC_CONTEXT === 'development',
   // skipWaiting: false,
   // cacheOnFrontEndNav: true,
 });

@@ -1,28 +1,22 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
-import Link from 'next/link';
-import { Building2Icon, ChevronsUpDown, LogOut, MessageSquareDiff, Settings } from 'lucide-react';
+import { ChevronsUpDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { signOut } from '@/lib/actions/userActions';
 
 import { FC } from 'react';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { getLangIcon, getLangName, Languages } from '@/lib/lists';
 import { Iso639LanguageCode } from 'kysely-codegen';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
 
 type LanguageMenuProps = {
   label: string;
   name: string;
-  language: string | null;
+  language: Iso639LanguageCode | null | undefined;
   onClick?: ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => void;
 };
 
@@ -39,14 +33,16 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ label, name, language, onClick })
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold">{getLangIcon(language)}</span>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">
-                {label}: {getLangName(language)}
-              </span>
+          {language && (
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold">{getLangIcon(language)}</span>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">
+                  {label}: {getLangName(language)}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
           <ChevronsUpDown className="ml-auto size-4" />
         </SidebarMenuButton>
       </DropdownMenuTrigger>

@@ -1,24 +1,22 @@
 'use client';
 
+import LanguageMenu from './language_selector';
+import Logo from '@/components/logo';
+import UserMenu from './user-menu';
+import { Home, Inbox, Search, Sparkles } from 'lucide-react';
+import { Iso639LanguageCode } from 'kysely-codegen';
+import { NavMain } from './nav_main';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import UserButton from './user_button';
-import Logo from '@/components/logo';
-import { Home, Inbox, Search, Sparkles } from 'lucide-react';
-import { NavMain } from './nav_main';
-import UserMenu from './user-menu';
-import { User } from '@supabase/supabase-js';
-import LanguageMenu from './language_selector';
 import { updateUserLanguage } from '@/lib/actions/userActions';
-import { Iso639LanguageCode } from 'kysely-codegen';
+import { User } from '@supabase/supabase-js';
 
 const pages = [
   {

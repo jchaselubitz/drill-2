@@ -1,36 +1,39 @@
 'use client';
 
+import ImportPodcast from './import_podcast';
+import MediaReview from './media_review';
 import React from 'react';
 import RecordButton, { RecordButtonStateType } from './record_button';
-import ImportPodcast from './import_podcast';
 import UploadButton from './upload_button';
-import { recordAudio, RecordAudioResult, savePrivateAudioFile } from '@/lib/helpers/helpersAudio';
-import MediaReview from './media_review';
 import { createClient } from '@/utils/supabase/client';
+import { recordAudio, RecordAudioResult, savePrivateAudioFile } from '@/lib/helpers/helpersAudio';
 
 type CaptureAudioProps = {
   userId: string | undefined;
 };
 
+type AudioResponse = {
+  blob: Blob;
+  url: string;
+};
+
 const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
   const supabase = createClient();
-  const [transcriptionLoading, setTranscriptionLoading] = React.useState(false);
-  const [transcript, setTranscript] = React.useState('');
+  const [transcriptionLoading, setTranscriptionLoading] = React.useState<boolean>(false);
+  const [transcript, setTranscript] = React.useState<string>('');
   const [recordingButtonState, setRecordingButtonState] =
     React.useState<RecordButtonStateType>('idle');
   const [recordingState, setRecordingState] = React.useState<RecordAudioResult | null>(null);
-  const [audioResponse, setAudioResponse] = React.useState<any>(null);
-  const [audioState, setAudioState] = React.useState<any>(null);
-  const [isSaving, setIsSaving] = React.useState(false);
-  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [audioResponse, setAudioResponse] = React.useState<AudioResponse | undefined | null>(null);
+
+  const [isSaving, setIsSaving] = React.useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [importingPodcast, setImportingPodcast] = React.useState(false);
 
   const resetRecordingButtonState = () => {
     setRecordingButtonState('idle');
     setRecordingState(null);
     setTranscriptionLoading(false);
-    setAudioResponse(null);
-    setAudioState(null);
     setTranscript('');
     setIsSaving(false);
     setIsPlaying(false);
@@ -76,7 +79,7 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
       const audioURL = URL.createObjectURL(audioBlob);
       setAudioResponse({ blob: audioBlob, url: audioURL });
     } catch (error) {
-      console.error('Error fetching podcast:', error);
+      throw Error('Error fetching podcast:');
       // Handle the error, e.g., show a notification to the user
     } finally {
       setRecordingButtonState('idle');
@@ -89,6 +92,9 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
     setTranscriptionLoading(true);
     const formData = new FormData();
     // formData.append('userApiKey', undefined);
+    if (!audioResponse) {
+      throw Error('No audio response to transcribe');
+    }
     formData.append('audioFile', audioResponse.blob, 'recording.mp4');
     const { data: transcription } = await supabase.functions.invoke('speech-to-text', {
       body: formData,
@@ -102,13 +108,15 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
     setIsSaving(true);
     const fileName = `${Date.now()}-recording`;
     const bucketName = 'user_recordings';
-    await savePrivateAudioFile({
-      fileName,
-      path: userId as string,
-      supabase: supabase,
-      bucketName,
-      audioFile: audioResponse.blob,
-    });
+    if (audioResponse) {
+      await savePrivateAudioFile({
+        fileName,
+        path: userId as string,
+        supabase: supabase,
+        bucketName,
+        audioFile: audioResponse.blob,
+      });
+    }
     //save transcript	to database
     const { data, error: langError } = await supabase.functions.invoke('check-language', {
       body: {
