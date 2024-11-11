@@ -1,7 +1,7 @@
 // ==== Lesson Suggestions ====
 
-import type { gptFormatType } from './helpersAI';
-import { LanguagesISO639, getLangName } from './lists';
+import { gptFormatType } from '../helpers/helpersAI';
+import { getLangName, LanguagesISO639 } from '../lists';
 
 export const lessonGenerationSystemInstructions =
   'Return a JSON that is a list of objects, each including the "title" of the concept and a very short "description". Your response will be parsed as follows: JSON.parse(<your-response>)';
@@ -20,16 +20,16 @@ export const requestLessonSuggestions = ({
 
 // ==== Card Content Generation ====
 
-export const phraseGenerationSystemInstructions = ({
+export const cardGenerationSystemInstructions = ({
   lang1,
   lang2,
 }: {
   lang1: LanguagesISO639;
   lang2: LanguagesISO639;
 }) =>
-  `The student will ask you for a list of examples, which will be added to flashcards. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "phrases" JSON that is a list of objects, each with the following keys: phrase_primary, phrase_secondary. The phrase_primary is the ${lang1} phrase, and the phrase_secondary is the ${lang2} phrase. The format should therefore be: [{phrase_primary: {text: "phrase1", lang:${lang1}}, phrase_secondary: {text: "phrase2", lang:${lang2}}}, ...]`;
+  `The student will ask you for a list of examples, which will be added to flashcards. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each with the following keys: phrase_primary, phrase_secondary. The phrase_primary is the ${lang1} phrase, and the phrase_secondary is the ${lang2} phrase. The format should therefore be: [{phrase_primary: {text: "phrase1", lang:${lang1}}, phrase_secondary: {text: "phrase2", lang:${lang2}}}, ...]`;
 
-export const phraseResponseChecks = ({
+export const cardResponseChecks = ({
   response,
   lang1,
   lang2,
@@ -39,29 +39,29 @@ export const phraseResponseChecks = ({
   lang2: string;
 }) => {
   if (response === '') {
-    throw Error('No phrases generated. Try again.');
+    throw Error('No cards generated. Try again.');
   }
 
-  const phraseObject = JSON.parse(response);
+  const cardsObject = JSON.parse(response);
 
-  if (!phraseObject.phrases) {
+  if (!cardsObject.cards) {
     alert('OpenAI returned wrong format. This happens sometimes. Please try again.');
-    throw Error('OpenAI returned wrong format (not .phrases). Please try again.');
+    throw Error('OpenAI returned wrong format (not .cards). Please try again.');
   }
-  const phraseArray = phraseObject.phrases;
-  if (phraseArray.length === 0) {
-    throw Error('No phrases generated. Try again.');
+  const cardsArray = cardsObject.cards;
+  if (cardsArray.length === 0) {
+    throw Error('No cards generated. Try again.');
   }
-  if (!phraseArray[0].phrase_primary.lang || !phraseArray[0].phrase_secondary.text) {
+  if (!cardsArray[0].phrase_primary.lang || !cardsArray[0].phrase_secondary.text) {
     alert('OpenAI returned wrong format. This happens sometimes. Please try again.');
     throw Error(
       'OpenAI returned wrong format (not phrase_primary/phrase_secondary). Please try again.'
     );
   }
-  return phraseArray;
+  return cardsArray;
 };
 
-export const requestPhraseSuggestions = ({
+export const requestCardSuggestions = ({
   concept,
   userLanguage,
   studyLanguage,

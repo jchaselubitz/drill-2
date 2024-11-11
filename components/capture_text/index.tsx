@@ -1,21 +1,21 @@
 'use client';
 
 import React from 'react';
-import { addPhrase } from '@/lib/actions/captureActions';
+import { addPhrase } from '@/lib/actions/phraseActions';
 import { Button } from '../ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { Languages } from '@/lib/lists';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { useForm } from 'react-hook-form';
+import { useUserContext } from '@/contexts/user_context';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-interface CaptureTextProps {
-  prefLanguage: string;
-}
+const CaptureText: React.FC = () => {
+  const { prefLanguage } = useUserContext();
 
-const CaptureText: React.FC<CaptureTextProps> = ({ prefLanguage }) => {
   const formSchema = z.object({
     text: z.string().min(3, 'Text is required'),
     lang: z.string().min(1, 'Language is required'),
@@ -23,7 +23,7 @@ const CaptureText: React.FC<CaptureTextProps> = ({ prefLanguage }) => {
 
   type FormValues = z.infer<typeof formSchema>;
 
-  const defaultValues: Partial<FormValues> = { text: '', lang: prefLanguage };
+  const defaultValues: Partial<FormValues> = { text: '', lang: prefLanguage ?? '' };
 
   const form = useForm<FormValues>({
     mode: 'onBlur',
@@ -32,52 +32,54 @@ const CaptureText: React.FC<CaptureTextProps> = ({ prefLanguage }) => {
   });
 
   const onSubmit = async (data: FormValues) => {
-    await addPhrase(data);
+    const text = data.text;
+    const lang = data.lang as Iso639LanguageCode;
+    await addPhrase({ text, lang });
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="text"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Text</FormLabel>
-              <FormControl>
-                <Textarea {...field} placeholder="Enter your text here" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="lang"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Language</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value as string}>
+    <div className="flex flex-col gap-4 p-4 rounded-lg shadow-lg bg-gray-50 w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full gap-2">
+          <FormField
+            control={form.control}
+            name="text"
+            render={({ field }) => (
+              <FormItem>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
+                  <Textarea {...field} placeholder="Enter your text here" />
                 </FormControl>
-                <SelectContent>
-                  {Languages.map((lang) => (
-                    <SelectItem key={lang.value} value={lang.value}>
-                      {lang.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lang"
+            render={({ field }) => (
+              <FormItem>
+                <Select onValueChange={field.onChange} defaultValue={field.value as string}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Languages.map((lang) => (
+                      <SelectItem key={lang.value} value={lang.value}>
+                        {lang.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
+    </div>
   );
 };
 

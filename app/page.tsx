@@ -1,21 +1,24 @@
 import CaptureAudio from '@/components/capture_audio';
 import CaptureText from '@/components/capture_text';
-import { createClient } from '@/utils/supabase/server';
+import PhraseCard from '@/components/phrases/phrase_card';
+import { getPhrases } from '@/lib/actions/phraseActions';
+import { getProfile } from '@/lib/actions/userActions';
 
 export default async function Home() {
-  const supabase = createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const phrases = await getPhrases();
+  const profile = await getProfile();
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px]  justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        {user && <CaptureAudio userId={user.id} />}
-        {user && <CaptureText prefLanguage="de" />}
-        <div className="flex flex-col items-center gap-4">Capture Image</div>
-        <div className="flex flex-col items-center gap-4">Recent Content</div>
+    <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
+      <main className="flex flex-col gap-8 md:items-center w-full">
+        {profile && <CaptureAudio />}
+        {profile && <CaptureText />}
+
+        <div className="flex flex-col items-center gap-4 w-full">
+          {phrases.map((phrase: any) => (
+            <PhraseCard key={phrase.id} phrase={phrase} />
+          ))}
+        </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
     </div>

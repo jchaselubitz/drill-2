@@ -27,10 +27,10 @@ const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
     setIsOpen(false);
   };
 
-  const triggerFileInput = () => {
-    importPodcast(inputValue);
-    closeModal();
-  };
+  // const triggerFileInput = () => {
+  //   importPodcast(inputValue);
+  //   closeModal();
+  // };
 
   const loadPodcastList = () => {
     fetch(`/api/podcasts?url=${inputValue}`)

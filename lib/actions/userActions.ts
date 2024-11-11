@@ -7,11 +7,18 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { Iso639LanguageCode } from 'kysely-codegen';
 
-export const getProfile = async ({ userId }: { userId: string | undefined }) => {
-  if (!userId) {
-    return undefined;
+export const getProfile = async () => {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
   }
-  return await db.selectFrom('profile').selectAll().where('id', '=', userId).executeTakeFirst();
+
+  return await db.selectFrom('profile').selectAll().where('id', '=', user.id).executeTakeFirst();
 };
 
 export async function signInWithEmail({
@@ -24,7 +31,8 @@ export async function signInWithEmail({
   shouldCreateUser?: boolean;
 }) {
   const supabase = createClient();
-  const origin = headers().get('origin');
+  const headersList = await headers();
+  const origin = headersList.get('origin');
 
   if (shouldCreateUser && !name) {
     return redirect('/login?message=Name required to create account');
@@ -74,7 +82,8 @@ export const signUp = async ({
   inviteEmail?: string;
 }) => {
   const supabase = createClient();
-  const origin = headers().get('origin');
+  const headersList = await headers();
+  const origin = headersList.get('origin');
   if (!inviteEmail && !email) {
     return redirect('/login?message=Missing required fields');
   }

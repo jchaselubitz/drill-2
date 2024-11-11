@@ -9,6 +9,7 @@ import { getProfile } from '@/lib/actions/userActions';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/toaster';
+import { UserContextProvider } from '@/contexts/user_context';
 import type { Metadata, Viewport } from 'next';
 
 const fontSans = FontSans({
@@ -58,7 +59,7 @@ export default async function RootLayout({
 }>) {
   const supabase = createClient();
   const user = await supabase.auth.getUser();
-  const profile = await getProfile({ userId: user.data.user?.id });
+  const profile = await getProfile();
 
   const imageUrl = profile?.imageUrl;
   const username = profile?.username;
@@ -66,12 +67,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cn('bg-background bg-white font-sans antialiased', fontSans.variable)}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <UserContextProvider profile={profile}>
+          {/* <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          > */}
           <SidebarProvider>
             {user.data.user ? (
               <AppSidebar
@@ -91,7 +93,8 @@ export default async function RootLayout({
               <div className="flex justify-center pb-24 md:justify-normal h-full  ">{children}</div>
             </main>
           </SidebarProvider>
-        </ThemeProvider>
+          {/* </ThemeProvider> */}
+        </UserContextProvider>
         <Toaster />
       </body>
     </html>

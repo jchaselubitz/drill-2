@@ -5,19 +5,18 @@ import MediaReview from './media_review';
 import React from 'react';
 import RecordButton, { RecordButtonStateType } from './record_button';
 import UploadButton from './upload_button';
+import { addRecordingText } from '@/lib/actions/captureActions';
 import { createClient } from '@/utils/supabase/client';
 import { recordAudio, RecordAudioResult, savePrivateAudioFile } from '@/lib/helpers/helpersAudio';
-
-type CaptureAudioProps = {
-  userId: string | undefined;
-};
+import { useUserContext } from '@/contexts/user_context';
 
 type AudioResponse = {
   blob: Blob;
   url: string;
 };
 
-const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
+const CaptureAudio: React.FC = () => {
+  const { userId } = useUserContext();
   const supabase = createClient();
   const [transcriptionLoading, setTranscriptionLoading] = React.useState<boolean>(false);
   const [transcript, setTranscript] = React.useState<string>('');
@@ -26,8 +25,8 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
   const [recordingState, setRecordingState] = React.useState<RecordAudioResult | null>(null);
   const [audioResponse, setAudioResponse] = React.useState<AudioResponse | undefined | null>(null);
 
-  const [isSaving, setIsSaving] = React.useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
+  // const [isSaving, setIsSaving] = React.useState<boolean>(false);
+  // const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [importingPodcast, setImportingPodcast] = React.useState(false);
 
   const resetRecordingButtonState = () => {
@@ -35,9 +34,10 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
     setRecordingState(null);
     setTranscriptionLoading(false);
     setTranscript('');
-    setIsSaving(false);
-    setIsPlaying(false);
+    // setIsSaving(false);
+    // setIsPlaying(false);
     setImportingPodcast(false);
+    setAudioResponse(null);
   };
 
   const startRecording = async () => {
@@ -78,8 +78,8 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
       const audioBlob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
       const audioURL = URL.createObjectURL(audioBlob);
       setAudioResponse({ blob: audioBlob, url: audioURL });
-    } catch (error) {
-      throw Error('Error fetching podcast:');
+    } catch (error: any) {
+      throw Error('Error fetching podcast:', error);
       // Handle the error, e.g., show a notification to the user
     } finally {
       setRecordingButtonState('idle');
@@ -105,7 +105,7 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
   };
 
   const saveRecording = async () => {
-    setIsSaving(true);
+    // setIsSaving(true);
     const fileName = `${Date.now()}-recording`;
     const bucketName = 'user_recordings';
     if (audioResponse) {
@@ -127,14 +127,9 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
       throw Error(`Error checking language: ${langError}`);
     }
     const lang = JSON.parse(data).lng;
-    const { error } = await supabase.from('recordings').insert({
-      user_id: userId,
-      transcript: transcript,
-      filename: fileName,
-      lang,
-    });
-    resetRecordingButtonState();
-    if (error) {
+    try {
+      await addRecordingText({ transcript, filename: fileName, lang });
+    } catch (error) {
       throw Error(`Error saving recording: ${error}`);
     }
     resetRecordingButtonState();
@@ -153,7 +148,7 @@ const CaptureAudio: React.FC<CaptureAudioProps> = ({ userId }) => {
 
   return (
     <div>
-      <div className="flex justify-center items-center gap-3 mb-2">
+      <div className="flex justify-center items-center gap-3 mb-2 w-full">
         <ImportPodcast importPodcast={importPodcast} />
         <UploadButton handleUpload={handleUpload} />
         <RecordButton recordingButtonState={recordingButtonState} handleClick={handleClick} />

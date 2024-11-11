@@ -3,7 +3,7 @@
 import LanguageMenu from './language_selector';
 import Logo from '@/components/logo';
 import UserMenu from './user-menu';
-import { Home, Inbox, Search, Sparkles } from 'lucide-react';
+import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
 import { Iso639LanguageCode } from 'kysely-codegen';
 import { NavMain } from './nav_main';
 import {
@@ -20,9 +20,28 @@ import { User } from '@supabase/supabase-js';
 
 const pages = [
   {
-    title: 'Search',
+    title: 'Home',
+    url: '/',
+    icon: Home,
+    isActive: true,
+  },
+  {
+    title: 'Lessons',
+    url: '/lessons',
+    icon: LucidePartyPopper,
+    badge: '10',
+  },
+  {
+    title: 'Library',
+    url: '/library',
+    icon: Library,
+    badge: '10',
+  },
+  {
+    title: 'Inbox',
     url: '#',
-    icon: Search,
+    icon: Inbox,
+    badge: '10',
   },
   {
     title: 'Ask AI',
@@ -30,16 +49,9 @@ const pages = [
     icon: Sparkles,
   },
   {
-    title: 'Home',
+    title: 'Search',
     url: '#',
-    icon: Home,
-    isActive: true,
-  },
-  {
-    title: 'Inbox',
-    url: '#',
-    icon: Inbox,
-    badge: '10',
+    icon: Search,
   },
 ];
 
