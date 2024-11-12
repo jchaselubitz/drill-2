@@ -10,17 +10,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
-import { getLangIcon, getLangName, Languages } from '@/lib/lists';
+import { getLangIcon, getLangName, Languages, LanguagesISO639 } from '@/lib/lists';
 
 type LanguageMenuProps = {
   label: string;
   name: string;
-  language: Iso639LanguageCode | null | undefined;
-  onClick?: ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => void;
+  language: LanguagesISO639 | null | undefined;
+  onClick?: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
 };
 
 const LanguageMenu: FC<LanguageMenuProps> = ({ label, name, language, onClick }) => {
-  const handleClick = (lang: Iso639LanguageCode) => {
+  const handleClick = (lang: LanguagesISO639) => {
     if (onClick) {
       onClick({ lang, name });
     }
@@ -49,7 +49,7 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ label, name, language, onClick })
         {Languages.map((lang) => (
           <DropdownMenuItem
             key={lang.value}
-            onClick={() => handleClick(lang.value as Iso639LanguageCode)}
+            onClick={() => handleClick(lang.value as LanguagesISO639)}
           >
             <span className="text-lg font-bold">{getLangIcon(lang.value)}</span>
             <div className="grid flex-1 text-left text-sm leading-tight">

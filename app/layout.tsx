@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
 
 import { AppSidebar } from './(components)/app_sidebar';
+import { LanguagesISO639 } from '@/lib/lists';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -80,8 +81,8 @@ export default async function RootLayout({
                 user={user.data.user}
                 username={username}
                 imageUrl={imageUrl}
-                userLanguage={profile?.userLanguage}
-                prefLanguage={profile?.prefLanguage}
+                userLanguage={profile?.userLanguage as LanguagesISO639}
+                prefLanguage={profile?.prefLanguage as LanguagesISO639}
               />
             ) : (
               <Link href="/login">

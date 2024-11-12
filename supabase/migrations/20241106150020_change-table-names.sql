@@ -1,7 +1,5 @@
 drop policy "Enable ALL for users based on user_id" on "public"."lessons";
 
-drop policy "Enable delete for users based on user_id" on "public"."phrases";
-
 drop policy "Enable ALL for users based on user_id" on "public"."recordings";
 
 drop policy "Enable ALL for users based on user_id" on "public"."subjects";

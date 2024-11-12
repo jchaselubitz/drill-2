@@ -1,7 +1,7 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Iso639LanguageCode } from 'kysely-codegen';
+
 import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
 import Logo from '@/components/logo';
 import {
@@ -18,6 +18,7 @@ import { updateUserLanguage } from '@/lib/actions/userActions';
 import LanguageMenu from './language_selector';
 import { NavMain } from './nav_main';
 import UserMenu from './user-menu';
+import { LanguagesISO639 } from '@/lib/lists';
 
 const pages = [
   {
@@ -60,8 +61,8 @@ type AppSidebarProps = {
   user: User;
   username: string | null | undefined;
   imageUrl: string | null | undefined;
-  userLanguage: Iso639LanguageCode | null | undefined;
-  prefLanguage: Iso639LanguageCode | null | undefined;
+  userLanguage: LanguagesISO639 | null | undefined;
+  prefLanguage: LanguagesISO639 | null | undefined;
 };
 
 export function AppSidebar({
@@ -71,7 +72,7 @@ export function AppSidebar({
   userLanguage,
   prefLanguage,
 }: AppSidebarProps) {
-  const setUserLanguages = async ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => {
+  const setUserLanguages = async ({ lang, name }: { lang: LanguagesISO639; name: string }) => {
     if (name === 'userLanguage') {
       await updateUserLanguage({
         userLanguage: lang,
