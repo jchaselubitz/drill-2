@@ -1,13 +1,14 @@
 import React from 'react';
 import TtsButton from '@/components/ai_elements/tts_button';
-import { BaseTranslation, TranslationWithPhrase } from 'kysely-codegen';
+import { TranslationWithPhrase } from 'kysely-codegen';
 import { getLangName } from '@/lib/lists';
 import { Input } from '@/components/ui/input';
 import { updatePhrase } from '@/lib/actions/phraseActions';
 
 interface PhraseListProps {
   translations: TranslationWithPhrase[];
-  translationsWithoutAudio: (BaseTranslation | undefined)[];
+  translationsWithoutAudio: (TranslationWithPhrase | undefined)[] | undefined;
+
   bucket: string;
 }
 

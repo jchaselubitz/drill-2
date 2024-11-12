@@ -4,7 +4,7 @@ import GenerateMorePhrases from '@/components/ai_elements/generate_more_phrases'
 import GeneratePhraseAudio from '@/components/ai_elements/generate_phrase_audio';
 import PhraseList from './phrase_list';
 import React, { useEffect, useState } from 'react';
-import { BaseTranslation, LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
+import { LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
 import { downloadApkg, downloadCSV } from '@/lib/helpers/helpersExport';
@@ -21,7 +21,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({ lesson }) => {
   const supabase = createClient();
   const { userLanguage } = useUserContext();
   const [translationsWithoutAudio, setTranslationsWithoutAudio] = useState<
-    ((TranslationWithPhrase | undefined)[] | null | undefined)[]
+    (TranslationWithPhrase | undefined)[] | undefined
   >([]);
   const [loadingCSV, setLoadingCSV] = useState(false);
   const [loadingAPKG, setLoadingAPKG] = useState(false);
@@ -85,7 +85,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({ lesson }) => {
           userLanguage={userLanguage}
           currentLevel={lesson.level}
         />
-        {translationsWithoutAudio.length > 0 && (
+        {translationsWithoutAudio && translationsWithoutAudio.length > 0 && (
           <GeneratePhraseAudio
             translations={translationsWithoutAudio}
             bucket={bucket}
@@ -94,7 +94,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({ lesson }) => {
                 const fileList = (await getFileList({ supabase, bucket })).map((file) => file.name);
                 const withoutAudio = await Promise.all(
                   translations.map(async (translation) => {
-                    const text = translation.phraseSecondary.text as string;
+                    const text = translation?.phraseSecondary.text as string;
                     const fileName = ((await hashString(text as string)) + '.mp3') as string;
                     if (!fileList.includes(fileName)) {
                       return translation;
