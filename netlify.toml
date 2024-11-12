@@ -3,8 +3,8 @@
 command = "yarn generate-deploy && next build"
 publish = ".next"
 [context.production.environment]
-NEXT_PUBLIC_SUPABASE_URL = 'https://kmevogjapirgcganztkz.supabase.co'
-NEXT_PUBLIC_SUPABASE_PROJECT_ID = "kmevogjapirgcganztkz"
+NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
+NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
 NEXT_PUBLIC_SITE_URL = 'https://nyca.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "prod"
 
@@ -21,8 +21,8 @@ NEXT_PUBLIC_CONTEXT = "staging"
 command = "yarn generate-deploy && next build"
 publish = ".next"
 [context.branch-deploy.environment]
-NEXT_PUBLIC_SUPABASE_URL = 'https://kmevogjapirgcganztkz.supabase.co'
-NEXT_PUBLIC_SUPABASE_PROJECT_ID = "kmevogjapirgcganztkz"
+NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
+NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
 NEXT_PUBLIC_SITE_URL = 'https://main--nyca.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "branch-deploy"
 
@@ -31,8 +31,8 @@ NEXT_PUBLIC_CONTEXT = "branch-deploy"
 command = "yarn generate && next build"
 publish = ".next"
 [context.development.environment]
-NEXT_PUBLIC_SUPABASE_URL = 'https://kmevogjapirgcganztkz.supabase.co'
-NEXT_PUBLIC_SUPABASE_PROJECT_ID = "kmevogjapirgcganztkz"
+NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
+NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
 # NEXT_PUBLIC_SITE_URL = 'https://main--nyca.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "development"
 
