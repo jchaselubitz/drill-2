@@ -1,6 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Iso639LanguageCode } from 'kysely-codegen';
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -184,7 +184,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
                       <SelectContent>
                         {Languages.map((language) => (
                           <SelectItem
-                            key={language.value as Iso639LanguageCode}
+                            key={language.value as LanguagesISO639}
                             value={language.value}
                           >
                             {language.name}

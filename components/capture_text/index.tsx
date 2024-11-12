@@ -1,13 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Iso639LanguageCode } from 'kysely-codegen';
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
-import { Languages } from '@/lib/lists';
+import { Languages, LanguagesISO639 } from '@/lib/lists';
 
 import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
@@ -34,7 +34,7 @@ const CaptureText: React.FC = () => {
 
   const onSubmit = async (data: FormValues) => {
     const text = data.text;
-    const lang = data.lang as Iso639LanguageCode;
+    const lang = data.lang as LanguagesISO639;
     await addPhrase({ text, lang });
   };
 

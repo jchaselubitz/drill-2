@@ -5,7 +5,7 @@ import db from '../database';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
-import { Iso639LanguageCode } from 'kysely-codegen';
+import { LanguagesISO639 } from '../lists';
 
 export const getProfile = async () => {
   const supabase = createClient();
@@ -166,8 +166,8 @@ export const updateUserLanguage = async ({
   userLanguage,
   prefLanguage,
 }: {
-  userLanguage: Iso639LanguageCode | null;
-  prefLanguage: Iso639LanguageCode | null;
+  userLanguage: LanguagesISO639 | null;
+  prefLanguage: LanguagesISO639 | null;
 }) => {
   const supabase = createClient();
   const {

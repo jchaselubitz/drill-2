@@ -1,6 +1,5 @@
 'use client';
 
-import { Iso639LanguageCode } from 'kysely-codegen';
 import { ChevronsUpDown } from 'lucide-react';
 import { FC } from 'react';
 import {

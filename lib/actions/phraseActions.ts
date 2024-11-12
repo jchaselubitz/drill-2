@@ -3,7 +3,8 @@ import { revalidatePath } from 'next/cache';
 import db from '../database';
 import { createClient } from '@/utils/supabase/server';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
-import { Iso639LanguageCode, NewPhrase, NewTranslation } from 'kysely-codegen';
+import { NewPhrase, NewTranslation } from 'kysely-codegen';
+import { LanguagesISO639 } from '../lists';
 
 export const getPhrases = async () => {
   const supabase = createClient();
@@ -66,7 +67,7 @@ export const addPhrase = async ({
   source,
 }: {
   text: string;
-  lang: Iso639LanguageCode;
+  lang: LanguagesISO639;
   source?: string;
 }) => {
   const supabase = createClient();

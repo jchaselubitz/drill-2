@@ -3,7 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import db from '../database';
 import { createClient } from '@/utils/supabase/server';
-import { Iso639LanguageCode, NewPhrase, NewRecording } from 'kysely-codegen';
+import { NewRecording } from 'kysely-codegen';
+import { LanguagesISO639 } from '../lists';
 
 export const addRecordingText = async ({
   transcript,
@@ -12,7 +13,7 @@ export const addRecordingText = async ({
 }: {
   transcript: string;
   filename: string;
-  lang: Iso639LanguageCode;
+  lang: LanguagesISO639;
 }) => {
   const supabase = createClient();
   const {
