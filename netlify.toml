@@ -33,7 +33,7 @@ publish = ".next"
 [context.development.environment]
 NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
-# NEXT_PUBLIC_SITE_URL = 'https://main--nyca.netlify.app/'
+NEXT_PUBLIC_SITE_URL = 'https://drillang.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "development"
 
 
