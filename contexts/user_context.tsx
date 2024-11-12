@@ -1,6 +1,6 @@
 'use client';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { BaseProfile } from 'kysely-codegen';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { LanguagesISO639 } from '@/lib/lists';
 
 type UserContextType = {

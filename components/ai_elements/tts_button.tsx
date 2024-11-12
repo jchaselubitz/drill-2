@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-
-import { AudioPlayButton } from '../ui/audio-play-button';
-import { createClient } from '@/utils/supabase/client';
 import { getAudioFile, playSavedAudio } from '@/lib/helpers/helpersAudio';
 import { hashString } from '@/lib/helpers/helpersDB';
+import { createClient } from '@/utils/supabase/client';
+
+import { AudioPlayButton } from '../ui/audio-play-button';
 
 interface TtsButtonProps {
   bucket: string;
-  lacksAudio?: boolean;
+  lacksAudio: boolean | undefined;
   text: string | null;
 }
 
@@ -17,8 +17,8 @@ const TtsButton: React.FC<TtsButtonProps> = ({ bucket, lacksAudio, text }) => {
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [exists, setExists] = useState(!lacksAudio);
   const [audioObject, setAudioObject] = useState<HTMLAudioElement | null>(null);
+  const [exists, setExists] = useState<boolean | undefined>(!lacksAudio);
 
   const handlePlaySpeech = async () => {
     if (!text) return;

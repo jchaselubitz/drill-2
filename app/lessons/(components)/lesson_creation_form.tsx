@@ -1,22 +1,14 @@
 'use client';
-import LessonOptionList from './lesson_option_list';
-import LightSuggestionList from '@/components/ai_elements/suggestions/light_suggestion_list';
-import React, { useState } from 'react';
-import { ContentSuggestions, Languages, LanguagesISO639, Levels } from '@/lib/lists';
-import { createClient } from '@/utils/supabase/client';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Iso639LanguageCode } from 'kysely-codegen';
-import { Label } from '@/components/ui/label';
-import {
-  lessonGenerationSystemInstructions,
-  phraseGenerationSystemInstructions,
-  phraseResponseChecks,
-  requestLessonSuggestions,
-  requestPhraseSuggestions,
-} from '@/lib/helpers/promptGenerators';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import LightSuggestionList from '@/components/ai_elements/suggestions/light_suggestion_list';
+import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/button-loading';
-import { OptionType } from './lesson_option';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -25,25 +17,38 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
 import { useUserContext } from '@/contexts/user_context';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
+import {
+  lessonGenerationSystemInstructions,
+  phraseGenerationSystemInstructions,
+  phraseResponseChecks,
+  requestLessonSuggestions,
+  requestPhraseSuggestions,
+} from '@/lib/helpers/promptGenerators';
+import { ContentSuggestions, Languages, LanguagesISO639, Levels } from '@/lib/lists';
+import { createClient } from '@/utils/supabase/client';
+
+import { OptionType } from './lesson_option';
+import LessonOptionList from './lesson_option_list';
 
 interface LessonCreationFormProps {
   subjectId?: string | undefined;
   subjectLanguage?: LanguagesISO639;
   subjectLevel?: string | null;
+  startOpen?: boolean;
 }
 
 const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
   subjectId,
   subjectLanguage,
   subjectLevel,
+  startOpen,
 }) => {
   if (subjectId && (!subjectLanguage || !subjectLevel)) {
     throw new Error('Subject ID provided without language or level');
   }
+  const [showCreationForm, setShowCreationForm] = useState(startOpen);
   const { userLanguage, prefLanguage } = useUserContext();
   const [level, setLevel] = useState(subjectLevel);
   const [studyLanguage, setStudyLanguage] = useState<LanguagesISO639 | undefined>(subjectLanguage);
@@ -66,6 +71,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
       studyLanguage: language,
       level: level,
       concept: request,
+      numberOfPhrases: 20,
     });
 
     const modelParams = { format: format };
@@ -77,7 +83,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
       { role: 'user', content: prompt },
     ];
 
-    const { data, error } = await supabase.functions.invoke('gen-text', {
+    const { data } = await supabase.functions.invoke('gen-text', {
       body: {
         userApiKey: getOpenAiKey(),
         modelSelection: getModelSelection(),
@@ -147,10 +153,18 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
     defaultValues: { level: level ?? '', language: studyLanguage ?? prefLanguage ?? '' },
   });
 
+  if (!showCreationForm) {
+    return (
+      <Button onClick={() => setShowCreationForm(true)} variant={'default'}>
+        Create a new lesson
+      </Button>
+    );
+  }
+
   return (
-    <div>
+    <div className="p-4 bg-zinc-50 rounded-lg w-full">
       <Form {...form}>
-        <form className="flex flex-col gap-2 w-full">
+        <form className="flex flex-col gap-2 w-full mb-5">
           {!subjectId && (
             <>
               <FormField
@@ -213,6 +227,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
           <Label>Describe the material you would like to drill</Label>
           <Textarea
             name="request"
+            className="w-full"
             placeholder="e.g. verb-adjective agreement, or business and political topics"
             value={request}
             onChange={(e) => setRequest(e.target.value)}
@@ -229,7 +244,6 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
 
           {request !== '' && (
             <LoadingButton
-              className="bg-blue-600 rounded-lg text-white p-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
               buttonState={isLoading ? 'loading' : 'default'}
               text="Generate Lesson"
               loadingText="Generating..."

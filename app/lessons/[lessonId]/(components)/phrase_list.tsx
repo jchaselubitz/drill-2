@@ -1,14 +1,13 @@
+import { TranslationWithPhrase } from 'kysely-codegen';
 import React from 'react';
 import TtsButton from '@/components/ai_elements/tts_button';
-import { TranslationWithPhrase } from 'kysely-codegen';
-import { getLangName } from '@/lib/lists';
 import { Input } from '@/components/ui/input';
 import { updatePhrase } from '@/lib/actions/phraseActions';
+import { getLangName } from '@/lib/lists';
 
 interface PhraseListProps {
   translations: TranslationWithPhrase[];
   translationsWithoutAudio: (TranslationWithPhrase | undefined)[] | undefined;
-
   bucket: string;
 }
 
@@ -67,7 +66,7 @@ const PhraseList: React.FC<PhraseListProps> = ({
                       lacksAudio={
                         translationsWithoutAudio
                           ? translationsWithoutAudio.some((twa) => twa?.id === translation.id)
-                          : false
+                          : true
                       }
                     />
                   </td>

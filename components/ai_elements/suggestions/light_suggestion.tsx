@@ -12,7 +12,7 @@ const LightSuggestion: React.FC<LightSuggestionProps> = ({ suggestion, setMateri
       onClick={() => setMaterialSuggestion(suggestion)}
     >
       <p className="text-xs text-gray-500 mb-1">{`Suggestion:`}</p>
-      <p>"{`${suggestion}`}"</p>
+      <p>{`"${suggestion}"`}</p>
     </button>
   );
 };

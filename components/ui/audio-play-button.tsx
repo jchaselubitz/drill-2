@@ -1,6 +1,5 @@
+import { ArrowDown, CirclePause, CirclePlay, Loader2Icon } from 'lucide-react';
 import * as React from 'react';
-
-import { ArrowDown, Loader2Icon, Pause, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -19,7 +18,7 @@ const AudioPlayButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isLoading}
         className={cn(
           [
-            'flex items-center justify-center gap-2 h-10 w-10 transition-colors duration-150 border-2 rounded-full hover:text-white focus:outline-none focus:shadow-outline-blue',
+            'flex items-center justify-center gap-2 h-10 w-10 transition-colors duration-150  rounded-full hover:text-white focus:outline-none focus:shadow-outline-blue',
           ],
           [
             !exists
@@ -36,9 +35,9 @@ const AudioPlayButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading ? (
           <Loader2Icon className=" h-8 w-8 animate-spin" />
         ) : isPlaying ? (
-          <Pause className="h-8 w-8" />
+          <CirclePause className="h-7 w-7 text-red-800" />
         ) : exists ? (
-          <Play className="h-8 w-8" />
+          <CirclePlay className="h-7 w-7" />
         ) : (
           <ArrowDown />
         )}{' '}

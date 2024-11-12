@@ -1,5 +1,6 @@
 // ==== Lesson Suggestions ====
 
+import { PhraseType } from '@/app/lessons/(components)/lesson_option';
 import type { gptFormatType } from './helpersAI';
 import { LanguagesISO639, getLangName } from './lists';
 
@@ -37,7 +38,7 @@ export const phraseResponseChecks = ({
   response: string;
   lang1: string;
   lang2: string;
-}) => {
+}): PhraseType[] => {
   if (response === '') {
     throw Error('No phrases generated. Try again.');
   }
@@ -66,11 +67,13 @@ export const requestPhraseSuggestions = ({
   userLanguage,
   studyLanguage,
   level,
+  numberOfPhrases,
 }: {
   concept: string;
   studyLanguage: LanguagesISO639 | '';
   userLanguage: LanguagesISO639 | '';
   level: string;
+  numberOfPhrases: number;
 }): { prompt: string; format: gptFormatType } => {
   if (studyLanguage === '' || concept === '' || level === '' || userLanguage === '') {
     throw new Error('studyLanguage, concept, or level is empty');
@@ -82,7 +85,7 @@ export const requestPhraseSuggestions = ({
     userLanguage
   )} on one side and ${getLangName(
     studyLanguage
-  )} on the other. Generate twenty long sentences that demonstrate the concept of ${concept} in ${getLangName(
+  )} on the other. Generate ${numberOfPhrases} long sentences that demonstrate the concept of ${concept} in ${getLangName(
     studyLanguage
   )}. The format of the JSON should be as follows: {${userLanguage}: "sentence", ${studyLanguage}: "sentence"}.`;
   const format = 'json_object';

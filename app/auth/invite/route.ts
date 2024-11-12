@@ -9,10 +9,7 @@ export async function GET(request: Request) {
 
   if (token && email) {
     const supabase = createClient();
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.verifyOtp({
+    await supabase.auth.verifyOtp({
       email,
       token: token,
       type: 'invite',

@@ -1,11 +1,9 @@
 'use client';
 
-import LanguageMenu from './language_selector';
-import Logo from '@/components/logo';
-import UserMenu from './user-menu';
-import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
+import { User } from '@supabase/supabase-js';
 import { Iso639LanguageCode } from 'kysely-codegen';
-import { NavMain } from './nav_main';
+import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
+import Logo from '@/components/logo';
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +14,10 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { updateUserLanguage } from '@/lib/actions/userActions';
-import { User } from '@supabase/supabase-js';
+
+import LanguageMenu from './language_selector';
+import { NavMain } from './nav_main';
+import UserMenu from './user-menu';
 
 const pages = [
   {

@@ -1,10 +1,10 @@
 'use client';
-import React, { useState } from 'react';
-
-import PhraseCardDetails from './phrase_card_details';
-import TtsButton from '../ai_elements/tts_button';
-import { cn } from '@/lib/utils';
 import { PhraseWithTranslations } from 'kysely-codegen';
+import React, { useState } from 'react';
+import { cn } from '@/lib/utils';
+
+import TtsButton from '../ai_elements/tts_button';
+import PhraseCardDetails from './phrase_card_details';
 
 interface PhraseCardProps {
   phrase: PhraseWithTranslations;

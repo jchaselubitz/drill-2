@@ -1,6 +1,7 @@
-import NestedListItem from './nested_list_item';
 import React from 'react';
 import { GenResponseType } from '@/lib/actions/phraseActions';
+
+import NestedListItem from './nested_list_item';
 
 type NestedObjectProps = {
   data: GenResponseType;

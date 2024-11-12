@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
 import { UploadIcon } from 'lucide-react';
+import React, { useRef } from 'react';
 
 interface UploadButtonProps {
   handleUpload: (file: File) => Promise<void>;

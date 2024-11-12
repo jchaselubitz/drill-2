@@ -1,11 +1,11 @@
+import { TranslationWithPhrase } from 'kysely-codegen';
 import React, { useState } from 'react';
-
-import { createClient } from '@/utils/supabase/client';
 import { getAudioFile } from '@/lib/helpers/helpersAudio';
 import { hashString } from '@/lib/helpers/helpersDB';
+import { createClient } from '@/utils/supabase/client';
 
 interface GeneratePhraseAudioProps {
-  translations: (Translation | undefined)[];
+  translations: (TranslationWithPhrase | undefined)[];
   bucket: string;
   updateAudioStatuses: () => void;
 }
@@ -24,10 +24,10 @@ const GeneratePhraseAudio: React.FC<GeneratePhraseAudioProps> = ({
     const genAudioFiles = () =>
       translations.map(async (translation, i) => {
         if (!translation) return;
-        const { phrase_secondary_id } = translation;
+        const { phraseSecondary } = translation;
         await getAudioFile({
-          text: phrase_secondary_id.text as string,
-          fileName: (await hashString(phrase_secondary_id.text as string)) + '.mp3',
+          text: phraseSecondary.text as string,
+          fileName: (await hashString(phraseSecondary.text as string)) + '.mp3',
           supabase,
           bucket,
           setIsLoadingFalse: () => {

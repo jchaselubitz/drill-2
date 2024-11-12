@@ -39,7 +39,10 @@ declare module 'kysely-codegen' {
     source: string | null;
     text: string | null;
   };
-  export type PhraseWithTranslations = Phrase & { translations: Translation[] };
+  export type PhraseWithTranslations = Phrase & {
+    translationsWherePrimary: Translation[];
+    translationsWhereSecondary: Translation[];
+  };
   export type NewPhrase = Insertable<Phrase>;
   export type EditedPhrase = Updateable<Phrase>;
 

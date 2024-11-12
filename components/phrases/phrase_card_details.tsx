@@ -1,14 +1,15 @@
+import { Languages } from 'lucide-react';
 import React from 'react';
+import { useUserContext } from '@/contexts/user_context';
+import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 
 import ContentRequest from '../ai_elements/content_request';
 import TtsButton from '../ai_elements/tts_button';
-import { cn } from '@/lib/utils';
-import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
-import { Languages } from 'lucide-react';
-import { useUserContext } from '@/contexts/user_context';
+import { PhraseWithTranslations } from 'kysely-codegen';
 
 interface PhraseCardDetailsProps {
-  phrase: any;
+  phrase: PhraseWithTranslations;
 }
 
 const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
@@ -42,7 +43,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
                 <div className="flex items-center justify-between md:gap-2">
                   {translationsPhrase.text}
                   <div className="w-12">
-                    <TtsButton text={translationsPhrase.text} bucket={bucket} />
+                    <TtsButton text={translationsPhrase.text} bucket={bucket} lacksAudio={false} />
                   </div>
                 </div>
                 <hr className="border border-gray-500 my-1" />

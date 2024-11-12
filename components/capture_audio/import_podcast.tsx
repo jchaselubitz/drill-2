@@ -1,9 +1,9 @@
+import { PodcastIcon } from 'lucide-react';
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-import PodcastListItem from './podcast_list_item';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { PodcastIcon } from 'lucide-react';
+import PodcastListItem from './podcast_list_item';
 
 type ImportPodcastProps = {
   importPodcast: (url: string) => void;
@@ -13,7 +13,7 @@ const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [episodes, setEpisodes] = useState<any[]>([]);
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   const openModal = () => {
     setIsOpen(true);
@@ -44,17 +44,17 @@ const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
         setEpisodes(data.episodes);
       })
       .catch((error) => {
-        console.error('Error:', error);
+        throw new Error(`Failed to load podcast list: ${error}`);
       });
   };
 
-  const setEpisodeURL = (url) => {
+  const setEpisodeURL = (url: string) => {
     importPodcast(url);
     closeModal();
   };
 
-  const handleClickOutside = (event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
+  const handleClickOutside = (event: Event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
       closeModal();
     }
   };

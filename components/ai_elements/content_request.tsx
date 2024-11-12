@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-
-import LightSuggestionList from './suggestions/light_suggestion_list';
-import NestedObject from './nested_object';
-import SaveTranslationButton from './save_translation_button';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
-import { createClient } from '@/utils/supabase/client';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
 import { LanguagesISO639 } from '@/lib/lists';
+import { createClient } from '@/utils/supabase/client';
+
 import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
+import NestedObject from './nested_object';
+import SaveTranslationButton from './save_translation_button';
+import LightSuggestionList from './suggestions/light_suggestion_list';
 
 interface ContentRequestProps {
   text: string | null;

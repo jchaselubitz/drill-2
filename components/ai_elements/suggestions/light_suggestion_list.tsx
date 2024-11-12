@@ -1,7 +1,8 @@
-import LightSuggestion from './light_suggestion';
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { LoadingButton } from '@/components/ui/button-loading';
+import { cn } from '@/lib/utils';
+
+import LightSuggestion from './light_suggestion';
 
 interface LightSuggestionListProps {
   suggestions: string[];
@@ -19,7 +20,7 @@ const LightSuggestionList: React.FC<LightSuggestionListProps> = ({
   setMaterialSuggestion,
 }) => {
   const mainClass =
-    'flex-col justify-start items-center p-4 rounded-lg border border-blue-300 bg-blue-100 bg-opacity-70 text-blue-800 font-semibold text-sm min-w-max hover:bg-opacity-100 transition-all';
+    'flex-col justify-start items-center rounded-lg border border-blue-300 bg-blue-100 bg-opacity-70 text-blue-800 font-semibold text-sm min-w-max hover:text-blue-100 hover:bg-opacity-80 transition-all';
 
   return (
     <div className="flex flex-row md:flex-wrap gap-4 my-4 overflow-x-scroll">

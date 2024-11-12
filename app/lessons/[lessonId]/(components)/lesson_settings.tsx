@@ -1,30 +1,36 @@
 'use client';
 
+import { LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
+import React, { useEffect, useState } from 'react';
 import GenerateMorePhrases from '@/components/ai_elements/generate_more_phrases';
 import GeneratePhraseAudio from '@/components/ai_elements/generate_phrase_audio';
-import PhraseList from './phrase_list';
-import React, { useEffect, useState } from 'react';
-import { LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
-import { cn } from '@/lib/utils';
-import { createClient } from '@/utils/supabase/client';
-import { downloadApkg, downloadCSV } from '@/lib/helpers/helpersExport';
+import { useUserContext } from '@/contexts/user_context';
 import { getFileList } from '@/lib/helpers/helpersAudio';
 import { hashString } from '@/lib/helpers/helpersDB';
+import { downloadApkg, downloadCSV } from '@/lib/helpers/helpersExport';
 import { LanguagesISO639 } from '@/lib/lists';
-import { useUserContext } from '@/contexts/user_context';
+import { cn } from '@/lib/utils';
+import { createClient } from '@/utils/supabase/client';
+
+import PhraseList from './phrase_list';
 
 interface LessonSettingsProps {
   lesson: LessonWithTranslations;
+  translationsWithoutAudio: (TranslationWithPhrase | undefined)[] | undefined;
 }
 
-const LessonSettings: React.FC<LessonSettingsProps> = ({ lesson }) => {
+const LessonSettings: React.FC<LessonSettingsProps> = ({
+  lesson,
+  translationsWithoutAudio: twa,
+}) => {
   const supabase = createClient();
   const { userLanguage } = useUserContext();
   const [translationsWithoutAudio, setTranslationsWithoutAudio] = useState<
     (TranslationWithPhrase | undefined)[] | undefined
-  >([]);
+  >(twa);
   const [loadingCSV, setLoadingCSV] = useState(false);
   const [loadingAPKG, setLoadingAPKG] = useState(false);
+
   const translations = lesson.translations;
   const studyLanguage = lesson.translations[0]?.phraseSecondary.lang as LanguagesISO639;
   const bucket = 'text_to_speech';
@@ -112,7 +118,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({ lesson }) => {
       </div>
       <hr className="border-gray-300 my-5" />
       <PhraseList
-        translations={lesson.translations}
+        translations={translations}
         bucket={bucket}
         translationsWithoutAudio={translationsWithoutAudio}
       />

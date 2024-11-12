@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
+import { addTranslationsToLesson } from '@/lib/actions/lessonActions';
 import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
-import { LanguagesISO639 } from '@/lib/lists';
 import {
   phraseGenerationSystemInstructions,
   phraseResponseChecks,
   requestPhraseSuggestions,
 } from '@/lib/helpers/promptGenerators';
+import { LanguagesISO639 } from '@/lib/lists';
+import { createClient } from '@/utils/supabase/client';
 
 interface GenerateMorePhrasesProps {
-  userId?: string;
   lessonId: string;
   lessonTitle: string;
   studyLanguage: LanguagesISO639;
@@ -18,7 +18,6 @@ interface GenerateMorePhrasesProps {
 }
 
 const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
-  userId,
   lessonId,
   lessonTitle,
   studyLanguage,
@@ -35,6 +34,7 @@ const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
       studyLanguage: studyLanguage,
       userLanguage: userLanguage,
       level: currentLevel ?? '',
+      numberOfPhrases: 2,
     });
 
     const messages = [
@@ -64,26 +64,20 @@ const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
         },
       });
 
-      const cardsArray = phraseResponseChecks({
+      const phaseArray = phraseResponseChecks({
         response: data,
         lang1: userLanguage,
         lang2: studyLanguage,
       });
 
-      const { error } = await supabase.rpc('add_translations_to_lesson', {
-        _lesson_id: lessonId,
-        _translations: cardsArray,
-        _user_id: userId,
+      await addTranslationsToLesson({
+        phrases: phaseArray,
+        lessonId: lessonId,
       });
-
-      if (error) {
-        throw Error(`${'Failed to insert cards:'} ${error.message}`);
-      }
 
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      console.log('genText Error', error);
     }
   };
 

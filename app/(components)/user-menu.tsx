@@ -1,8 +1,9 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
+import { User } from '@supabase/supabase-js';
 import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { FC } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { signOut } from '@/lib/actions/userActions';
-
-import { FC } from 'react';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
-import { User } from '@supabase/supabase-js';
+import { signOut } from '@/lib/actions/userActions';
 
 type UserMenuProps = {
   user: User | null | undefined;

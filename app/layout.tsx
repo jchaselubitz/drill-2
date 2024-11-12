@@ -1,16 +1,16 @@
 import './globals.css';
-import Link from 'next/link';
-import { AppSidebar } from './(components)/app_sidebar';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { createClient } from '@/utils/supabase/server';
+import type { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
-import { getProfile } from '@/lib/actions/userActions';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/toaster';
 import { UserContextProvider } from '@/contexts/user_context';
-import type { Metadata, Viewport } from 'next';
+import { getProfile } from '@/lib/actions/userActions';
+import { cn } from '@/lib/utils';
+import { createClient } from '@/utils/supabase/server';
+
+import { AppSidebar } from './(components)/app_sidebar';
 
 const fontSans = FontSans({
   subsets: ['latin'],

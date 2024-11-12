@@ -1,17 +1,16 @@
 'use client';
 
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { ChevronsUpDown } from 'lucide-react';
+import { FC } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-import { FC } from 'react';
-import { getLangIcon, getLangName, Languages } from '@/lib/lists';
-import { Iso639LanguageCode } from 'kysely-codegen';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { getLangIcon, getLangName, Languages } from '@/lib/lists';
 
 type LanguageMenuProps = {
   label: string;

@@ -87,29 +87,38 @@ export const addPhrase = async ({
   revalidatePath('/');
 };
 
-export type GenResponseType = {
-  input_text: string;
-  input_lang: string;
-  output_text: string;
-  output_lang: string;
-};
-type AddTranslationProps = {
-  primaryPhraseIds: string[];
-  genResponse: GenResponseType;
-  source: string;
-};
-
 export const updatePhrase = async ({ phraseId, text }: { phraseId: string; text: string }) => {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
   try {
-    await db.updateTable('phrase').set({ text }).where('id', '=', phraseId).execute();
+    await db
+      .updateTable('phrase')
+      .set({ text })
+      .where('id', '=', phraseId)
+      .where('userId', '=', userId)
+      .execute();
   } catch (error) {
     throw Error(`Failed to update phrase: ${error}`);
   }
+};
+
+export type GenResponseType = {
+  input_text: string;
+  input_lang: string;
+  output_text: string;
+  output_lang: string;
+};
+
+type AddTranslationProps = {
+  primaryPhraseIds?: string[];
+  genResponse: GenResponseType;
+  source: string;
 };
 
 export const addTranslation = async ({
@@ -127,7 +136,7 @@ export const addTranslation = async ({
     return [];
   }
 
-  if (primaryPhraseIds.length > 0) {
+  if (primaryPhraseIds && primaryPhraseIds.length > 0) {
     const primaryPhraseId = primaryPhraseIds[0];
     const translation = await db.transaction().execute(async (trx) => {
       const secondaryPhrase = await trx

@@ -1,8 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-
-import db from '../database';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import {
   BasePhrase,
   LessonWithTranslations,
@@ -11,9 +9,11 @@ import {
   NewSubject,
   NewTranslation,
 } from 'kysely-codegen';
-import { createClient } from '@/utils/supabase/server';
-import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
+import { revalidatePath } from 'next/cache';
 import { PhraseType } from '@/app/lessons/(components)/lesson_option';
+import { createClient } from '@/utils/supabase/server';
+
+import db from '../database';
 
 export const getSubjects = async () => {
   const supabase = createClient();
@@ -218,7 +218,64 @@ export const addSubjectLessonWithTranslations = async ({
       return { subjectId: newSubjectId, lessonId: lesson.id };
     });
   } catch (error) {
-    console.log('Error saving lesson to db:', error);
+    throw Error('Error saving lesson to db:');
   }
-  revalidatePath('/lessons', 'page');
+};
+
+export const addTranslationsToLesson = async ({
+  lessonId,
+  phrases,
+}: {
+  lessonId: string;
+  phrases: PhraseType[];
+}) => {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return;
+  }
+  const userId = user.id;
+  try {
+    await db.transaction().execute(async (trx) => {
+      phrases.map(async (phrase) => {
+        const phrase1 = await trx
+          .insertInto('phrase')
+          .values({
+            text: phrase.phrase_primary.text,
+            lang: phrase.phrase_primary.lang,
+            source: '',
+            userId,
+          } as NewPhrase)
+          .returning('id')
+          .executeTakeFirstOrThrow();
+        const phrase2 = await trx
+          .insertInto('phrase')
+          .values({
+            text: phrase.phrase_secondary.text,
+            lang: phrase.phrase_secondary.lang,
+            source: '',
+            userId,
+          } as NewPhrase)
+          .returning('id')
+          .executeTakeFirstOrThrow();
+
+        trx
+          .insertInto('translation')
+          .values({
+            userId,
+            lessonId,
+            phrasePrimaryId: phrase1.id,
+            phraseSecondaryId: phrase2.id,
+          } as NewTranslation)
+          .execute();
+      });
+    });
+    revalidatePath(`/lessons/${lessonId}`, 'page');
+  } catch (error) {
+    throw Error('Error adding translations to lesson to db');
+  }
 };

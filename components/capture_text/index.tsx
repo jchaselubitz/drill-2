@@ -1,17 +1,18 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
+import { Languages } from '@/lib/lists';
+
 import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
-import { Iso639LanguageCode } from 'kysely-codegen';
-import { Languages } from '@/lib/lists';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
-import { useForm } from 'react-hook-form';
-import { useUserContext } from '@/contexts/user_context';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 const CaptureText: React.FC = () => {
   const { prefLanguage } = useUserContext();

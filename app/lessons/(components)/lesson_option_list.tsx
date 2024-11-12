@@ -1,7 +1,7 @@
 import React from 'react';
+import { LanguagesISO639 } from '@/lib/lists';
 
 import LessonOption, { OptionType } from './lesson_option';
-import { LanguagesISO639 } from '@/lib/lists';
 
 interface LessonOptionListProps {
   options: OptionType[];

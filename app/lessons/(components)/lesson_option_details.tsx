@@ -1,24 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
-
 import Link from 'next/link';
-import { addSubjectLessonWithTranslations } from '@/lib/actions/lessonActions';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
-import { createClient } from '@/utils/supabase/client';
-import { getLangName, LanguagesISO639 } from '@/lib/lists';
+import { addSubjectLessonWithTranslations } from '@/lib/actions/lessonActions';
 import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
-import { OptionType } from './lesson_option';
 import {
   phraseGenerationSystemInstructions,
   phraseResponseChecks,
   requestPhraseSuggestions,
 } from '@/lib/helpers/promptGenerators';
+import { getLangName, LanguagesISO639 } from '@/lib/lists';
+import { createClient } from '@/utils/supabase/client';
+
+import { OptionType } from './lesson_option';
 
 interface LessonOptionDetailsProps {
   option: OptionType;
-
   subjectId: string | undefined;
   studyLanguage: LanguagesISO639;
   userLanguage: LanguagesISO639;
@@ -27,7 +26,6 @@ interface LessonOptionDetailsProps {
 
 const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
   option,
-
   subjectId,
   studyLanguage,
   userLanguage,
@@ -51,6 +49,7 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
       studyLanguage,
       userLanguage,
       level: level,
+      numberOfPhrases: 20,
     });
 
     const messages = [
@@ -112,7 +111,7 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
 
         setSaveButtonState('success');
       }
-    } catch (error) {
+    } catch {
       setSaveButtonState('error');
       throw Error('Translation Save Error');
     }
@@ -121,20 +120,24 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
   return (
     <div className="p-1">
       <div className="flex px-4 pb-4 gap-2 w-full">
-        {lessonLink ? (
-          <Link href={lessonLink}>
-            <Button variant={'default'}>Go to Lesson</Button>
-          </Link>
-        ) : (
-          <LoadingButton
-            variant={'default'}
-            onClick={() => handleSave(option)}
-            buttonState={saveButtonState}
-            text="Save Translations"
-            loadingText={'Saving ...'}
-            successText={'Saved'}
-            errorText={'Error'}
-          />
+        {phraseArray.length > 0 && (
+          <>
+            {lessonLink ? (
+              <Link href={lessonLink}>
+                <Button variant={'default'}>Go to Lesson</Button>
+              </Link>
+            ) : (
+              <LoadingButton
+                variant={'default'}
+                onClick={() => handleSave(option)}
+                buttonState={saveButtonState}
+                text="Save Translations"
+                loadingText={'Saving ...'}
+                successText={'Saved'}
+                errorText={'Error'}
+              />
+            )}
+          </>
         )}
         <LoadingButton
           variant={'default'}

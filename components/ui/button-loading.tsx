@@ -1,10 +1,9 @@
+import { ReloadIcon } from '@radix-ui/react-icons';
+import { type VariantProps } from 'class-variance-authority';
+import { Check } from 'lucide-react';
 import * as React from 'react';
 
-import { type VariantProps } from 'class-variance-authority';
-
 import { Button, buttonVariants } from './button';
-import { Check } from 'lucide-react';
-import { ReloadIcon } from '@radix-ui/react-icons';
 
 export type ButtonLoadingState = 'default' | 'disabled' | 'loading' | 'success' | 'error';
 export interface ButtonProps

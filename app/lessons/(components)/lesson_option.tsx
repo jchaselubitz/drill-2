@@ -1,9 +1,10 @@
+import { BasePhrase } from 'kysely-codegen';
 import React, { useState } from 'react';
+import { Separator } from '@/components/ui/separator';
+import { LanguagesISO639 } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 
 import LessonOptionDetails from './lesson_option_details';
-import { BasePhrase } from 'kysely-codegen';
-import { cn } from '@/lib/utils';
-import { LanguagesISO639 } from '@/lib/lists';
 
 export interface PhraseType {
   phrase_primary: BasePhrase;
@@ -65,13 +66,16 @@ const LessonOption: React.FC<LessonOptionProps> = ({
         </button>
 
         {isOpen && (
-          <LessonOptionDetails
-            option={option}
-            subjectId={subjectId}
-            studyLanguage={studyLanguage}
-            userLanguage={userLanguage}
-            level={level}
-          />
+          <>
+            <Separator className="bg-zinc-300" />
+            <LessonOptionDetails
+              option={option}
+              subjectId={subjectId}
+              studyLanguage={studyLanguage}
+              userLanguage={userLanguage}
+              level={level}
+            />
+          </>
         )}
       </div>
     </div>

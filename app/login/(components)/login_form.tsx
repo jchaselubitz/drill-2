@@ -1,7 +1,11 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-
+import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import {
   Form,
   FormControl,
@@ -11,13 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
-import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { signIn, signInWithEmail, signUp, updatePassword } from '@/lib/actions/userActions';
-import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 interface LoginFormProps {
   token?: string | null;

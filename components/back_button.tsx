@@ -1,10 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { FC } from 'react';
+import { cn } from '@/lib/utils';
 
 import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
-import { FC } from 'react';
 
 interface BackButtonProps {
   classNames?: string;
