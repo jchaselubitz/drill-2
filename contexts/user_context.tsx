@@ -7,6 +7,7 @@ type UserContextType = {
   userId: string;
   userLanguage: LanguagesISO639 | undefined | null;
   prefLanguage: LanguagesISO639 | undefined | null;
+  podcasts: string[] | undefined | null;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,6 +30,7 @@ export const UserContextProvider = ({
         userId: userProfile.id,
         userLanguage: userProfile.userLanguage as LanguagesISO639,
         prefLanguage: userProfile.prefLanguage as LanguagesISO639,
+        podcasts: userProfile.podcasts,
       }}
     >
       {children}

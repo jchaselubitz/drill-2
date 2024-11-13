@@ -32,3 +32,38 @@ export const addRecordingText = async ({
   }
   revalidatePath('/');
 };
+
+export const getUserPodcasts = async () => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return await db.selectFrom('profile').select('podcasts').where('id', '=', user.id).execute();
+};
+
+export const updateUserPodcasts = async ({ podcastUrls }: { podcastUrls: string[] }) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  try {
+    await db
+      .updateTable('profile')
+      .set({ podcasts: podcastUrls })
+      .where('id', '=', user.id)
+      .execute();
+  } catch (error) {
+    if (error) {
+      throw error;
+    }
+  }
+  revalidatePath('/');
+};

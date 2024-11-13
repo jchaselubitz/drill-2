@@ -21,6 +21,21 @@ const db = new Kysely<DB>({
 });
 
 declare module 'kysely-codegen' {
+  export interface PodcastEpisode {
+    title: string;
+    description: string;
+    imageURL: string;
+    audioURL: string;
+    date: string;
+  }
+
+  export type Podcast = {
+    title: string;
+    description: string;
+    imageURL?: string;
+    episodes: PodcastEpisode[];
+  };
+
   export type BaseLesson = Selectable<Lesson> & { level: string | null };
   export type LessonWithTranslations = BaseLesson & {
     translations: TranslationWithPhrase[];

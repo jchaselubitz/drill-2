@@ -1,20 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { XMLParser } from 'fast-xml-parser';
-
-interface PodcastEpisode {
-  title: string;
-  description: string;
-  imageURL: string;
-  audioURL: string;
-  date: string;
-}
-
-interface Podcast {
-  title: string;
-  description: string;
-  imageURL?: string;
-  episodes: PodcastEpisode[];
-}
+import { Podcast, PodcastEpisode } from 'kysely-codegen';
 
 export async function GET(request: NextRequest) {
   const rssFeedUrl = request.nextUrl.searchParams.get('url') || '';
