@@ -2,12 +2,7 @@
 
 import { ChevronsUpDown } from 'lucide-react';
 import { FC } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { getLangIcon, getLangName, Languages, LanguagesISO639 } from '@/lib/lists';
 
@@ -26,38 +21,29 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ label, name, language, onClick })
     }
   };
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold">{language && getLangIcon(language)}</span>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">
-                {label}: {language && getLangName(language)}
-              </span>
-            </div>
+    <Select onValueChange={(v) => handleClick(v as LanguagesISO639)}>
+      <SelectTrigger>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-bold">{language && getLangIcon(language)}</span>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">
+              {label}: {language && getLangName(language)}
+            </span>
           </div>
-
-          <ChevronsUpDown className="ml-auto size-4" />
-        </SidebarMenuButton>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+        </div>
+      </SelectTrigger>
+      <SelectContent className="w-56">
         {Languages.map((lang) => (
-          <DropdownMenuItem
-            key={lang.value}
-            onClick={() => handleClick(lang.value as LanguagesISO639)}
-          >
-            <span className="text-lg font-bold">{getLangIcon(lang.value)}</span>
-            <div className="grid flex-1 text-left text-sm leading-tight">
+          <SelectItem key={lang.value} value={lang.value}>
+            {' '}
+            <div className="flex items-center gap-1 text-left text-sm leading-tight">
+              <span className="text-lg font-bold">{getLangIcon(lang.value)}</span>
               <span className="truncate font-semibold">{getLangName(lang.value)}</span>
             </div>
-          </DropdownMenuItem>
+          </SelectItem>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </SelectContent>
+    </Select>
   );
 };
 

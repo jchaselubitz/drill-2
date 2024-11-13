@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import { Button } from '../ui/button';
+import TrimAudio from './trim_audio';
 
 interface MediaReviewProps {
   audioResponse: { blob: Blob; url: string };
+  setAudioResponse: (audioResponse: { blob: Blob; url: string }) => void;
   transcriptionLoading: boolean;
   transcribeRecording: () => Promise<void>;
   saveRecording: () => Promise<void>;
@@ -15,6 +17,7 @@ const maxDuration = 120;
 
 const MediaReview: React.FC<MediaReviewProps> = ({
   audioResponse,
+  setAudioResponse,
   transcriptionLoading,
   transcribeRecording,
   saveRecording,
@@ -55,8 +58,13 @@ const MediaReview: React.FC<MediaReviewProps> = ({
         {origAudioURL && (
           <>
             <audio src={origAudioURL} controls />
-            {/* Replace TrimAudio with appropriate React component */}
-            {/* <TrimAudio audioResponse={audioResponse} audioDuration={audioDuration} maxDuration={maxDuration} /> */}
+
+            <TrimAudio
+              audioResponse={audioResponse}
+              setAudioResponse={setAudioResponse}
+              audioDuration={audioDuration}
+              maxDuration={maxDuration}
+            />
           </>
         )}
       </div>

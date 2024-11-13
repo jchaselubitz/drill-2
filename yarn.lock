@@ -4119,6 +4119,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/audiobuffer-to-wav@npm:^1":
+  version: 1.0.4
+  resolution: "@types/audiobuffer-to-wav@npm:1.0.4"
+  checksum: 10c0/79d53844cdcaa360644abb9365a2e721f7ecf176c1ddb4a3ab782a5111eead80e2367782bf997f9663788031a7ce3fa0db1b1386d0e98bcb66134aec7bfdfc23
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:0.0.39":
   version: 0.0.39
   resolution: "@types/estree@npm:0.0.39"
@@ -5253,6 +5260,13 @@ __metadata:
     stubborn-fs: "npm:^1.2.5"
     when-exit: "npm:^2.1.1"
   checksum: 10c0/b9008a74f590d29be947f34b7583dab32034335fedfe340ac3e6458e2e315c770d8af6f15cd3947214702c523d91b5f989498348b1ab49c197bd645dc87d7a94
+  languageName: node
+  linkType: hard
+
+"audiobuffer-to-wav@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "audiobuffer-to-wav@npm:1.0.0"
+  checksum: 10c0/39e5ec0364578d081c684fde0e2d3d002785c1af9a32be58092611201abd85942236869a3a3311a31283e3a72419d9d91c87161b8b49004b7189dea49ce446c2
   languageName: node
   linkType: hard
 
@@ -7044,11 +7058,13 @@ __metadata:
     "@supabase/ssr": "npm:^0.5.1"
     "@supabase/supabase-js": "npm:^2.45.6"
     "@tailwindcss/typography": "npm:^0.5.15"
+    "@types/audiobuffer-to-wav": "npm:^1"
     "@types/next-pwa": "npm:^5.6.9"
     "@types/node": "npm:^20"
     "@types/pg": "npm:^8"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18"
+    audiobuffer-to-wav: "npm:^1.0.0"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
     eslint: "npm:^8"
@@ -7060,6 +7076,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.0.0"
     eslint-plugin-simple-import-sort: "npm:^12.1.1"
     eslint-plugin-sort-imports-es6-autofix: "npm:^0.6.0"
+    fast-xml-parser: "npm:^4.5.0"
     kysely: "npm:^0.27.3"
     kysely-codegen: "npm:^0.16.0"
     lucide-react: "npm:^0.453.0"
@@ -8304,6 +8321,17 @@ __metadata:
   version: 3.0.3
   resolution: "fast-uri@npm:3.0.3"
   checksum: 10c0/4b2c5ce681a062425eae4f15cdc8fc151fd310b2f69b1f96680677820a8b49c3cd6e80661a406e19d50f0c40a3f8bffdd458791baf66f4a879d80be28e10a320
+  languageName: node
+  linkType: hard
+
+"fast-xml-parser@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "fast-xml-parser@npm:4.5.0"
+  dependencies:
+    strnum: "npm:^1.0.5"
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: 10c0/71d206c9e137f5c26af88d27dde0108068a5d074401901d643c500c36e95dfd828333a98bda020846c41f5b9b364e2b0e9be5b19b0bdcab5cf31559c07b80a95
   languageName: node
   linkType: hard
 
@@ -15203,6 +15231,13 @@ __metadata:
   version: 2.0.0
   resolution: "strip-outer@npm:2.0.0"
   checksum: 10c0/6633b62914884dd63bc94221368b8d8a8df4cbde3d50849de0cfa3bf9f76751828108c9cc9195bcd1b70d73317cc25d3c1c4d6b717be437a1f6161206f44fe75
+  languageName: node
+  linkType: hard
+
+"strnum@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "strnum@npm:1.0.5"
+  checksum: 10c0/64fb8cc2effbd585a6821faa73ad97d4b553c8927e49086a162ffd2cc818787643390b89d567460a8e74300148d11ac052e21c921ef2049f2987f4b1b89a7ff1
   languageName: node
   linkType: hard
 

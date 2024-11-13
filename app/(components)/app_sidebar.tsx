@@ -94,7 +94,7 @@ export function AppSidebar({
       </div>{' '}
       <NavMain items={pages} />
       <SidebarContent>
-        <SidebarMenu>
+        <SidebarMenu className="px-2 gap-1 mt-2">
           <SidebarMenuItem>
             <LanguageMenu
               label="User Language"

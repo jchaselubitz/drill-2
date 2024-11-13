@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { FC, useState } from 'react';
 import { useUserContext } from '@/contexts/user_context';
 import { addRecordingText } from '@/lib/actions/captureActions';
 import { recordAudio, RecordAudioResult, savePrivateAudioFile } from '@/lib/helpers/helpersAudio';
@@ -16,19 +16,18 @@ type AudioResponse = {
   url: string;
 };
 
-const CaptureAudio: React.FC = () => {
+const CaptureAudio: FC = () => {
   const { userId } = useUserContext();
   const supabase = createClient();
-  const [transcriptionLoading, setTranscriptionLoading] = React.useState<boolean>(false);
-  const [transcript, setTranscript] = React.useState<string>('');
-  const [recordingButtonState, setRecordingButtonState] =
-    React.useState<RecordButtonStateType>('idle');
-  const [recordingState, setRecordingState] = React.useState<RecordAudioResult | null>(null);
-  const [audioResponse, setAudioResponse] = React.useState<AudioResponse | undefined | null>(null);
+  const [transcriptionLoading, setTranscriptionLoading] = useState<boolean>(false);
+  const [transcript, setTranscript] = useState<string>('');
+  const [recordingButtonState, setRecordingButtonState] = useState<RecordButtonStateType>('idle');
+  const [recordingState, setRecordingState] = useState<RecordAudioResult | null>(null);
+  const [audioResponse, setAudioResponse] = useState<AudioResponse | undefined | null>(null);
 
-  // const [isSaving, setIsSaving] = React.useState<boolean>(false);
-  // const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [importingPodcast, setImportingPodcast] = React.useState(false);
+  // const [isSaving, setIsSaving] = useState<boolean>(false);
+  // const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [importingPodcast, setImportingPodcast] = useState(false);
 
   const resetRecordingButtonState = () => {
     setRecordingButtonState('idle');
@@ -81,7 +80,6 @@ const CaptureAudio: React.FC = () => {
       setAudioResponse({ blob: audioBlob, url: audioURL });
     } catch (error: any) {
       throw Error('Error fetching podcast:', error);
-      // Handle the error, e.g., show a notification to the user
     } finally {
       setRecordingButtonState('idle');
       setImportingPodcast(false);
@@ -159,6 +157,7 @@ const CaptureAudio: React.FC = () => {
       ) : audioResponse ? (
         <MediaReview
           audioResponse={audioResponse}
+          setAudioResponse={setAudioResponse}
           transcriptionLoading={transcriptionLoading}
           transcribeRecording={transcribeRecording}
           saveRecording={saveRecording}
