@@ -15,6 +15,7 @@ type LanguageMenuProps = {
   label: string;
   name: string;
   language: LanguagesISO639 | null | undefined;
+
   onClick?: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
 };
 
@@ -31,16 +32,15 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ label, name, language, onClick })
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          {language && (
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold">{getLangIcon(language)}</span>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {label}: {getLangName(language)}
-                </span>
-              </div>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold">{language && getLangIcon(language)}</span>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">
+                {label}: {language && getLangName(language)}
+              </span>
             </div>
-          )}
+          </div>
+
           <ChevronsUpDown className="ml-auto size-4" />
         </SidebarMenuButton>
       </DropdownMenuTrigger>

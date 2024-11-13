@@ -15,6 +15,7 @@ const UserButton: FC<UserButtonProps> = async () => {
   const profile = await getProfile();
   const username = profile?.username;
   const imageUrl = profile?.imageUrl;
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
