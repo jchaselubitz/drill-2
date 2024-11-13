@@ -13,8 +13,8 @@ const UserButton: FC<UserButtonProps> = async () => {
   const supabase = createClient();
   const user = await supabase.auth.getUser();
   const profile = await getProfile();
-  const imageUrl = profile?.imageUrl;
   const username = profile?.username;
+  const imageUrl = profile?.imageUrl;
   return (
     <SidebarMenu>
       <SidebarMenuItem>
