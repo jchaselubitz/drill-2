@@ -6,8 +6,9 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { LanguagesISO639 } from '../lists';
+import { BaseProfile } from 'kysely-codegen';
 
-export const getProfile = async () => {
+export const getProfile = async (): Promise<BaseProfile | null | undefined> => {
   const supabase = createClient();
 
   const {
