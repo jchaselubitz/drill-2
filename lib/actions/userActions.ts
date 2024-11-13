@@ -32,7 +32,7 @@ export async function signInWithEmail({
   shouldCreateUser?: boolean;
 }) {
   const supabase = createClient();
-  const headersList = await headers();
+  const headersList = headers();
   const origin = headersList.get('origin');
 
   if (shouldCreateUser && !name) {
@@ -83,7 +83,7 @@ export const signUp = async ({
   inviteEmail?: string;
 }) => {
   const supabase = createClient();
-  const headersList = await headers();
+  const headersList = headers();
   const origin = headersList.get('origin');
   if (!inviteEmail && !email) {
     return redirect('/login?message=Missing required fields');
