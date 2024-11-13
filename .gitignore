@@ -30,8 +30,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # env files (can opt-in for commiting if needed)
-.env*
-local.env*
+.env.prod
+.env.local
 
 # vercel
 .vercel
@@ -42,3 +42,17 @@ next-env.d.ts
 
 # Local Netlify folder
 .netlify
+
+public/precache.*.*.js
+public/sw.js
+public/workbox-*.js
+public/worker-*.js
+public/fallback-*.js
+public/precache.*.*.js.map
+public/sw.js.map
+public/workbox-*.js.map
+public/worker-*.js.map
+public/fallback-*.js
+
+public/sw.js.map
+
