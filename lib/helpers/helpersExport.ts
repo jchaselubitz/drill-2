@@ -1,10 +1,8 @@
 import { createClient } from '@/utils/supabase/client';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { LessonWithTranslations } from 'kysely-codegen';
 
-export async function downloadCSV(
-  lesson: { id: string; title: string },
-  setLoadingFalse: () => void
-) {
+export async function downloadCSV(lesson: LessonWithTranslations, setLoadingFalse: () => void) {
   // Get the access token
   const supabase: SupabaseClient = createClient();
 
@@ -49,7 +47,7 @@ export async function downloadApkg({
   lesson,
   setLoadingFalse,
 }: {
-  lesson: { id: string; title: string };
+  lesson: LessonWithTranslations;
   setLoadingFalse: () => void;
 }) {
   try {

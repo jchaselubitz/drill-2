@@ -31,7 +31,7 @@ NEXT_PUBLIC_CONTEXT = "development"
 
 [dev]
 command = "next dev"
-port = 3000
+port = 8888
 targetPort = 3000
 context = "dev"
 
