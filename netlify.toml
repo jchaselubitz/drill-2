@@ -1,6 +1,6 @@
 
 [context.production]
-command = "yarn generate-deploy && next build"
+command = "yarn generate-deploy && next build && printenv"
 publish = ".next"
 [context.production.environment]
 NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
