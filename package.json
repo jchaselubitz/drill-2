@@ -13,6 +13,7 @@
     "ngrok": "ngrok http --domain=romantic-pig-living.ngrok-free.app 3000",
     "ngrok:server": "ngrok http --domain=romantic-pig-living.ngrok-free.app 54321",
     "dev": "next dev --turbopack",
+    "devnet": "netlify dev",
     "build-dev": "netlify build --context=development",
     "build-branch": "netlify build --context=branch-deploy",
     "build-staging": "netlify build --context=staging",

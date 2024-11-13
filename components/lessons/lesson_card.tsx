@@ -1,11 +1,9 @@
+import { BaseLesson } from 'kysely-codegen';
 import Link from 'next/link';
 import React from 'react';
 
 interface LessonCardProps {
-  lesson: {
-    id: string;
-    title: string;
-  };
+  lesson: BaseLesson;
 }
 
 const LessonCard: React.FC<LessonCardProps> = ({ lesson }) => {
