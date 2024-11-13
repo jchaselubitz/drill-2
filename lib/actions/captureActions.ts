@@ -22,7 +22,7 @@ export const addRecordingText = async ({
   const userId = user?.id;
   try {
     await db
-      .insertInto('recording')
+      .insertInto('recording' as never)
       .values({ transcript, lang, filename, userId } as NewRecording)
       .execute();
   } catch (error) {
