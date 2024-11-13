@@ -62,9 +62,6 @@ export default async function RootLayout({
   const user = await supabase.auth.getUser();
   const profile = await getProfile();
 
-  if (!profile) {
-    return null;
-  }
   const imageUrl = profile?.imageUrl;
   const username = profile?.username;
 
