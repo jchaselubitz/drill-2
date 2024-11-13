@@ -9,21 +9,13 @@ NEXT_PUBLIC_SITE_URL = 'https://nyca.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "prod"
 
 
-[context.staging]
-command = "yarn generate-deploy && next build"
-publish = ".next"
-[context.staging.environment]
-NEXT_PUBLIC_SUPABASE_URL = 'https://staging.nyca.netlify.app/'
-NEXT_PUBLIC_CONTEXT = "staging"
-
-
 [context.branch-deploy]
 command = "yarn generate-deploy && next build"
 publish = ".next"
 [context.branch-deploy.environment]
 NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
-NEXT_PUBLIC_SITE_URL = 'https://main--nyca.netlify.app/'
+NEXT_PUBLIC_SITE_URL = 'https://drillang.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "branch-deploy"
 
 
