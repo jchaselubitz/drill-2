@@ -8,7 +8,47 @@ import {
 } from 'kysely';
 import { DB, Lesson, Phrase, Profile, Recording, Subject, Translation } from 'kysely-codegen';
 import { Pool } from 'pg';
-import { LanguagesISO639 } from '../lists';
+
+export enum LanguagesISO639 {
+  'German' = 'de',
+  'English' = 'en',
+  'French' = 'fr',
+  'Spanish' = 'es',
+  'Italian' = 'it',
+  'Portuguese' = 'pt',
+  'Dutch' = 'nl',
+  'Swedish' = 'sv',
+  'Polish' = 'pl',
+  'Romanian' = 'ro',
+  'Czech' = 'cs',
+  'Danish' = 'da',
+  'Hungarian' = 'hu',
+  'Finnish' = 'fi',
+  'Slovak' = 'sk',
+  'Slovenian' = 'sl',
+  'Estonian' = 'et',
+  'Greek' = 'el',
+  'Bulgarian' = 'bg',
+  'Croatian' = 'hr',
+  'Lithuanian' = 'lt',
+  'Latvian' = 'lv',
+  'Maltese' = 'mt',
+  'Norwegian' = 'no',
+  'Turkish' = 'tr',
+  'Ukrainian' = 'uk',
+  'Hebrew' = 'he',
+  'Hindi' = 'hi',
+  'Indonesian' = 'id',
+  'Korean' = 'ko',
+  'Malay' = 'ms',
+  'Vietnamese' = 'vi',
+  'Chinese' = 'zh',
+  'Japanese' = 'ja',
+  'Urdu' = 'ur',
+  'Bengali' = 'bn',
+  'Russian' = 'ru',
+  'Arabic' = 'ar',
+}
 
 const db = new Kysely<DB>({
   plugins: [new CamelCasePlugin()],
