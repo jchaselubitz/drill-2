@@ -7,11 +7,11 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import { UserContextProvider } from '@/contexts/user_context';
 import { getProfile } from '@/lib/actions/userActions';
+import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
 
 import { AppSidebar } from './(components)/app_sidebar';
-import { LanguagesISO639 } from '@/lib/lists';
 
 const fontSans = FontSans({
   subsets: ['latin'],

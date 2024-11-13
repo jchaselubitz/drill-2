@@ -24,7 +24,7 @@ export const getSubjects = async () => {
     return [];
   }
   return await db
-    .selectFrom('subject')
+    .selectFrom('subject' as never)
     .innerJoin('lesson', 'subject.id', 'lesson.subjectId')
     .limit(1)
     .innerJoin('translation', 'lesson.id', 'translation.lessonId')
@@ -38,7 +38,7 @@ export const getSubjects = async () => {
       'phrase.lang as lang',
       jsonArrayFrom(
         db
-          .selectFrom('lesson')
+          .selectFrom('lesson' as never)
           .select([
             'lesson.id',
             'lesson.title',
@@ -68,7 +68,7 @@ export const getLesson = async (lessonId: string): Promise<LessonWithTranslation
     return null;
   }
   const lesson = await db
-    .selectFrom('lesson')
+    .selectFrom('lesson' as never)
     .selectAll()
     .where('lesson.id', '=', lessonId)
     .where('lesson.userId', '=', user.id)

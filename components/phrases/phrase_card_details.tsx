@@ -1,3 +1,4 @@
+import { PhraseWithTranslations } from 'kysely-codegen';
 import { Languages } from 'lucide-react';
 import React from 'react';
 import { useUserContext } from '@/contexts/user_context';
@@ -6,7 +7,6 @@ import { cn } from '@/lib/utils';
 
 import ContentRequest from '../ai_elements/content_request';
 import TtsButton from '../ai_elements/tts_button';
-import { PhraseWithTranslations } from 'kysely-codegen';
 
 interface PhraseCardDetailsProps {
   phrase: PhraseWithTranslations;

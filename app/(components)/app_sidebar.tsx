@@ -1,7 +1,6 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-
 import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
 import Logo from '@/components/logo';
 import {
@@ -14,11 +13,11 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { updateUserLanguage } from '@/lib/actions/userActions';
+import { LanguagesISO639 } from '@/lib/lists';
 
 import LanguageMenu from './language_selector';
 import { NavMain } from './nav_main';
 import UserMenu from './user-menu';
-import { LanguagesISO639 } from '@/lib/lists';
 
 const pages = [
   {

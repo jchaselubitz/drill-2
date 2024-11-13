@@ -1,10 +1,10 @@
+import { BaseProfile } from 'kysely-codegen';
 import { FC } from 'react';
 import { SidebarMenu, SidebarMenuItem } from '@/components/ui/sidebar';
 import { getProfile } from '@/lib/actions/userActions';
 import { createClient } from '@/utils/supabase/server';
 
 import UserMenu from './user-menu';
-import { BaseProfile } from 'kysely-codegen';
 
 type UserButtonProps = {
   organizationId: string;
