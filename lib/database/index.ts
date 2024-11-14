@@ -6,7 +6,17 @@ import {
   Insertable,
   Updateable,
 } from 'kysely';
-import { DB, Lesson, Phrase, Profile, Recording, Subject, Translation } from 'kysely-codegen';
+import {
+  DB,
+  Lesson,
+  Media,
+  Phrase,
+  Profile,
+  Recording,
+  Subject,
+  Translation,
+  UserMedia,
+} from 'kysely-codegen';
 import { Pool } from 'pg';
 import { LanguagesISO639 } from '../lists';
 
@@ -21,7 +31,7 @@ const db = new Kysely<DB>({
 });
 
 declare module 'kysely-codegen' {
-  export interface PodcastEpisode {
+  export interface Episode {
     title: string;
     description: string;
     imageURL: string;
@@ -32,8 +42,10 @@ declare module 'kysely-codegen' {
   export type Podcast = {
     title: string;
     description: string;
-    imageURL?: string;
-    episodes: PodcastEpisode[];
+    imageUrl: string;
+    episodes: Episode[];
+    website?: string;
+    mediaUrl: string;
   };
 
   export type BaseLesson = Selectable<Lesson> & { level: string | null };
@@ -45,15 +57,7 @@ declare module 'kysely-codegen' {
   export type EditedLesson = Updateable<Lesson>;
 
   export type BasePhrase = Selectable<Phrase>;
-  export type BasePhraseObject = {
-    createdAt: Date | null;
-    id: string;
-    userId: string | null;
-    lang: string | null;
-    partSpeech: string | null;
-    source: string | null;
-    text: string | null;
-  };
+
   export type PhraseWithTranslations = Phrase & {
     translationsWherePrimary: Translation[];
     translationsWhereSecondary: Translation[];
@@ -61,7 +65,14 @@ declare module 'kysely-codegen' {
   export type NewPhrase = Insertable<Phrase>;
   export type EditedPhrase = Updateable<Phrase>;
 
+  export type BaseMedia = Selectable<Media>;
+  export type NewMedia = Insertable<Media>;
+  export type EditedMedia = Updateable<Media>;
+
+  export type NewUserMedia = Insertable<UserMedia>;
+
   export type BaseProfile = Selectable<Profile>;
+  export type ProfileWithMedia = BaseProfile & { media: BaseMedia[] };
   export type NewProfile = Insertable<Profile>;
   export type EditedProfile = Updateable<Profile>;
 

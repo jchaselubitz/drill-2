@@ -1,5 +1,5 @@
 'use client';
-import { BaseProfile } from 'kysely-codegen';
+import { BaseMedia, Media, ProfileWithMedia } from 'kysely-codegen';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { LanguagesISO639 } from '@/lib/lists';
 
@@ -7,7 +7,7 @@ type UserContextType = {
   userId: string;
   userLanguage: LanguagesISO639 | undefined | null;
   prefLanguage: LanguagesISO639 | undefined | null;
-  podcasts: string[] | undefined | null;
+  media: BaseMedia[] | undefined | null;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -16,10 +16,10 @@ export const UserContextProvider = ({
   profile,
   children,
 }: {
-  profile: BaseProfile | undefined | null;
+  profile: ProfileWithMedia | undefined | null;
   children: ReactNode;
 }) => {
-  const [userProfile] = useState<BaseProfile | undefined | null>(profile);
+  const [userProfile] = useState<ProfileWithMedia | undefined | null>(profile);
   if (!userProfile) {
     return <> {children}</>;
   }
@@ -30,7 +30,7 @@ export const UserContextProvider = ({
         userId: userProfile.id,
         userLanguage: userProfile.userLanguage as LanguagesISO639,
         prefLanguage: userProfile.prefLanguage as LanguagesISO639,
-        podcasts: userProfile.podcasts,
+        media: userProfile.media,
       }}
     >
       {children}

@@ -6,9 +6,10 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { LanguagesISO639 } from '../lists';
-import { BaseProfile } from 'kysely-codegen';
+import { ProfileWithMedia } from 'kysely-codegen';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
-export const getProfile = async (): Promise<BaseProfile | null | undefined> => {
+export const getProfile = async (): Promise<ProfileWithMedia | null | undefined> => {
   const supabase = createClient();
 
   const {
@@ -19,7 +20,31 @@ export const getProfile = async (): Promise<BaseProfile | null | undefined> => {
     return null;
   }
 
-  return await db.selectFrom('profile').selectAll().where('id', '=', user.id).executeTakeFirst();
+  const profileWithMedia = await db
+    .selectFrom('profile')
+    .leftJoin('userMedia', 'userMedia.profileId', 'profile.id')
+    .select(({ eb }) => [
+      'profile.id as id',
+      'userLanguage',
+      'prefLanguage',
+      'imageUrl as imageUrl',
+      'username',
+      'profile.createdAt as createdAt',
+      'updatedAt',
+      jsonArrayFrom(
+        eb
+          .selectFrom('media')
+          .selectAll()
+          .whereRef('userMedia.mediaId', '=', 'media.id')
+          .orderBy('createdAt', 'desc')
+      ).as('media'),
+    ])
+    .where('profile.id', '=', user.id)
+    .executeTakeFirst();
+
+  const profile = profileWithMedia as ProfileWithMedia;
+
+  return profile;
 };
 
 export async function signInWithEmail({
@@ -38,7 +63,7 @@ export async function signInWithEmail({
   if (shouldCreateUser && !name) {
     return redirect('/login?message=Name required to create account');
   }
-  const { data, error } = await supabase.auth.signInWithOtp({
+  const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       shouldCreateUser,

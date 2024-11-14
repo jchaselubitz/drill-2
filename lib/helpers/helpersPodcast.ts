@@ -18,7 +18,8 @@ export async function fetchAndParseRSSFeed(feedUrl: string): Promise<Podcast | n
     const podcastInfo: Podcast = {
       title: channel.title,
       description: channel.description,
-      imageURL: channel?.image?.url ?? '',
+      imageUrl: channel?.image?.url ?? '',
+      mediaUrl: feedUrl,
       episodes: [],
     };
 

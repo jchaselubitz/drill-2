@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { XMLParser } from 'fast-xml-parser';
-import { Podcast, PodcastEpisode } from 'kysely-codegen';
+import { Episode, Podcast } from 'kysely-codegen';
 
 export async function GET(request: NextRequest) {
   const rssFeedUrl = request.nextUrl.searchParams.get('url') || '';
@@ -24,7 +24,8 @@ export async function GET(request: NextRequest) {
       const podcastInfo: Podcast = {
         title: channel.title,
         description: channel.description,
-        imageURL: channel?.image?.url ?? '',
+        imageUrl: channel?.image?.url ?? '',
+        mediaUrl: rssFeedUrl,
         episodes: [],
       };
 
@@ -32,10 +33,10 @@ export async function GET(request: NextRequest) {
       const items = Array.isArray(channel.item) ? channel.item : [channel.item];
 
       items.forEach((item: any) => {
-        const episodeImage = item['itunes:image']?.['@_href'] ?? podcastInfo.imageURL;
+        const episodeImage = item['itunes:image']?.['@_href'] ?? podcastInfo.imageUrl;
         const audioURL = item.enclosure?.['@_url'] ?? item.link;
 
-        const episode: PodcastEpisode = {
+        const episode: Episode = {
           title: item.title,
           description: item.description || item['itunes:summary'] || '',
           imageURL: episodeImage,
