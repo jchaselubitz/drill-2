@@ -35,6 +35,7 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithT
       'phrase.partSpeech',
       'phrase.source',
       'phrase.userId',
+      'phrase.favorite',
       jsonArrayFrom(
         eb
           .selectFrom('tag')
@@ -195,6 +196,34 @@ export const updatePhrase = async ({ phraseId, text }: { phraseId: string; text:
       .execute();
   } catch (error) {
     throw Error(`Failed to update phrase: ${error}`);
+  }
+};
+
+export const togglePhraseFavorite = async ({
+  phraseId,
+  isFavorite,
+}: {
+  phraseId: string;
+  isFavorite: boolean;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
+  try {
+    await db
+      .updateTable('phrase')
+      .set({ favorite: !isFavorite })
+      .where('id', '=', phraseId)
+      .where('userId', '=', userId)
+      .execute();
+    revalidatePath('/library');
+  } catch (error) {
+    throw Error(`Failed to toggle favorite: ${error}`);
   }
 };
 

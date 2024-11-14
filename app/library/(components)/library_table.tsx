@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -34,6 +33,7 @@ import {
 import { LanguagesISO639 } from '@/lib/lists';
 
 import LibraryColumns from './library_table_columns';
+import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 
 export function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -44,10 +44,17 @@ export function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] })
   const mentionedLanguages = phrases.map((phrase) => phrase.lang);
   const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as LanguagesISO639[];
 
+  const toggleFavorite = async (phraseId: string) => {
+    await togglePhraseFavorite({
+      phraseId,
+      isFavorite: !!phrases.find((phrase) => phrase.id === phraseId)?.favorite,
+    });
+  };
+
   const table = useReactTable({
     data: phrases,
     columns: LibraryColumns,
-    meta: { uniqueLanguages },
+    meta: { uniqueLanguages, toggleFavorite },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

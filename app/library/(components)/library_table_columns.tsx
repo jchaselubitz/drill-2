@@ -8,7 +8,7 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { PhraseWithTranslations } from 'kysely-codegen';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Languages } from '@/lib/helpers/lists';
+
 import { getLangName, LanguagesISO639 } from '@/lib/lists';
 
 export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
@@ -59,10 +59,23 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     cell: ({ row }) => (
       <span className="flex flex-1">
         <span className="md:pl-2 font-medium w-full truncate">
-          <div className="capitalize">{row.getValue('text')}</div>{' '}
+          <div className="capitalize">{row.getValue('text')}</div>
         </span>
       </span>
     ),
+  },
+
+  {
+    accessorKey: 'favorite',
+    cell: ({ row, table }) => {
+      return (
+        <Button variant="ghost" onClick={() => table.options.meta?.toggleFavorite(row.original.id)}>
+          {row.getValue('favorite') ? <Star color="blue" /> : <Star />}
+        </Button>
+      );
+    },
+    size: 10,
+    enableResizing: false,
   },
 
   {
