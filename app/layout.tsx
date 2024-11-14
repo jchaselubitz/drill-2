@@ -62,9 +62,6 @@ export default async function RootLayout({
   const user = await supabase.auth.getUser();
   const profile = await getProfile();
 
-  const imageUrl = profile?.imageUrl;
-  const username = profile?.username;
-
   return (
     <html lang="en">
       <body className={cn('bg-background bg-white font-sans antialiased', fontSans.variable)}>
@@ -77,13 +74,7 @@ export default async function RootLayout({
           > */}
           <SidebarProvider>
             {user.data.user ? (
-              <AppSidebar
-                user={user.data.user}
-                username={username}
-                imageUrl={imageUrl}
-                userLanguage={profile?.userLanguage as LanguagesISO639}
-                prefLanguage={profile?.prefLanguage as LanguagesISO639}
-              />
+              <AppSidebar user={user.data.user} />
             ) : (
               <Link href="/login">
                 <Button className="absolute top-4 right-4">Login</Button>

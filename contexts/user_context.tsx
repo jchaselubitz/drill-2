@@ -7,6 +7,8 @@ type UserContextType = {
   userId: string;
   userLanguage: LanguagesISO639 | undefined | null;
   prefLanguage: LanguagesISO639 | undefined | null;
+  imageUrl: string | undefined | null;
+  username: string | undefined | null;
   media: BaseMedia[] | undefined | null;
 };
 
@@ -30,6 +32,8 @@ export const UserContextProvider = ({
         userId: userProfile.id,
         userLanguage: userProfile.userLanguage as LanguagesISO639,
         prefLanguage: userProfile.prefLanguage as LanguagesISO639,
+        imageUrl: userProfile.imageUrl,
+        username: userProfile.username,
         media: userProfile.media,
       }}
     >

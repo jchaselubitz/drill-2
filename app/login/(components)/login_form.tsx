@@ -72,11 +72,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
         }
         if (isCreateAccount) {
           await signUp(submission);
-          setSignInButtonState('default');
+          setSignInButtonState('success');
+          return;
         }
         if (!isCreateAccount) {
           await signIn({ email, password });
           setSignInButtonState('default');
+          return;
         }
       }
     } catch (error) {

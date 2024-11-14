@@ -18,6 +18,7 @@ import { LanguagesISO639 } from '@/lib/lists';
 import LanguageMenu from './language_selector';
 import { NavMain } from './nav_main';
 import UserMenu from './user-menu';
+import { useUserContext } from '@/contexts/user_context';
 
 const pages = [
   {
@@ -58,19 +59,11 @@ const pages = [
 
 type AppSidebarProps = {
   user: User;
-  username: string | null | undefined;
-  imageUrl: string | null | undefined;
-  userLanguage: LanguagesISO639 | null | undefined;
-  prefLanguage: LanguagesISO639 | null | undefined;
 };
 
-export function AppSidebar({
-  user,
-  username,
-  imageUrl,
-  userLanguage,
-  prefLanguage,
-}: AppSidebarProps) {
+export function AppSidebar({ user }: AppSidebarProps) {
+  const { userLanguage, prefLanguage, username, imageUrl } = useUserContext();
+
   const setUserLanguages = async ({ lang, name }: { lang: LanguagesISO639; name: string }) => {
     if (name === 'userLanguage') {
       await updateUserLanguage({
