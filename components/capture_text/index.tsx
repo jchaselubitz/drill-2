@@ -34,7 +34,7 @@ const CaptureText: React.FC = () => {
   const onSubmit = async (data: FormValues) => {
     const text = data.text;
     const lang = data.lang as LanguagesISO639;
-    await addPhrase({ text, lang });
+    await addPhrase({ text, lang, source: 'home' });
   };
 
   return (

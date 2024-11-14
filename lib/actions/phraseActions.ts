@@ -3,10 +3,18 @@ import { revalidatePath } from 'next/cache';
 import db from '../database';
 import { createClient } from '@/utils/supabase/server';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
-import { NewPhrase, NewTranslation } from 'kysely-codegen';
-import { LanguagesISO639 } from '../lists';
+import {
+  BaseTag,
+  NewPhrase,
+  NewPhraseTag,
+  NewTag,
+  NewTranslation,
+  Phrase,
+  PhraseWithTranslations,
+} from 'kysely-codegen';
+import { LanguagesISO639, SourceOptionType } from '../lists';
 
-export const getPhrases = async () => {
+export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithTranslations[]> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -17,7 +25,7 @@ export const getPhrases = async () => {
     return [];
   }
 
-  return await db
+  let phrases = db
     .selectFrom('phrase')
     .select(({ eb }) => [
       'phrase.id',
@@ -26,18 +34,28 @@ export const getPhrases = async () => {
       'phrase.createdAt',
       'phrase.partSpeech',
       'phrase.source',
+      'phrase.userId',
+      jsonArrayFrom(
+        eb
+          .selectFrom('tag')
+          .innerJoin('phraseTag', 'phraseTag.tagId', 'tag.id')
+          .select(['tag.id', 'tag.label', 'tag.userId', 'tag.createdAt'])
+          .where('tag.userId', '=', userId)
+      ).as('tags'),
       jsonArrayFrom(
         eb
           .selectFrom('translation')
           .innerJoin('phrase as p1', 'p1.id', 'translation.phraseSecondaryId')
           .select([
             'translation.id',
-            'p1.id',
+            'translation.lessonId as lessonId',
+            'p1.id as phraseId',
             'p1.text',
             'p1.lang',
             'p1.createdAt',
             'p1.partSpeech',
             'p1.source',
+            'p1.userId',
           ])
           .whereRef('phrasePrimaryId', '=', 'phrase.id')
       ).as('translationsWherePrimary'),
@@ -47,18 +65,28 @@ export const getPhrases = async () => {
           .innerJoin('phrase as p1', 'p1.id', 'translation.phraseSecondaryId')
           .select([
             'translation.id',
-            'p1.id',
+            'translation.lessonId as lessonId',
+            'p1.id as phraseId',
             'p1.text',
             'p1.lang',
             'p1.createdAt',
             'p1.partSpeech',
             'p1.source',
+            'p1.userId',
           ])
           .whereRef('phraseSecondaryId', '=', 'phrase.id')
       ).as('translationsWhereSecondary'),
     ])
     .where('phrase.userId', '=', userId)
-    .execute();
+    .orderBy('phrase.createdAt', 'desc');
+
+  if (source) {
+    phrases = phrases.where('phrase.source', '=', source);
+  }
+
+  const phrasesWithTranslations = await phrases.execute();
+
+  return phrasesWithTranslations as PhraseWithTranslations[];
 };
 
 export const addPhrase = async ({
@@ -86,6 +114,67 @@ export const addPhrase = async ({
     }
   }
   revalidatePath('/');
+};
+
+export const addPhraseTag = async ({ phraseId, tag }: { phraseId: string; tag: BaseTag }) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
+  try {
+    await db.transaction().execute(async (trx) => {
+      if (!tag.id) {
+        const newTag = await trx
+          .insertInto('tag')
+          .values({ label: tag.label, userId: tag.userId })
+          .returning('id')
+          .executeTakeFirstOrThrow();
+        await trx
+          .insertInto('phraseTag')
+          .values({ phraseId, tagId: newTag.id, userId } as NewPhraseTag)
+          .execute();
+      }
+      await trx
+        .insertInto('phraseTag')
+        .values({ phraseId, tagId: tag.id, userId } as NewPhraseTag)
+        .execute();
+    });
+  } catch (error) {
+    throw Error(`Failed to add tags to phrase: ${error}`);
+  }
+};
+
+export const removePhraseTag = async ({
+  phraseId,
+  tagId,
+}: {
+  phraseId: string;
+  tagId: string[];
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
+  //theoretically one user could delete anther user's tags, but I am not going to worry about that for now
+  try {
+    await db.transaction().execute(async (trx) => {
+      await trx
+        .deleteFrom('phraseTag')
+        .where('phraseId', '=', phraseId)
+        .where('tagId', '=', tagId)
+        .execute();
+    });
+  } catch (error) {
+    throw Error(`Failed to remove tags from phrase: ${error}`);
+  }
 };
 
 export const updatePhrase = async ({ phraseId, text }: { phraseId: string; text: string }) => {

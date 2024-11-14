@@ -104,3 +104,5 @@ export const TranscriptRequestSuggestions = [
   `Generate four more paragraphs like this one`,
   `List all the sentences.`,
 ];
+
+export type SourceOptionType = 'home' | 'lesson' | 'library' | 'inbox' | 'ai';

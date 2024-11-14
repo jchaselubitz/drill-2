@@ -11,9 +11,11 @@ import {
   Lesson,
   Media,
   Phrase,
+  PhraseTag,
   Profile,
   Recording,
   Subject,
+  Tag,
   Translation,
   UserMedia,
 } from 'kysely-codegen';
@@ -56,11 +58,29 @@ declare module 'kysely-codegen' {
   export type NewLesson = Insertable<Lesson>;
   export type EditedLesson = Updateable<Lesson>;
 
-  export type BasePhrase = Selectable<Phrase>;
+  export type BaseTag = Selectable<Tag>;
+  export type NewTag = Insertable<Tag>;
+  export type EditedTag = Updateable<Tag>;
 
-  export type PhraseWithTranslations = Phrase & {
-    translationsWherePrimary: Translation[];
-    translationsWhereSecondary: Translation[];
+  export type NewPhraseTag = Insertable<PhraseTag>;
+
+  export type BasePhrase = Selectable<Phrase>;
+  export type PhraseWithTags = BasePhrase & { tags: BaseTag[] };
+  export type PhraseWithTranslations = PhraseWithTags & {
+    translationsWherePrimary: {
+      createdAt: Date;
+      id: string;
+      userId: string;
+      lessonId: string | null;
+      phraseId: string;
+    }[];
+    translationsWhereSecondary: {
+      createdAt: Date;
+      id: string;
+      userId: string;
+      lessonId: string | null;
+      phraseId: string;
+    }[];
   };
   export type NewPhrase = Insertable<Phrase>;
   export type EditedPhrase = Updateable<Phrase>;

@@ -1,7 +1,8 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
+import Link from 'next/link';
 import { FC } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -23,7 +24,6 @@ type UserMenuProps = {
 
 const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
   const userEmail = user?.email;
-  console.log({ user, username, imageUrl });
 
   return (
     <DropdownMenu>
@@ -55,13 +55,13 @@ const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {/* <DropdownMenuItem asChild>
-          <Link href={`/${organizationId}/settings/`}>
+        <DropdownMenuItem asChild>
+          <Link href={`/settings/`}>
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        {/*  <DropdownMenuItem asChild>
           <Link href={`/${organizationId}/feedback/`}>
             <MessageSquareDiff className="mr-2 h-4 w-4" />
             <span>Feedback</span>

@@ -34,7 +34,7 @@ const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
       studyLanguage: studyLanguage,
       userLanguage: userLanguage,
       level: currentLevel ?? '',
-      numberOfPhrases: 2,
+      numberOfPhrases: 20,
     });
 
     const messages = [

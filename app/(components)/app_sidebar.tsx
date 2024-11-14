@@ -12,13 +12,13 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { useUserContext } from '@/contexts/user_context';
 import { updateUserLanguage } from '@/lib/actions/userActions';
 import { LanguagesISO639 } from '@/lib/lists';
 
 import LanguageMenu from './language_selector';
 import { NavMain } from './nav_main';
 import UserMenu from './user-menu';
-import { useUserContext } from '@/contexts/user_context';
 
 const pages = [
   {
@@ -86,8 +86,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <Logo logoUrl={'/icons/drill-logo.png'} />
       </div>{' '}
       <NavMain items={pages} />
-      <SidebarContent>
-        <SidebarMenu className="px-2 gap-1 mt-2">
+      <SidebarContent></SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu className="px-2 gap-1 mb-2">
           <SidebarMenuItem>
             <LanguageMenu
               label="User Language"
@@ -105,9 +106,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
             />
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
+        <SidebarMenu className="">
           <SidebarMenuItem>
             <UserMenu user={user} username={username} imageUrl={imageUrl} />
           </SidebarMenuItem>
