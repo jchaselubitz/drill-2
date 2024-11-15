@@ -2,6 +2,7 @@
 
 import {
   ColumnFiltersState,
+  ExpandedState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -14,7 +15,7 @@ import {
 import { PhraseWithTranslations } from 'kysely-codegen';
 import { ChevronDown } from 'lucide-react';
 import * as React from 'react';
-import { startTransition, useOptimistic, useState } from 'react';
+import { FC, startTransition, useOptimistic, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,19 +35,20 @@ import {
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 import { LanguagesISO639 } from '@/lib/lists';
 
+import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
 
-function _LibraryTable({
-  phrases,
-  setOptPhraseData,
-}: {
+type LibraryTableProps = {
   phrases: PhraseWithTranslations[];
   setOptPhraseData: (action: PhraseWithTranslations) => void;
-}) {
+};
+
+const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [expanded, setExpanded] = useState<ExpandedState>({});
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20, // Default number of rows per page
@@ -84,12 +86,14 @@ function _LibraryTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onExpandedChange: setExpanded,
     state: {
       pagination,
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      expanded,
     },
   });
 
@@ -131,14 +135,14 @@ function _LibraryTable({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="">
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="px-3"
+                      className="px-3 "
                       style={{
-                        width: header.getSize(),
+                        width: header.column.getSize(),
                       }}
                     >
                       {header.isPlaceholder
@@ -152,15 +156,7 @@ function _LibraryTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="p-3">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => <LibraryRow key={row.id} row={row} />)
             ) : (
               <TableRow>
                 <TableCell colSpan={LibraryColumns.length} className="h-24 text-center">
@@ -197,7 +193,7 @@ function _LibraryTable({
       </div>
     </div>
   );
-}
+};
 
 export default function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] }) {
   const [optPhraseData, setOptPhraseData] = useOptimistic<
@@ -215,5 +211,5 @@ export default function LibraryTable({ phrases }: { phrases: PhraseWithTranslati
     ];
   });
 
-  return <_LibraryTable phrases={optPhraseData} setOptPhraseData={setOptPhraseData} />;
+  return <LibraryTableBase phrases={optPhraseData} setOptPhraseData={setOptPhraseData} />;
 }

@@ -9,7 +9,8 @@ import {
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import { ColumnDef } from '@tanstack/react-table';
 import { PhraseWithTranslations } from 'kysely-codegen';
-import { ArrowUpDown, Languages, MoreHorizontal, Star } from 'lucide-react';
+import { ArrowUpDown, Languages, MoreHorizontal } from 'lucide-react';
+import TtsButton from '@/components/ai_elements/tts_button';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -20,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
-import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
+import { getLangIcon, LanguagesISO639 } from '@/lib/lists';
 
 export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
   {
@@ -54,7 +55,6 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       return (
         <Button
           variant="ghost"
-          className="p-3 h-12"
           onClick={() => column.setFilterValue(column.getFilterValue() ? undefined : true)}
         >
           {column.getFilterValue() ? <StarFilledIcon color="black" /> : <StarIcon />}
@@ -63,11 +63,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     },
     cell: ({ row, table }) => {
       return (
-        <Button
-          variant="ghost"
-          className="p-3"
-          onClick={() => table.options.meta?.toggleFavorite(row.original.id)}
-        >
+        <Button variant="ghost" onClick={() => table.options.meta?.toggleFavorite(row.original.id)}>
           {row.getValue('favorite') ? <StarFilledIcon color="black" /> : <StarIcon />}
         </Button>
       );
@@ -82,7 +78,6 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       return (
         <Button
           variant="ghost"
-          className="p-3"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Text
@@ -91,12 +86,28 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       );
     },
     cell: ({ row }) => (
-      <span className="flex font-medium max-w-full whitespace-normal ">
+      <span
+        className="flex font-medium max-w-full whitespace-normal "
+        onClick={() => {
+          row.toggleExpanded(!row.getIsExpanded());
+        }}
+      >
         <div className="capitalize">{row.getValue('text')}</div>
       </span>
     ),
     size: 1000,
     maxSize: 1000,
+  },
+
+  {
+    accessorKey: 'Audio',
+    header: '',
+    cell: ({ row }) => (
+      <div className="w-12">
+        <TtsButton text={row.original.text} bucket={'text_to_speech'} lacksAudio={false} />
+      </div>
+    ),
+    size: 1,
   },
 
   {
