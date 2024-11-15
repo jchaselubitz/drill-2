@@ -14,6 +14,7 @@ import {
 import { PhraseWithTranslations } from 'kysely-codegen';
 import { ChevronDown } from 'lucide-react';
 import * as React from 'react';
+import { startTransition, useOptimistic, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -30,22 +31,42 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 import { LanguagesISO639 } from '@/lib/lists';
 
 import LibraryColumns from './library_table_columns';
-import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 
-export function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+function _LibraryTable({
+  phrases,
+  setOptPhraseData,
+}: {
+  phrases: PhraseWithTranslations[];
+  setOptPhraseData: (action: PhraseWithTranslations) => void;
+}) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 20, // Default number of rows per page
+  });
 
   const mentionedLanguages = phrases.map((phrase) => phrase.lang);
   const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as LanguagesISO639[];
 
   const toggleFavorite = async (phraseId: string) => {
-    await togglePhraseFavorite({
+    const phrase = phrases.find((phrase) => phrase.id === phraseId);
+    if (!phrase) {
+      return;
+    }
+    startTransition(() => {
+      setOptPhraseData({
+        ...phrase,
+        favorite: !phrase.favorite,
+      });
+    });
+    togglePhraseFavorite({
       phraseId,
       isFavorite: !!phrases.find((phrase) => phrase.id === phraseId)?.favorite,
     });
@@ -58,12 +79,13 @@ export function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] })
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    // getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
@@ -109,10 +131,16 @@ export function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] })
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="px-3"
+                      style={{
+                        width: header.getSize(),
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -127,7 +155,7 @@ export function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] })
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="p-3">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -169,4 +197,23 @@ export function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] })
       </div>
     </div>
   );
+}
+
+export default function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] }) {
+  const [optPhraseData, setOptPhraseData] = useOptimistic<
+    PhraseWithTranslations[],
+    PhraseWithTranslations
+  >(phrases, (state, updatedPhrase) => {
+    const updatedPhrasesIndex = state.findIndex((phrase) => phrase.id === updatedPhrase.id);
+    if (updatedPhrasesIndex === -1) {
+      return [...state, updatedPhrase];
+    }
+    return [
+      ...state.slice(0, updatedPhrasesIndex),
+      updatedPhrase,
+      ...state.slice(updatedPhrasesIndex + 1),
+    ];
+  });
+
+  return <_LibraryTable phrases={optPhraseData} setOptPhraseData={setOptPhraseData} />;
 }

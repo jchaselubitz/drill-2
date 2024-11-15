@@ -6,9 +6,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
+import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import { ColumnDef } from '@tanstack/react-table';
 import { PhraseWithTranslations } from 'kysely-codegen';
-import { ArrowUpDown, MoreHorizontal, Star } from 'lucide-react';
+import { ArrowUpDown, Languages, MoreHorizontal, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -18,8 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-import { getLangName, LanguagesISO639 } from '@/lib/lists';
+import { getHumanDate } from '@/lib/helpers/helpersDate';
+import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
 
 export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
   {
@@ -42,6 +43,38 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+    size: 1,
+
+    maxSize: 1,
+    enablePinning: true,
+  },
+  {
+    accessorKey: 'favorite',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-3 h-12"
+          onClick={() => column.setFilterValue(column.getFilterValue() ? undefined : true)}
+        >
+          {column.getFilterValue() ? <StarFilledIcon color="black" /> : <StarIcon />}
+        </Button>
+      );
+    },
+    cell: ({ row, table }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="p-3"
+          onClick={() => table.options.meta?.toggleFavorite(row.original.id)}
+        >
+          {row.getValue('favorite') ? <StarFilledIcon color="black" /> : <StarIcon />}
+        </Button>
+      );
+    },
+    size: 1,
+    maxSize: 1,
+    enablePinning: true,
   },
   {
     accessorKey: 'text',
@@ -49,6 +82,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       return (
         <Button
           variant="ghost"
+          className="p-3"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Text
@@ -57,25 +91,12 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       );
     },
     cell: ({ row }) => (
-      <span className="flex flex-1">
-        <span className="md:pl-2 font-medium w-full truncate">
-          <div className="capitalize">{row.getValue('text')}</div>
-        </span>
+      <span className="flex font-medium max-w-full whitespace-normal ">
+        <div className="capitalize">{row.getValue('text')}</div>
       </span>
     ),
-  },
-
-  {
-    accessorKey: 'favorite',
-    cell: ({ row, table }) => {
-      return (
-        <Button variant="ghost" onClick={() => table.options.meta?.toggleFavorite(row.original.id)}>
-          {row.getValue('favorite') ? <Star color="blue" /> : <Star />}
-        </Button>
-      );
-    },
-    size: 10,
-    enableResizing: false,
+    size: 1000,
+    maxSize: 1000,
   },
 
   {
@@ -83,22 +104,46 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     header: ({ column, table }) => {
       return (
         <Select defaultValue={''} onValueChange={(v) => column.setFilterValue(v)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Language" />
+          <SelectTrigger className="outline-none border-none hover:bg-zinc-100">
+            <SelectValue placeholder={<Languages size={18} />} />
           </SelectTrigger>
           <SelectContent>
             {table.options.meta?.uniqueLanguages.map((lang: LanguagesISO639) => (
               <SelectItem key={lang} value={lang}>
-                {getLangName(lang)}
+                {getLangIcon(lang)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{getLangName(row.getValue('lang'))}</div>,
+    cell: ({ row }) => (
+      <div className="flex justify-center">{getLangIcon(row.getValue('lang'))}</div>
+    ),
+    size: 1,
+  },
+
+  {
+    accessorKey: 'createdAt',
+    id: 'createdAt',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Date
+          <ArrowUpDown />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <span className="flex justify-center ">
+        <div className="capitalize ">{getHumanDate(row.getValue('createdAt'))}</div>
+      </span>
+    ),
     size: 10,
-    enableResizing: false,
+    maxSize: 10,
   },
 
   {
@@ -127,6 +172,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
         </DropdownMenu>
       );
     },
+    size: 1,
   },
 ];
 

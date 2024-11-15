@@ -1,13 +1,6 @@
-import { PhraseWithTranslations } from 'kysely-codegen';
-import Link from 'next/link';
-import CaptureAudio from '@/components/capture_audio';
-import CaptureText from '@/components/capture_text';
-import PhraseCard from '@/components/phrases/phrase_card';
-import { Button } from '@/components/ui/button';
 import { getPhrases } from '@/lib/actions/phraseActions';
-import { getProfile } from '@/lib/actions/userActions';
 
-import { LibraryTable } from './(components)/library_table';
+import LibraryTable from './(components)/library_table';
 
 export default async function Home() {
   const phrases = await getPhrases();
