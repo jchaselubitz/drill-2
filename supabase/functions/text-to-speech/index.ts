@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
   // Try to get image from Supabase Storage CDN.
 
   const supabaseAdminClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('DB_SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
   );
 

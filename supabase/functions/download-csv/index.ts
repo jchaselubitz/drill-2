@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
   const bucket = 'text_to_speech';
 
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('DB_SUPABASE_URL') ?? '',
     Deno.env.get('DB_SUPABASE_ANON_KEY') ?? '',
     { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
   );

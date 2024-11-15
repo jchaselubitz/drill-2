@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
   const bucket = 'text_to_speech';
 
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('DB_SUPABASE_URL') ?? '',
     Deno.env.get('DB_SUPABASE_ANON_KEY') ?? '',
     { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
   );
@@ -77,15 +77,15 @@ Deno.serve(async (req) => {
     },
   });
   return resp;
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
-  }
+  // if (error) {
+  //   return new Response(JSON.stringify({ error: error.message }), {
+  //     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  //     status: 400,
+  //   });
+  // }
 
-  return new Response('Method not allowed', {
-    status: 405,
-    headers: corsHeaders,
-  });
+  // return new Response('Method not allowed', {
+  //   status: 405,
+  //   headers: corsHeaders,
+  // });
 });
