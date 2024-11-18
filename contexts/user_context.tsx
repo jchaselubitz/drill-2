@@ -26,6 +26,15 @@ export const UserContextProvider = ({
     return <> {children}</>;
   }
 
+  console.log({
+    userId: userProfile.id,
+    userLanguage: userProfile.userLanguage as LanguagesISO639,
+    prefLanguage: userProfile.prefLanguage as LanguagesISO639,
+    imageUrl: userProfile.imageUrl,
+    username: userProfile.username,
+    media: userProfile.media,
+  });
+
   return (
     <UserContext.Provider
       value={{

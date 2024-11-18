@@ -25,6 +25,8 @@ type UserMenuProps = {
 const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
   const userEmail = user?.email;
 
+  console.log({ user, username, imageUrl });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
