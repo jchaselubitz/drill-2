@@ -19,16 +19,17 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row }) => {
         key={row.id}
         data-state={row.getIsSelected() && 'selected'}
         className={cn(expanded && 'border-b-0 bg-zinc-100 dark:bg-zinc-800')}
+        onClick={() => row.toggleExpanded()}
       >
         {visibleCells.map((cell) => (
-          <TableCell key={cell.id} className="p-3 " style={{ width: cell.column.getSize() }}>
+          <TableCell key={cell.id} className="px-3 py-2" style={{ width: cell.column.getSize() }}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </TableCell>
         ))}{' '}
       </TableRow>
       {expanded && (
         <TableRow>
-          <TableCell colSpan={visibleCells.length} className="p-3  bg-zinc-100 dark:bg-zinc-800">
+          <TableCell colSpan={visibleCells.length} className="p-3 bg-zinc-100 dark:bg-zinc-800">
             <div className="p-3">
               <PhraseCardDetails phrase={row.original} />
             </div>

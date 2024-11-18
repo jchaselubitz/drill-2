@@ -36,11 +36,13 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
@@ -55,7 +57,9 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       return (
         <Button
           variant="ghost"
-          onClick={() => column.setFilterValue(column.getFilterValue() ? undefined : true)}
+          onClick={(e) => {
+            column.setFilterValue(column.getFilterValue() ? undefined : true);
+          }}
         >
           {column.getFilterValue() ? <StarFilledIcon color="black" /> : <StarIcon />}
         </Button>
@@ -63,7 +67,13 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     },
     cell: ({ row, table }) => {
       return (
-        <Button variant="ghost" onClick={() => table.options.meta?.toggleFavorite(row.original.id)}>
+        <Button
+          variant="ghost"
+          onClick={(e) => {
+            e.stopPropagation();
+            table.options.meta?.toggleFavorite(row.original.id);
+          }}
+        >
           {row.getValue('favorite') ? <StarFilledIcon color="black" /> : <StarIcon />}
         </Button>
       );
@@ -86,19 +96,13 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       );
     },
     cell: ({ row }) => (
-      <span
-        className="flex font-medium max-w-full whitespace-normal "
-        onClick={() => {
-          row.toggleExpanded(!row.getIsExpanded());
-        }}
-      >
+      <span className="flex font-medium max-w-full whitespace-normal w-full">
         <div className="capitalize">{row.getValue('text')}</div>
       </span>
     ),
     size: 1000,
     maxSize: 1000,
   },
-
   {
     accessorKey: 'Audio',
     header: '',
