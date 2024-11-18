@@ -9,6 +9,7 @@ import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
 import LightSuggestionList from './suggestions/light_suggestion_list';
+import { useIsMobile } from '@/lib/hooks/use-mobile';
 
 interface ContentRequestProps {
   text: string | null;
@@ -158,7 +159,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   return (
     <div className="flex flex-col">
       <Textarea
-        className="input"
+        className="w-full"
         value={requestText}
         onChange={(e) => setRequestText(e.target.value)}
         placeholder="Type your request here"

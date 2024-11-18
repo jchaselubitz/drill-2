@@ -39,9 +39,11 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithT
       jsonArrayFrom(
         eb
           .selectFrom('tag')
+
           .innerJoin('phraseTag', 'phraseTag.tagId', 'tag.id')
-          .select(['tag.id', 'tag.label', 'tag.userId', 'tag.createdAt'])
           .where('tag.userId', '=', userId)
+          .whereRef('phraseId', '=', 'phrase.id')
+          .select(['tag.id', 'tag.label', 'tag.userId', 'tag.createdAt'])
       ).as('tags'),
       jsonArrayFrom(
         eb
@@ -117,7 +119,7 @@ export const addPhrase = async ({
   revalidatePath('/');
 };
 
-export const addPhraseTag = async ({ phraseId, tag }: { phraseId: string; tag: BaseTag }) => {
+export const addPhraseTags = async ({ phraseId, tags }: { phraseId: string; tags: string[] }) => {
   const supabase = createClient();
   const {
     data: { user },
@@ -126,36 +128,45 @@ export const addPhraseTag = async ({ phraseId, tag }: { phraseId: string; tag: B
   if (!userId) {
     return [];
   }
+
+  if (!tags || tags.length === 0) {
+    return;
+  }
+
   try {
-    await db.transaction().execute(async (trx) => {
-      if (!tag.id) {
+    tags.forEach(async (tagText: string) => {
+      await db.transaction().execute(async (trx) => {
+        const insertTag = async (newTagId: string) =>
+          await trx
+            .insertInto('phraseTag')
+            .values({ phraseId, tagId: newTagId } as NewPhraseTag)
+            .execute();
+
+        const tag = await trx
+          .selectFrom('tag')
+          .select(['id'])
+          .where('label', '=', tagText)
+          .where('userId', '=', userId)
+          .executeTakeFirst();
+
+        if (tag?.id) {
+          await insertTag(tag.id);
+        }
         const newTag = await trx
           .insertInto('tag')
-          .values({ label: tag.label, userId: tag.userId })
+          .values({ label: tagText, userId: userId } as NewTag)
           .returning('id')
           .executeTakeFirstOrThrow();
-        await trx
-          .insertInto('phraseTag')
-          .values({ phraseId, tagId: newTag.id, userId } as NewPhraseTag)
-          .execute();
-      }
-      await trx
-        .insertInto('phraseTag')
-        .values({ phraseId, tagId: tag.id, userId } as NewPhraseTag)
-        .execute();
+        await insertTag(newTag.id);
+      });
     });
+    revalidatePath('/library');
   } catch (error) {
     throw Error(`Failed to add tags to phrase: ${error}`);
   }
 };
 
-export const removePhraseTag = async ({
-  phraseId,
-  tagId,
-}: {
-  phraseId: string;
-  tagId: string[];
-}) => {
+export const removePhraseTag = async ({ phraseId, tagId }: { phraseId: string; tagId: string }) => {
   const supabase = createClient();
   const {
     data: { user },
@@ -173,6 +184,7 @@ export const removePhraseTag = async ({
         .where('tagId', '=', tagId)
         .execute();
     });
+    revalidatePath('/library');
   } catch (error) {
     throw Error(`Failed to remove tags from phrase: ${error}`);
   }

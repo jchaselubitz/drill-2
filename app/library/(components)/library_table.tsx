@@ -13,7 +13,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { PhraseWithTranslations } from 'kysely-codegen';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Languages } from 'lucide-react';
 import * as React from 'react';
 import { FC, startTransition, useOptimistic, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -33,10 +33,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
-import { LanguagesISO639 } from '@/lib/lists';
+import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
 
 import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
+import { useWindowSize } from 'react-use';
 
 type LibraryTableProps = {
   phrases: PhraseWithTranslations[];
@@ -44,9 +45,18 @@ type LibraryTableProps = {
 };
 
 const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) => {
+  const isMobile = useWindowSize().width < 768;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    select: !isMobile,
+    favorite: !isMobile,
+    text: true,
+    lang: false,
+    tts: true,
+    createdAt: false,
+    actions: !isMobile,
+  });
   const [rowSelection, setRowSelection] = useState({});
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const [pagination, setPagination] = useState({
@@ -99,37 +109,62 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 gap-2 justify-between">
         <Input
           placeholder="Filter phrases..."
           value={(table.getColumn('text')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('text')?.setFilterValue(event.target.value)}
-          className="max-w-sm"
+          className="max-w-48"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                <Languages size={18} /> <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {uniqueLanguages.map((lang) => {
                 return (
                   <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    key={lang}
+                    className="capitalize flex items-center gap-1"
+                    checked={table.getColumn('lang')?.getFilterValue() === lang}
+                    onCheckedChange={(v) => {
+                      table.getColumn('lang')?.setFilterValue(v ? lang : undefined);
+                    }}
                   >
-                    {column.id}
+                    {getLangIcon(lang)} {getLangName(lang)}
                   </DropdownMenuCheckboxItem>
                 );
               })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

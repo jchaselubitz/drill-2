@@ -45,7 +45,6 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       </div>
     ),
     enableSorting: false,
-    enableHiding: false,
     size: 1,
 
     maxSize: 1,
@@ -80,6 +79,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     },
     size: 1,
     maxSize: 1,
+    enableHiding: true,
     enablePinning: true,
   },
   {
@@ -102,6 +102,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     ),
     size: 1000,
     maxSize: 1000,
+    enableHiding: false,
   },
   {
     accessorKey: 'Audio',
@@ -112,30 +113,19 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
       </div>
     ),
     size: 1,
+    enableHiding: true,
   },
 
   {
     accessorKey: 'lang',
-    header: ({ column, table }) => {
-      return (
-        <Select defaultValue={''} onValueChange={(v) => column.setFilterValue(v)}>
-          <SelectTrigger className="outline-none border-none hover:bg-zinc-100">
-            <SelectValue placeholder={<Languages size={18} />} />
-          </SelectTrigger>
-          <SelectContent>
-            {table.options.meta?.uniqueLanguages.map((lang: LanguagesISO639) => (
-              <SelectItem key={lang} value={lang}>
-                {getLangIcon(lang)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      );
+    header: () => {
+      return <Languages size={18} />;
     },
     cell: ({ row }) => (
       <div className="flex justify-center">{getLangIcon(row.getValue('lang'))}</div>
     ),
     size: 1,
+    enableHiding: true,
   },
 
   {
@@ -147,7 +137,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Date
+          Created
           <ArrowUpDown />
         </Button>
       );
@@ -159,14 +149,14 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     ),
     size: 10,
     maxSize: 10,
+    enableHiding: true,
   },
 
   {
     id: 'actions',
-    enableHiding: false,
+
     cell: ({ row }) => {
       const phrase = row.original;
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
