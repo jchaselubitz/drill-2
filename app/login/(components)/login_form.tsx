@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -25,6 +26,7 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLink, message }) => {
+  const router = useRouter();
   const [showCreateAccount, setShowCreateAccount] = useState(false);
   const [signInButtonState, setSignInButtonState] = useState<ButtonLoadingState>('default');
   const isCreateAccount = (!isPasswordReset && !!showCreateAccount) || !!token;
@@ -69,22 +71,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
       } else {
         if (!isCreateAccount && !password) {
           setSignInButtonState('error');
-          return;
         }
         if (isCreateAccount) {
           await signUp(submission);
           setSignInButtonState('success');
-          return;
+          return router.push('/confirm-your-email?email=' + email);
         }
         if (!isCreateAccount) {
           await signIn({ email, password });
           setSignInButtonState('default');
-          return;
+          return router.push('/');
         }
+        return;
       }
     } catch (error) {
-      console.error(error);
       setSignInButtonState('error');
+      throw Error(`Error signing in ${error}`);
     }
   };
 

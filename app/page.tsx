@@ -22,11 +22,13 @@ export default async function Home() {
           {recentPhrases.map((phrase: any) => (
             <PhraseCard key={phrase.id} phrase={phrase} />
           ))}
-          <Link href={'/library'}>
-            <Button size={'lg'} variant={'link'} className="text-base">
-              See all
-            </Button>
-          </Link>
+          {recentPhrases.length > 0 && (
+            <Link href={'/library'}>
+              <Button size={'lg'} variant={'link'} className="text-base">
+                See all
+              </Button>
+            </Link>
+          )}
         </div>
       </main>
       {/* <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer> */}

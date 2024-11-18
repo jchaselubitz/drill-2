@@ -2,12 +2,13 @@
 
 import { headers } from 'next/headers';
 import db from '../database';
-import { redirect } from 'next/navigation';
+
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { LanguagesISO639 } from '../lists';
 import { ProfileWithMedia } from 'kysely-codegen';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { redirect } from 'next/navigation';
 
 export const getProfile = async (): Promise<ProfileWithMedia | null | undefined> => {
   const supabase = createClient();
@@ -76,7 +77,6 @@ export async function signInWithEmail({
   if (error) {
     return redirect('/login?message=Could not authenticate user');
   }
-  return redirect('/');
 }
 
 export const signIn = async ({ email, password }: { email: string; password: string }) => {
@@ -91,7 +91,6 @@ export const signIn = async ({ email, password }: { email: string; password: str
     return redirect('/login?message=Could not authenticate user');
   }
   console.timeEnd('signIn');
-  return redirect('/');
 };
 
 export const signUp = async ({
@@ -111,7 +110,7 @@ export const signUp = async ({
   const headersList = await headers();
   const origin = headersList.get('origin');
   if (!inviteEmail && !email) {
-    return redirect('/login?message=Missing required fields');
+    throw Error('/login?message=Missing required fields');
   }
   const { error, data } = await supabase.auth.signUp({
     email: inviteEmail ?? (email as string),
@@ -130,11 +129,8 @@ export const signUp = async ({
   // }
 
   if (error) {
-    console.log(error);
     return redirect(`/login?message=Could not authenticate user${token ? '&code=' + token : ''}`);
   }
-
-  return redirect('/confirm-your-email?email=' + email);
 };
 
 export const signOut = async () => {
@@ -143,6 +139,7 @@ export const signOut = async () => {
   if (error) {
     return redirect('/login?message=Could not sign out');
   }
+  return redirect('/login');
 };
 
 export const requestReset = async ({ email }: { email: string }) => {
