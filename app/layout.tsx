@@ -62,8 +62,8 @@ export default async function RootLayout({
   const user = await supabase.auth.getUser();
   const profile = await getProfile();
 
-  if (!user || !profile) {
-    return <div>Loading...</div>;
+  if (!profile) {
+    console.log('no profile');
   }
 
   console.log('layout', { user, profile });
@@ -71,28 +71,34 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cn('bg-background bg-white font-sans antialiased', fontSans.variable)}>
-        <UserContextProvider profile={profile}>
-          {/* <ThemeProvider
+        {user ? (
+          <UserContextProvider profile={profile}>
+            {/* <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           > */}
-          <SidebarProvider>
-            {user.data.user ? (
-              <AppSidebar user={user.data.user} />
-            ) : (
-              <Link href="/login">
-                <Button className="absolute top-4 right-4">Login</Button>
-              </Link>
-            )}
-            <main className="w-full h-full flex flex-col pt-14 md:pt-0 md:pb-12">
-              <SidebarTrigger />
-              <div className="flex justify-center pb-24 md:justify-normal h-full  ">{children}</div>
-            </main>
-          </SidebarProvider>
-          {/* </ThemeProvider> */}
-        </UserContextProvider>
+            <SidebarProvider>
+              {user.data.user ? (
+                <AppSidebar user={user.data.user} />
+              ) : (
+                <Link href="/login">
+                  <Button className="absolute top-4 right-4">Login</Button>
+                </Link>
+              )}
+              <main className="w-full h-full flex flex-col pt-14 md:pt-0 md:pb-12">
+                <SidebarTrigger />
+                <div className="flex justify-center pb-24 md:justify-normal h-full  ">
+                  {children}
+                </div>
+              </main>
+            </SidebarProvider>
+            {/* </ThemeProvider> */}
+          </UserContextProvider>
+        ) : (
+          <>{children}</>
+        )}
         <Toaster />
       </body>
     </html>
