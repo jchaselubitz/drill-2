@@ -113,7 +113,6 @@ export const signUp = async ({
   if (!inviteEmail && !email) {
     return redirect('/login?message=Missing required fields');
   }
-
   const { error, data } = await supabase.auth.signUp({
     email: inviteEmail ?? (email as string),
     password,

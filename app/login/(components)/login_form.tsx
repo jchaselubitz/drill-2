@@ -83,6 +83,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
         }
       }
     } catch (error) {
+      console.error(error);
       setSignInButtonState('error');
     }
   };
