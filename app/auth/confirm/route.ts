@@ -19,11 +19,13 @@ export async function GET(request: NextRequest) {
 
   if (token_hash && type) {
     const supabase = createClient();
+    console.log('verifying otp', { token_hash, type });
 
     const { error } = await supabase.auth.verifyOtp({
       type,
       token_hash,
     });
+
     if (!error) {
       redirectTo.searchParams.delete('next');
       if (type === 'recovery') {
@@ -31,6 +33,7 @@ export async function GET(request: NextRequest) {
       }
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}${next}`);
     }
+    console.log('error', error);
   }
 
   // return the user to an error page with some instructions

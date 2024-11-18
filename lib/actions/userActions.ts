@@ -131,6 +131,7 @@ export const signUp = async ({
   // }
 
   if (error) {
+    console.log(error);
     return redirect(`/login?message=Could not authenticate user${token ? '&code=' + token : ''}`);
   }
 

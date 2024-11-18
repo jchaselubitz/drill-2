@@ -45,7 +45,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{username}</span>
-              <span className="truncate text-xs">{username}</span>
+              <span className="truncate text-xs">{userEmail}</span>
             </div>
           </div>
           <ChevronsUpDown className="ml-auto size-4" />

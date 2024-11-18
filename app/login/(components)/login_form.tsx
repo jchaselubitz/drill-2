@@ -65,6 +65,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
       if (isMagicLink) {
         await signInWithEmail({ email, shouldCreateUser: isCreateAccount, name });
         setSignInButtonState('success');
+        return;
       } else {
         if (!isCreateAccount && !password) {
           setSignInButtonState('error');

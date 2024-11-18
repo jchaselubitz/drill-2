@@ -62,7 +62,11 @@ export default async function RootLayout({
   const user = await supabase.auth.getUser();
   const profile = await getProfile();
 
-  console.log({ user, profile });
+  if (!user || !profile) {
+    return <div>Loading...</div>;
+  }
+
+  console.log('layout', { user, profile });
 
   return (
     <html lang="en">
