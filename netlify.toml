@@ -5,7 +5,7 @@ publish = ".next"
 [context.production.environment]
 NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
-NEXT_PUBLIC_SITE_URL = 'https://drillang.netlify.app/'
+NEXT_PUBLIC_SITE_URL = 'https://drilllang.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "prod"
 
 
@@ -15,7 +15,7 @@ publish = ".next"
 [context.branch-deploy.environment]
 NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
-NEXT_PUBLIC_SITE_URL = 'https://drillang.netlify.app/'
+NEXT_PUBLIC_SITE_URL = 'https://drilllang.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "branch-deploy"
 
 
@@ -25,7 +25,7 @@ publish = ".next"
 [context.development.environment]
 NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
-NEXT_PUBLIC_SITE_URL = 'https://drillang.netlify.app/'
+NEXT_PUBLIC_SITE_URL = 'https://drilllang.netlify.app/'
 NEXT_PUBLIC_CONTEXT = "development"
 
 
