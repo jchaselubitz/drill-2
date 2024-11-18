@@ -92,11 +92,9 @@ export const getLesson = async (lessonId: string): Promise<LessonWithTranslation
           .select(({ eb }) => [
             'translation.id',
             'translation.lessonId',
-            'translation.intervalHistory',
             'translation.userId',
             'translation.lessonId',
             'translation.createdAt',
-            'translation.repetitionHistory',
             'translation.phrasePrimaryId',
             'translation.phraseSecondaryId',
             jsonObjectFrom(
