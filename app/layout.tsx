@@ -62,6 +62,8 @@ export default async function RootLayout({
   const user = await supabase.auth.getUser();
   const profile = await getProfile();
 
+  console.log({ user, profile });
+
   return (
     <html lang="en">
       <body className={cn('bg-background bg-white font-sans antialiased', fontSans.variable)}>
