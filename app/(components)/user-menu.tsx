@@ -22,9 +22,8 @@ import LanguageChooser from './language_chooser';
 
 type UserMenuProps = {
   user: User | null | undefined;
-
   mobile?: boolean;
-  setUserLanguages: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
+  setUserLanguages?: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
 };
 
 const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
@@ -65,11 +64,14 @@ const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <SidebarMenu className="px-2 gap-1 my-4">
-          <LanguageChooser setUserLanguages={setUserLanguages} />
-        </SidebarMenu>
-        <DropdownMenuSeparator />
-
+        {!!setUserLanguages && (
+          <>
+            <SidebarMenu className="px-2 gap-1 my-4">
+              <LanguageChooser setUserLanguages={setUserLanguages} />
+            </SidebarMenu>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem asChild>
           <Link href={`/settings/`}>
             <Settings className="mr-2 h-4 w-4" />
