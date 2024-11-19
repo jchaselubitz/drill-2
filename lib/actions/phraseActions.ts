@@ -125,45 +125,45 @@ export const addPhraseTags = async ({ phraseId, tags }: { phraseId: string; tags
     data: { user },
   } = await supabase.auth.getUser();
   const userId = user?.id;
-  if (!userId) {
-    return [];
-  }
 
-  if (!tags || tags.length === 0) {
-    return;
-  }
+  if (!userId || tags.length === 0) return;
 
   try {
-    tags.forEach(async (tagText: string) => {
-      await db.transaction().execute(async (trx) => {
-        const insertTag = async (newTagId: string) =>
-          await trx
-            .insertInto('phraseTag')
-            .values({ phraseId, tagId: newTagId } as NewPhraseTag)
-            .execute();
+    await Promise.all(
+      tags.map(async (tagText: string) => {
+        await db.transaction().execute(async (trx) => {
+          const tag = await trx
+            .selectFrom('tag')
+            .select(['id'])
+            .where('label', '=', tagText)
+            .where('userId', '=', userId)
+            .executeTakeFirst();
 
-        const tag = await trx
-          .selectFrom('tag')
-          .select(['id'])
-          .where('label', '=', tagText)
-          .where('userId', '=', userId)
-          .executeTakeFirst();
+          if (tag?.id) {
+            await trx
+              .insertInto('phraseTag')
+              .values({ phraseId, tagId: tag.id } as NewPhraseTag)
+              .execute();
+          } else {
+            const newTag = await trx
+              .insertInto('tag')
+              .values({ label: tagText, userId } as NewTag)
+              .returning('id')
+              .executeTakeFirstOrThrow();
 
-        if (tag?.id) {
-          await insertTag(tag.id);
-        }
-        const newTag = await trx
-          .insertInto('tag')
-          .values({ label: tagText, userId: userId } as NewTag)
-          .returning('id')
-          .executeTakeFirstOrThrow();
-        await insertTag(newTag.id);
-      });
-    });
-    revalidatePath('/library');
+            await trx
+              .insertInto('phraseTag')
+              .values({ phraseId, tagId: newTag.id } as NewPhraseTag)
+              .execute();
+          }
+        });
+      })
+    );
   } catch (error) {
-    throw Error(`Failed to add tags to phrase: ${error}`);
+    throw new Error(`Failed to add tags to phrase: ${error}`);
   }
+
+  revalidatePath('/library', 'page');
 };
 
 export const removePhraseTag = async ({ phraseId, tagId }: { phraseId: string; tagId: string }) => {
@@ -184,10 +184,10 @@ export const removePhraseTag = async ({ phraseId, tagId }: { phraseId: string; t
         .where('tagId', '=', tagId)
         .execute();
     });
-    revalidatePath('/library');
   } catch (error) {
     throw Error(`Failed to remove tags from phrase: ${error}`);
   }
+  revalidatePath('/library', 'page');
 };
 
 export const updatePhrase = async ({ phraseId, text }: { phraseId: string; text: string }) => {

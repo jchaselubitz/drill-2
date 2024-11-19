@@ -10,7 +10,7 @@ interface TagProps {
 const Tag: React.FC<TagProps> = ({ label, onRemove, className = '' }) => {
   return (
     <div
-      className={`inline-flex items-center gap-1 px-2 pr-3 py-1 text-sm  text-gray-100 bg-gray-800 rounded-full ${className}`}
+      className={`inline-flex items-center gap-1 pl-1 pr-3 py-1 text-sm  text-gray-100 bg-gray-800 rounded-full ${className}`}
     >
       {onRemove && (
         <button

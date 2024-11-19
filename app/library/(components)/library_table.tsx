@@ -191,7 +191,11 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => <LibraryRow key={row.id} row={row} />)
+              table
+                .getRowModel()
+                .rows.map((row) => (
+                  <LibraryRow key={row.id} row={row} setOptPhraseData={setOptPhraseData} />
+                ))
             ) : (
               <TableRow>
                 <TableCell colSpan={LibraryColumns.length} className="h-24 text-center">
@@ -245,6 +249,7 @@ export default function LibraryTable({ phrases }: { phrases: PhraseWithTranslati
       ...state.slice(updatedPhrasesIndex + 1),
     ];
   });
+  console.log('optPhraseData', optPhraseData[0].tags);
 
   return <LibraryTableBase phrases={optPhraseData} setOptPhraseData={setOptPhraseData} />;
 }

@@ -13,15 +13,8 @@ import { ArrowUpDown, Languages, MoreHorizontal } from 'lucide-react';
 import TtsButton from '@/components/ai_elements/tts_button';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
-import { getLangIcon, LanguagesISO639 } from '@/lib/lists';
+import { getLangIcon } from '@/lib/lists';
 
 export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
   {

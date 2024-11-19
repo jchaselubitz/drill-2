@@ -1,5 +1,5 @@
 import { flexRender, Row } from '@tanstack/react-table';
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { BaseTag, NewTag, PhraseWithTranslations } from 'kysely-codegen';
 import React, { Fragment } from 'react';
 import PhraseCardDetails from '@/components/phrases/phrase_card_details';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -10,11 +10,13 @@ import TagList from '@/components/tags/tag_list';
 
 interface LibraryRowProps {
   row: Row<PhraseWithTranslations>;
+  setOptPhraseData: (action: PhraseWithTranslations) => void;
 }
 
-const LibraryRow: React.FC<LibraryRowProps> = ({ row }) => {
+const LibraryRow: React.FC<LibraryRowProps> = ({ row, setOptPhraseData }) => {
   const visibleCells = row.getVisibleCells();
   const expanded = row.getIsExpanded();
+  // const [tags, setTags] = React.useState<BaseTag[]>(row.original.tags);
 
   return (
     <Fragment key={row.id}>
@@ -40,7 +42,7 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row }) => {
                   <div>Language: {getLangIcon(row.original.lang)}</div>
                   {row.original.source && <div>Source: {row.original.source}</div>}
                 </div>
-                <TagList phraseId={row.original.id} tags={row.original.tags} />
+                <TagList phrase={row.original} setOptPhraseData={setOptPhraseData} />
               </div>
               <PhraseCardDetails phrase={row.original} />
             </div>

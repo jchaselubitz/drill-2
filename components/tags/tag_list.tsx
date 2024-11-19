@@ -1,26 +1,23 @@
-import { useState } from 'react';
+import { startTransition, useState } from 'react';
 import Tag from './tag';
 import { addPhraseTags, removePhraseTag } from '@/lib/actions/phraseActions';
-import { BaseTag } from 'kysely-codegen';
+import { BaseTag, PhraseWithTranslations } from 'kysely-codegen';
+import { Button } from '../ui/button';
+import { Plus } from 'lucide-react';
+import { Input } from '../ui/input';
 
 interface TagListProps {
-  tags: BaseTag[];
-  phraseId: string;
+  phrase: PhraseWithTranslations;
+  setOptPhraseData: (action: PhraseWithTranslations) => void;
 }
 
-export default function TagList({ phraseId, tags }: TagListProps) {
+export default function TagList({ phrase, setOptPhraseData }: TagListProps) {
+  const { id: phraseId, tags } = phrase;
   const [showInput, setShowInput] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-  };
-
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === ',' || e.key === 'Enter') {
-      e.preventDefault();
-      await submitTags();
-    }
   };
 
   const submitTags = async () => {
@@ -32,54 +29,69 @@ export default function TagList({ phraseId, tags }: TagListProps) {
       .filter((tag) => tag.length > 0);
 
     if (newTags.length > 0) {
-      await addPhraseTags({ phraseId, tags: newTags });
+      const placeholderTags = newTags.map((tag, i) => ({
+        label: tag,
+        id: Math.random().toString(),
+      })) as BaseTag[];
+
+      startTransition(async () => {
+        await addPhraseTags({ phraseId, tags: newTags });
+        setOptPhraseData({ ...phrase, tags: [...tags, ...placeholderTags] });
+      });
+
       setInputValue('');
     }
   };
 
   const handleRemoveTag = async (tagId: string) => {
+    const placeholderTags = tags.filter((tag) => tag.id !== tagId);
+    startTransition(() => {
+      setOptPhraseData({ ...phrase, tags: placeholderTags });
+    });
     await removePhraseTag({ phraseId, tagId });
   };
 
-  return (
-    <div className="flex flex-wrap gap-2 items-center">
-      {tags.map((tag: BaseTag) => (
-        <Tag key={tag.id} label={tag.label} onRemove={() => handleRemoveTag(tag.id)} />
-      ))}
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === ',' || e.key === 'Enter') {
+      await submitTags();
+    }
+  };
 
+  return (
+    <div className="flex gap-2 items-center w-full justify-end ">
+      <div className="flex flex-wrap gap-2 items-center ">
+        {tags.map((tag) => (
+          <Tag key={tag.id} label={tag.label} onRemove={() => handleRemoveTag(tag.id)} />
+        ))}
+      </div>
       {!showInput ? (
-        <button
-          onClick={() => setShowInput(true)}
-          className="px-2 py-1 text-sm border rounded-md hover:bg-gray-50"
-        >
-          + Add Tag
-        </button>
+        <Button onClick={() => setShowInput(true)} variant={'ghost'}>
+          <Plus size={20} />
+        </Button>
       ) : (
         <div className="flex items-center gap-2">
-          <input
+          <Input
             type="text"
+            className="min-w-24"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder="Add tags, separate with commas"
-            className="px-2 py-1 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             autoFocus
           />
-          <button
+          <Button
             onClick={() => {
               submitTags();
               setShowInput(false);
             }}
-            className="px-2 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            variant={'default'}
+            size="sm"
           >
             Add
-          </button>
-          <button
-            onClick={() => setShowInput(false)}
-            className="px-2 py-1 text-sm border rounded-md hover:bg-gray-50"
-          >
+          </Button>
+          <Button variant={'outline'} size="sm" onClick={() => setShowInput(false)}>
             Cancel
-          </button>
+          </Button>
         </div>
       )}
     </div>

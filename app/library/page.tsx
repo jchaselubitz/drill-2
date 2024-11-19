@@ -4,6 +4,7 @@ import LibraryTable from './(components)/library_table';
 
 export default async function Home() {
   const phrases = await getPhrases();
+  console.log(phrases[0].tags);
 
   return (
     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
