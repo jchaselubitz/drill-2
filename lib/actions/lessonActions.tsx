@@ -238,40 +238,42 @@ export const addTranslationsToLesson = async ({
   }
   const userId = user.id;
   try {
-    await db.transaction().execute(async (trx) => {
+    await Promise.all(
       phrases.map(async (phrase) => {
-        const phrase1 = await trx
-          .insertInto('phrase')
-          .values({
-            text: phrase.phrase_primary.text,
-            lang: phrase.phrase_primary.lang,
-            source: '',
-            userId,
-          } as NewPhrase)
-          .returning('id')
-          .executeTakeFirstOrThrow();
-        const phrase2 = await trx
-          .insertInto('phrase')
-          .values({
-            text: phrase.phrase_secondary.text,
-            lang: phrase.phrase_secondary.lang,
-            source: '',
-            userId,
-          } as NewPhrase)
-          .returning('id')
-          .executeTakeFirstOrThrow();
+        await db.transaction().execute(async (trx) => {
+          const phrase1 = await trx
+            .insertInto('phrase')
+            .values({
+              text: phrase.phrase_primary.text,
+              lang: phrase.phrase_primary.lang,
+              source: '',
+              userId,
+            } as NewPhrase)
+            .returning('id')
+            .executeTakeFirstOrThrow();
+          const phrase2 = await trx
+            .insertInto('phrase')
+            .values({
+              text: phrase.phrase_secondary.text,
+              lang: phrase.phrase_secondary.lang,
+              source: '',
+              userId,
+            } as NewPhrase)
+            .returning('id')
+            .executeTakeFirstOrThrow();
 
-        trx
-          .insertInto('translation')
-          .values({
-            userId,
-            lessonId,
-            phrasePrimaryId: phrase1.id,
-            phraseSecondaryId: phrase2.id,
-          } as NewTranslation)
-          .execute();
-      });
-    });
+          trx
+            .insertInto('translation')
+            .values({
+              userId,
+              lessonId,
+              phrasePrimaryId: phrase1.id,
+              phraseSecondaryId: phrase2.id,
+            } as NewTranslation)
+            .execute();
+        });
+      })
+    );
     revalidatePath(`/lessons/${lessonId}`, 'page');
   } catch (error) {
     throw Error('Error adding translations to lesson to db');

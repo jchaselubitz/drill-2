@@ -253,6 +253,9 @@ const SidebarTrigger = React.forwardRef<
 >(({ className, onClick, ...props }, ref) => {
   const { toggleSidebar } = useSidebar();
 
+  if (useIsMobile()) {
+    return <></>;
+  }
   return (
     <Button
       ref={ref}

@@ -9,21 +9,15 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
+  Updater,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
 import { PhraseWithTranslations } from 'kysely-codegen';
-import { ChevronDown, Languages } from 'lucide-react';
 import * as React from 'react';
 import { FC, startTransition, useOptimistic, useState } from 'react';
+import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -33,11 +27,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
-import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
+import { LanguagesISO639 } from '@/lib/lists';
 
 import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
-import { useWindowSize } from 'react-use';
+import LibraryTableHeaderTools from './library_table_header_tools';
 
 type LibraryTableProps = {
   phrases: PhraseWithTranslations[];
@@ -54,18 +48,20 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     text: true,
     lang: false,
     tts: true,
+    tags: false,
     createdAt: false,
     actions: !isMobile,
   });
   const [rowSelection, setRowSelection] = useState({});
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const [pagination, setPagination] = useState({
-    pageIndex: 0,
+    pageIndex: 0, // Default page index
     pageSize: 20, // Default number of rows per page
   });
 
   const mentionedLanguages = phrases.map((phrase) => phrase.lang);
   const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as LanguagesISO639[];
+  const userTags = [...new Set(phrases.flatMap((phrase) => phrase.tags.map((tag) => tag.label)))];
 
   const toggleFavorite = async (phraseId: string) => {
     const phrase = phrases.find((phrase) => phrase.id === phraseId);
@@ -84,10 +80,15 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     });
   };
 
+  const handleExpanded = (updater: Updater<ExpandedState>) => {
+    setExpanded(updater);
+  };
+
   const table = useReactTable({
     data: phrases,
     columns: LibraryColumns,
     meta: { uniqueLanguages, toggleFavorite },
+    onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -96,7 +97,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onExpandedChange: setExpanded,
+    onExpandedChange: (value) => handleExpanded(value),
     state: {
       pagination,
       sorting,
@@ -109,63 +110,11 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4 gap-2 justify-between">
-        <Input
-          placeholder="Filter phrases..."
-          value={(table.getColumn('text')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('text')?.setFilterValue(event.target.value)}
-          className="max-w-48"
-        />
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Languages size={18} /> <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {uniqueLanguages.map((lang) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={lang}
-                    className="capitalize flex items-center gap-1"
-                    checked={table.getColumn('lang')?.getFilterValue() === lang}
-                    onCheckedChange={(v) => {
-                      table.getColumn('lang')?.setFilterValue(v ? lang : undefined);
-                    }}
-                  >
-                    {getLangIcon(lang)} {getLangName(lang)}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+      <LibraryTableHeaderTools
+        table={table}
+        uniqueLanguages={uniqueLanguages}
+        userTags={userTags}
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -194,7 +143,12 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
               table
                 .getRowModel()
                 .rows.map((row) => (
-                  <LibraryRow key={row.id} row={row} setOptPhraseData={setOptPhraseData} />
+                  <LibraryRow
+                    key={row.id}
+                    row={row}
+                    setOptPhraseData={setOptPhraseData}
+                    userTags={userTags}
+                  />
                 ))
             ) : (
               <TableRow>
@@ -220,6 +174,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
           >
             Previous
           </Button>
+
           <Button
             variant="outline"
             size="sm"
@@ -249,7 +204,6 @@ export default function LibraryTable({ phrases }: { phrases: PhraseWithTranslati
       ...state.slice(updatedPhrasesIndex + 1),
     ];
   });
-  console.log('optPhraseData', optPhraseData[0].tags);
 
   return <LibraryTableBase phrases={optPhraseData} setOptPhraseData={setOptPhraseData} />;
 }

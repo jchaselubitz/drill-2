@@ -1,7 +1,9 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
+import { BookA, Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { useWindowSize } from 'react-use';
 import Logo from '@/components/logo';
 import {
   Sidebar,
@@ -16,6 +18,7 @@ import { useUserContext } from '@/contexts/user_context';
 import { updateUserLanguage } from '@/lib/actions/userActions';
 import { LanguagesISO639 } from '@/lib/lists';
 
+import LanguageChooser from './language_chooser';
 import LanguageMenu from './language_selector';
 import { NavMain } from './nav_main';
 import UserMenu from './user-menu';
@@ -62,7 +65,8 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({ user }: AppSidebarProps) {
-  const { userLanguage, prefLanguage, username, imageUrl } = useUserContext();
+  const { userLanguage, prefLanguage } = useUserContext();
+  const isMobile = useWindowSize().width < 768;
 
   const setUserLanguages = async ({ lang, name }: { lang: LanguagesISO639; name: string }) => {
     if (name === 'userLanguage') {
@@ -78,37 +82,31 @@ export function AppSidebar({ user }: AppSidebarProps) {
       });
     }
   };
+  if (isMobile) {
+    return (
+      <div className="fixed z-40 bottom-2 right-2 left-2 p-2 flex h-14 drop-shadow-lg bg-sidebar rounded-md items-center">
+        <NavMain items={pages} className="px-2" mobile />
+
+        <UserMenu user={user} setUserLanguages={setUserLanguages} mobile />
+      </div>
+    );
+  }
 
   return (
-    <Sidebar>
+    <Sidebar variant="floating">
       <SidebarHeader />
       <div className="mx-3 mb-3">
         <Logo logoUrl={'/icons/drill-logo.png'} />
       </div>{' '}
-      <NavMain items={pages} />
+      <NavMain items={pages} className="px-2" />
       <SidebarContent></SidebarContent>
       <SidebarFooter>
-        <SidebarMenu className="px-2 gap-1 mb-2">
-          <SidebarMenuItem>
-            <LanguageMenu
-              label="User Language"
-              name="userLanguage"
-              language={userLanguage}
-              onClick={setUserLanguages}
-            />
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <LanguageMenu
-              label="Study Language"
-              name="prefLanguage"
-              language={prefLanguage}
-              onClick={setUserLanguages}
-            />
-          </SidebarMenuItem>
+        <SidebarMenu className="px-2 gap-1 my-2">
+          <LanguageChooser setUserLanguages={setUserLanguages} />
         </SidebarMenu>
         <SidebarMenu className="">
           <SidebarMenuItem>
-            <UserMenu user={user} username={username} imageUrl={imageUrl} />
+            <UserMenu user={user} setUserLanguages={setUserLanguages} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -1,4 +1,7 @@
+'use client';
+
 import { BaseLesson } from 'kysely-codegen';
+import { Loader2Icon } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
@@ -7,9 +10,19 @@ interface LessonCardProps {
 }
 
 const LessonCard: React.FC<LessonCardProps> = ({ lesson }) => {
+  const [loadingState, setLoadingState] = React.useState(false);
   return (
     <Link key={lesson.id} href={`/lessons/${lesson.id}`}>
-      <div className="p-3 border rounded-lg">{lesson.title}</div>
+      <button
+        className="flex justify-between p-3 border border-zinc-300 rounded-lg w-full shadow-sm hover:bg-zinc-50 items-center"
+        onClick={() => setLoadingState(true)}
+      >
+        <div className="text-left">
+          <div className="">{lesson.title}</div>
+          <div className="text-xs text-gray-500">{lesson.shortDescription}</div>
+        </div>
+        {loadingState && <Loader2Icon className="mr-2 h-6 w-6 animate-spin" />}
+      </button>
     </Link>
   );
 };

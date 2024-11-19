@@ -1,16 +1,9 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import { ColumnDef } from '@tanstack/react-table';
 import { PhraseWithTranslations } from 'kysely-codegen';
-import { ArrowUpDown, Languages, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, Languages } from 'lucide-react';
 import TtsButton from '@/components/ai_elements/tts_button';
+import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
@@ -39,7 +32,6 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     ),
     enableSorting: false,
     size: 1,
-
     maxSize: 1,
     enablePinning: true,
   },
@@ -97,6 +89,23 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     maxSize: 1000,
     enableHiding: false,
   },
+
+  {
+    accessorKey: 'tags',
+    header: '',
+    cell: ({ row }) => (
+      <span className="flex justify-center">{<TagList phrase={row.original} />}</span>
+    ),
+    size: 10,
+    maxSize: 10,
+    enableHiding: true,
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue || filterValue.length === 0) return true;
+      const tags = row.original.tags;
+      const labels = tags.map((tag) => tag.label);
+      return labels.some((label) => filterValue.includes(label));
+    },
+  },
   {
     accessorKey: 'Audio',
     header: '',
@@ -145,33 +154,33 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     enableHiding: true,
   },
 
-  {
-    id: 'actions',
+  // {
+  //   id: 'actions',
 
-    cell: ({ row }) => {
-      const phrase = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(phrase.id)}>
-              Copy phrase ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View phrase details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-    size: 1,
-  },
+  //   cell: ({ row }) => {
+  //     const phrase = row.original;
+  //     return (
+  //       <DropdownMenu>
+  //         <DropdownMenuTrigger asChild>
+  //           <Button variant="ghost" className="h-8 w-8 p-0">
+  //             <span className="sr-only">Open menu</span>
+  //             <MoreHorizontal />
+  //           </Button>
+  //         </DropdownMenuTrigger>
+  //         <DropdownMenuContent align="end">
+  //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+  //           <DropdownMenuItem onClick={() => navigator.clipboard.writeText(phrase.id)}>
+  //             Copy phrase ID
+  //           </DropdownMenuItem>
+  //           <DropdownMenuSeparator />
+  //           <DropdownMenuItem>View customer</DropdownMenuItem>
+  //           <DropdownMenuItem>View phrase details</DropdownMenuItem>
+  //         </DropdownMenuContent>
+  //       </DropdownMenu>
+  //     );
+  //   },
+  //   size: 1,
+  // },
 ];
 
 export default LibraryColumns;

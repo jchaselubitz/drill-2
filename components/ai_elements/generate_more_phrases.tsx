@@ -34,7 +34,7 @@ const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
       studyLanguage: studyLanguage,
       userLanguage: userLanguage,
       level: currentLevel ?? '',
-      numberOfPhrases: 20,
+      numberOfPhrases: 2,
     });
 
     const messages = [
@@ -87,7 +87,7 @@ const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
       type="submit"
       onClick={handleGenerate}
     >
-      {isLoading ? 'Loading...' : 'Generate More Cards'}
+      {isLoading ? 'Loading...' : 'Generate More'}
     </button>
   );
 };

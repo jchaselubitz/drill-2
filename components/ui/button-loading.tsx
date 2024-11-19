@@ -1,6 +1,6 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { type VariantProps } from 'class-variance-authority';
-import { Check } from 'lucide-react';
+import { Check, Loader2Icon } from 'lucide-react';
 import * as React from 'react';
 
 import { Button, buttonVariants } from './button';
@@ -45,7 +45,7 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {buttonState === 'loading' ? (
           <span className="flex gap-2 items-center">
-            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> {loadingText}{' '}
+            <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> {loadingText}{' '}
           </span>
         ) : buttonState === 'success' ? (
           <span className="flex gap-2 justify-between items-center">

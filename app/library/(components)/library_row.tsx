@@ -2,18 +2,19 @@ import { flexRender, Row } from '@tanstack/react-table';
 import { BaseTag, NewTag, PhraseWithTranslations } from 'kysely-codegen';
 import React, { Fragment } from 'react';
 import PhraseCardDetails from '@/components/phrases/phrase_card_details';
+import TagList from '@/components/tags/tag_list';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
-import TagList from '@/components/tags/tag_list';
+import { cn } from '@/lib/utils';
 
 interface LibraryRowProps {
   row: Row<PhraseWithTranslations>;
   setOptPhraseData: (action: PhraseWithTranslations) => void;
+  userTags: string[];
 }
 
-const LibraryRow: React.FC<LibraryRowProps> = ({ row, setOptPhraseData }) => {
+const LibraryRow: React.FC<LibraryRowProps> = ({ row, userTags, setOptPhraseData }) => {
   const visibleCells = row.getVisibleCells();
   const expanded = row.getIsExpanded();
   // const [tags, setTags] = React.useState<BaseTag[]>(row.original.tags);
@@ -24,7 +25,9 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row, setOptPhraseData }) => {
         key={row.id}
         data-state={row.getIsSelected() && 'selected'}
         className={cn(expanded && 'border-b-0 bg-zinc-100 dark:bg-zinc-800')}
-        onClick={() => row.toggleExpanded()}
+        onClick={() => {
+          row.toggleExpanded();
+        }}
       >
         {visibleCells.map((cell) => (
           <TableCell key={cell.id} className="px-3 py-2" style={{ width: cell.column.getSize() }}>
@@ -42,7 +45,11 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row, setOptPhraseData }) => {
                   <div>Language: {getLangIcon(row.original.lang)}</div>
                   {row.original.source && <div>Source: {row.original.source}</div>}
                 </div>
-                <TagList phrase={row.original} setOptPhraseData={setOptPhraseData} />
+                <TagList
+                  phrase={row.original}
+                  setOptPhraseData={setOptPhraseData}
+                  userTags={userTags}
+                />
               </div>
               <PhraseCardDetails phrase={row.original} />
             </div>

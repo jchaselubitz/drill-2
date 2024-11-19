@@ -65,14 +65,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cn('bg-background bg-white font-sans antialiased', fontSans.variable)}>
-        {user ? (
-          <UserContextProvider profile={profile}>
-            {/* <ThemeProvider
+        {/* <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           > */}
+        {user ? (
+          <UserContextProvider profile={profile}>
             <SidebarProvider>
               <AppSidebar user={user} />
               <main className="w-full h-full flex flex-col pt-14 md:pt-0 md:pb-12">
@@ -82,12 +82,13 @@ export default async function RootLayout({
                 </div>
               </main>
             </SidebarProvider>
-            {/* </ThemeProvider> */}
           </UserContextProvider>
         ) : (
           <>{children}</>
         )}
+
         <Toaster />
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );

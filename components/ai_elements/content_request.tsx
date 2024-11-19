@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
+import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { LanguagesISO639 } from '@/lib/lists';
 import { createClient } from '@/utils/supabase/client';
 
@@ -9,7 +10,6 @@ import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
 import LightSuggestionList from './suggestions/light_suggestion_list';
-import { useIsMobile } from '@/lib/hooks/use-mobile';
 
 interface ContentRequestProps {
   text: string | null;

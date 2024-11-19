@@ -1,20 +1,22 @@
 'use client';
 
-import { ChevronsUpDown } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import { FC } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { getLangIcon, getLangName, Languages, LanguagesISO639 } from '@/lib/lists';
 
 type LanguageMenuProps = {
-  label: string;
-  name: string;
-  language: LanguagesISO639 | null | undefined;
-
+  props: {
+    label: string;
+    name: string;
+    language: LanguagesISO639 | null | undefined;
+    icon: LucideIcon;
+  };
   onClick?: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
 };
 
-const LanguageMenu: FC<LanguageMenuProps> = ({ label, name, language, onClick }) => {
+const LanguageMenu: FC<LanguageMenuProps> = ({ props, onClick }) => {
+  const { label, name, language } = props;
   const handleClick = (lang: LanguagesISO639) => {
     if (onClick) {
       onClick({ lang, name });
@@ -24,10 +26,12 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ label, name, language, onClick })
     <Select onValueChange={(v) => handleClick(v as LanguagesISO639)}>
       <SelectTrigger>
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold">{language && getLangIcon(language)}</span>
+          <span className="text-lg font-bold">
+            <props.icon size={18} />
+          </span>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">
-              {label}: {language && getLangName(language)}
+              {language ? getLangName(language) : label}
             </span>
           </div>
         </div>

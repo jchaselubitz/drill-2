@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import SubjectItem from '@/components/lessons/subject_item';
 import { Accordion } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 import { getSubjects } from '@/lib/actions/lessonActions';
 
 export default async function Home() {
@@ -13,6 +15,9 @@ export default async function Home() {
             <SubjectItem key={subject.id} subject={subject} />
           ))}
         </Accordion>
+        <Link href="/lessons/create">
+          <Button className="w-full">Create New Subject</Button>
+        </Link>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
     </div>

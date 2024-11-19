@@ -13,16 +13,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { SidebarMenu, SidebarMenuButton } from '@/components/ui/sidebar';
+import { useUserContext } from '@/contexts/user_context';
 import { signOut } from '@/lib/actions/userActions';
+import { LanguagesISO639 } from '@/lib/lists';
+
+import LanguageChooser from './language_chooser';
 
 type UserMenuProps = {
   user: User | null | undefined;
-  username?: string | null;
-  imageUrl?: string | null | undefined;
+
+  mobile?: boolean;
+  setUserLanguages: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
 };
 
-const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
+const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
+  const { username, imageUrl } = useUserContext();
   const userEmail = user?.email;
 
   return (
@@ -30,7 +36,9 @@ const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton
           size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          className={
+            'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-fit md:w-full'
+          }
         >
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8 rounded-lg">
@@ -41,10 +49,12 @@ const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
               />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{username}</span>
-              <span className="truncate text-xs">{userEmail}</span>
-            </div>
+            {!mobile && (
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">{username}</span>
+                <span className="truncate text-xs">{userEmail}</span>
+              </div>
+            )}
           </div>
           <ChevronsUpDown className="ml-auto size-4" />
         </SidebarMenuButton>
@@ -53,6 +63,11 @@ const UserMenu: FC<UserMenuProps> = ({ user, username, imageUrl }) => {
         <DropdownMenuLabel>
           <span>{userEmail}</span>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        <SidebarMenu className="px-2 gap-1 my-4">
+          <LanguageChooser setUserLanguages={setUserLanguages} />
+        </SidebarMenu>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
