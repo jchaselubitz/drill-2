@@ -44,10 +44,10 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     select: !isMobile,
-    favorite: !isMobile,
+    favorite: true,
     text: true,
     lang: false,
-    tts: true,
+    audio: !isMobile,
     tags: false,
     type: true,
     createdAt: false,

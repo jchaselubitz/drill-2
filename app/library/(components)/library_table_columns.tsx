@@ -109,7 +109,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     },
   },
   {
-    accessorKey: 'Audio',
+    accessorKey: 'audio',
     header: '',
     cell: ({ row }) => (
       <div className="w-12">
