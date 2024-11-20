@@ -2,14 +2,14 @@ import { ArrowDown, CirclePause, CirclePlay, Loader2Icon } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface AudioButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isPlaying: boolean;
   isLoading: boolean;
   exists: boolean | undefined;
   handleClick: () => void;
 }
 
-const AudioPlayButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const AudioPlayButton = React.forwardRef<HTMLButtonElement, AudioButtonProps>(
   ({ className, isPlaying, isLoading, handleClick, exists, ...props }, ref) => {
     return (
       <button
@@ -21,9 +21,9 @@ const AudioPlayButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
             'flex items-center justify-center gap-2 h-10 w-10 transition-colors duration-150  rounded-full hover:text-white focus:outline-none focus:shadow-outline-blue',
           ],
           [
-            !exists
-              ? 'border-gray-800 text-gray-800 active:bg-gray-800 hover:bg-gray-900'
-              : 'border-blue-600 text-blue-600 active:bg-blue-600 hover:bg-blue-700',
+            exists
+              ? 'border-blue-600 text-blue-600 active:bg-blue-600 hover:bg-blue-700'
+              : 'border-gray-800 text-gray-800 active:bg-gray-800 hover:bg-gray-900',
           ],
           className
         )}

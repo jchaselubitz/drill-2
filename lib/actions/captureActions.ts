@@ -3,35 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import db from '../database';
 import { createClient } from '@/utils/supabase/server';
-import { NewMedia, NewRecording, NewUserMedia } from 'kysely-codegen';
-import { LanguagesISO639 } from '../lists';
-
-export const addRecordingText = async ({
-  transcript,
-  filename,
-  lang,
-}: {
-  transcript: string;
-  filename: string;
-  lang: LanguagesISO639;
-}) => {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const userId = user?.id;
-  try {
-    await db
-      .insertInto('recording')
-      .values({ transcript, lang, filename, userId } as NewRecording)
-      .execute();
-  } catch (error) {
-    if (error) {
-      throw error;
-    }
-  }
-  revalidatePath('/');
-};
+import { NewMedia, NewUserMedia } from 'kysely-codegen';
 
 export const addUserMedia = async (media: NewMedia) => {
   const { title, description, websiteUrl, mediaUrl, imageUrl } = media;

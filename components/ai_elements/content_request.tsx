@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
-import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { LanguagesISO639 } from '@/lib/lists';
 import { createClient } from '@/utils/supabase/client';
 
@@ -15,7 +14,7 @@ interface ContentRequestProps {
   text: string | null;
   lang: LanguagesISO639;
   userId: string | undefined;
-  primaryPhraseIds: string[];
+  primaryPhraseIds?: string[];
   suggestions: string[];
   source: string;
 }
@@ -38,6 +37,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     const word = firstWord ? firstWord[0].toUpperCase() + firstWord.slice(1) : '';
     if (
       word === 'Explain' ||
+      word === 'Why' ||
       word === 'Extract' ||
       word === 'Translate' ||
       word === 'List' ||
@@ -57,7 +57,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   const selectSystemMessage = (command: string | undefined) => {
     const message =
       'The user will send you a text and a request for how to handle that content. Return as a JSON.';
-    if (command === 'Explain') {
+    if (command === 'Explain' || command === 'Why') {
       return (
         message + `Return a JSON with key: "explanation" and value: <a string of the explanation>.`
       );
@@ -140,16 +140,18 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     if (!genResponse) {
       throw Error('No genResponse');
     }
-    await addTranslation({
-      primaryPhraseIds,
-      genResponse: {
-        input_text: genResponse.input_text,
-        input_lang: genResponse.input_lang,
-        output_text: genResponse.output_text,
-        output_lang: genResponse.output_lang,
-      },
-      source,
-    });
+    if (primaryPhraseIds && primaryPhraseIds.length === 0) {
+      await addTranslation({
+        primaryPhraseIds,
+        genResponse: {
+          input_text: genResponse.input_text,
+          input_lang: genResponse.input_lang,
+          output_text: genResponse.output_text,
+          output_lang: genResponse.output_lang,
+        },
+        source,
+      });
+    }
   };
 
   const setMaterialSuggestion = (suggestion: string) => {
@@ -181,7 +183,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
         />
       )}
       <div>
-        {setCommand(firstWord) === 'Translate'
+        {setCommand(firstWord) === 'Translate' && primaryPhraseIds
           ? genResponse && (
               <SaveTranslationButton
                 input_text={genResponse.input_text}

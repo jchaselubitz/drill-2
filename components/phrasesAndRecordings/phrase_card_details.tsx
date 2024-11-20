@@ -2,7 +2,7 @@ import { PhraseWithTranslations } from 'kysely-codegen';
 import { Languages } from 'lucide-react';
 import React from 'react';
 import { useUserContext } from '@/contexts/user_context';
-import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
+import { getContentSuggestions, getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import ContentRequest from '../ai_elements/content_request';
@@ -17,8 +17,6 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
   const text = phrase.text;
   const lang = phrase.lang as LanguagesISO639;
   const translationsWherePrimary = phrase.translationsWherePrimary;
-
-  const suggestedTranslationLang = lang === userLanguage ? prefLanguage : userLanguage;
 
   const primaryPhraseIds = [
     ...translationsWherePrimary.map((t: any) => {
@@ -74,12 +72,12 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
         userId={userId}
         primaryPhraseIds={primaryPhraseIds}
         source="phrase"
-        suggestions={[
-          userLanguage
-            ? `Translate to ${suggestedTranslationLang && getLangName(suggestedTranslationLang)}`
-            : `Translate to`,
-          `Create a sentence using`,
-        ]}
+        suggestions={getContentSuggestions({
+          userLanguage,
+          prefLanguage,
+          contentLang: lang,
+          suggestionList: [`Create a sentence using`],
+        })}
       />
     </div>
   );

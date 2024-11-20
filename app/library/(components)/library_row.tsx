@@ -1,7 +1,7 @@
 import { flexRender, Row } from '@tanstack/react-table';
 import { BaseTag, NewTag, PhraseWithTranslations } from 'kysely-codegen';
 import React, { Fragment } from 'react';
-import PhraseCardDetails from '@/components/phrases/phrase_card_details';
+import PhraseCardDetails from '@/components/phrasesAndRecordings/phrase_card_details';
 import TagList from '@/components/tags/tag_list';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { getHumanDate } from '@/lib/helpers/helpersDate';

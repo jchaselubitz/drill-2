@@ -106,3 +106,24 @@ export const TranscriptRequestSuggestions = [
 ];
 
 export type SourceOptionType = 'home' | 'lesson' | 'library' | 'inbox' | 'ai';
+
+export const getContentSuggestions = ({
+  contentLang,
+  userLanguage,
+  prefLanguage,
+  suggestionList,
+}: {
+  contentLang: LanguagesISO639 | null | undefined;
+  userLanguage: LanguagesISO639 | null | undefined;
+  prefLanguage: LanguagesISO639 | null | undefined;
+  suggestionList: string[];
+}) => {
+  const suggestedTranslationLang = contentLang === userLanguage ? prefLanguage : userLanguage;
+
+  return [
+    ...suggestionList,
+    userLanguage
+      ? `Translate to ${suggestedTranslationLang && getLangName(suggestedTranslationLang)}`
+      : `Translate to`,
+  ];
+};
