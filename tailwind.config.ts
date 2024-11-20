@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      rounded: {
+        '5xl': 'calc(var(--radius) - 2px)',
+      },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
@@ -23,7 +26,9 @@ const config: Config = {
           ring: 'hsl(var(--sidebar-ring))',
         },
       },
+
       borderRadius: {
+        iPhone: 'calc(var(--radius) + 35px)',
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',

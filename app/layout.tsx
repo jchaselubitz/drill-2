@@ -8,7 +8,7 @@ import { getProfile } from '@/lib/actions/userActions';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
 
-import { AppSidebar } from './(components)/app_sidebar';
+import { NavService } from './(components)/nav_service';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -74,19 +74,12 @@ export default async function RootLayout({
         {user ? (
           <UserContextProvider profile={profile}>
             <SidebarProvider>
-              <AppSidebar user={user} />
-              <main className="w-full h-full flex flex-col pt-14 md:pt-0 md:pb-12">
-                <SidebarTrigger />
-                <div className="flex justify-center pb-24 md:justify-normal h-full  ">
-                  {children}
-                </div>
-              </main>
+              <NavService user={user}>{children}</NavService>
             </SidebarProvider>
           </UserContextProvider>
         ) : (
           <>{children}</>
         )}
-
         <Toaster />
         {/* </ThemeProvider> */}
       </body>

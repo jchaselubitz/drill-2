@@ -21,7 +21,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
   const suggestedTranslationLang = lang === userLanguage ? prefLanguage : userLanguage;
 
   const primaryPhraseIds = [
-    ...translationsWherePrimary?.map((t: any) => {
+    ...translationsWherePrimary.map((t: any) => {
       return t.phrasePrimaryId;
     }),
     phrase.id,

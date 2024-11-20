@@ -26,12 +26,19 @@ export function NavMain({
     isActive: item.url === pathname,
   }));
   return (
-    <SidebarMenu className={cn(className, mobile && 'flex flex-row')}>
+    <SidebarMenu className={cn(className, mobile && 'flex flex-row gap-3')}>
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
-          <SidebarMenuButton asChild isActive={item.isActive}>
+          <SidebarMenuButton
+            asChild={!mobile}
+            isActive={item.isActive}
+            className={cn(
+              mobile &&
+                'data-[active=true]:bg-slate-500 data-[active=true]:text-slate-100 rounded-full h-12 w-12 items-center justify-center'
+            )}
+          >
             <Link href={item.url}>
-              <item.icon size={30} />
+              <item.icon />
               {!mobile && <span>{item.title}</span>}
             </Link>
           </SidebarMenuButton>
