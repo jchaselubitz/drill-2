@@ -1,9 +1,9 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronLeft } from 'lucide-react';
 
 interface BackButtonProps {
   classNames?: string;

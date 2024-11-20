@@ -104,12 +104,8 @@ const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
           <div className="col-span-2">
             {episodes.length > 0 && (
               <div className="h-full flex flex-col overflow-scroll gap-2">
-                {episodes.map((episode) => (
-                  <EpisodeListItem
-                    key={episode.id}
-                    episode={episode}
-                    setEpisodeURL={setEpisodeURL}
-                  />
+                {episodes.map((episode, i) => (
+                  <EpisodeListItem key={i} episode={episode} setEpisodeURL={setEpisodeURL} />
                 ))}
               </div>
             )}

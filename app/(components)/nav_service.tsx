@@ -1,9 +1,10 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
+import { Home, Inbox, Library, LucidePartyPopper, Plus, Search, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useWindowSize } from 'react-use';
+import BackButton from '@/components/back_button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useUserContext } from '@/contexts/user_context';
 import { updateUserLanguage } from '@/lib/actions/userActions';
@@ -11,7 +12,6 @@ import { LanguagesISO639 } from '@/lib/lists';
 
 import { AppSidebar } from './app_sidebar';
 import MobileNavbar from './mobile_navbar';
-import BackButton from '@/components/back_button';
 
 export function NavService({ user, children }: { user: User; children: React.ReactNode }) {
   const { userLanguage, prefLanguage } = useUserContext();
@@ -62,6 +62,7 @@ export function NavService({ user, children }: { user: User; children: React.Rea
       badge: '10',
       mobile: true,
     },
+
     {
       title: 'Inbox',
       url: '#',
@@ -73,7 +74,7 @@ export function NavService({ user, children }: { user: User; children: React.Rea
       title: 'Ask AI',
       url: '#',
       icon: Sparkles,
-      mobile: true,
+      mobile: false,
     },
     {
       title: 'Search',

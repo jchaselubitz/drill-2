@@ -25,8 +25,11 @@ export function NavMain({
     ...item,
     isActive: item.url === pathname,
   }));
+
   return (
-    <SidebarMenu className={cn(className, mobile && 'flex flex-row gap-3')}>
+    <SidebarMenu
+      className={cn(className, mobile && 'flex flex-row gap-3 items-center justify-center w-58')}
+    >
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton
@@ -34,7 +37,7 @@ export function NavMain({
             isActive={item.isActive}
             className={cn(
               mobile &&
-                'data-[active=true]:bg-slate-500 data-[active=true]:text-slate-100 rounded-full h-12 w-12 items-center justify-center'
+                'data-[active=true]:border-slate-500 data-[active=true]:border-2 rounded-full h-12 w-12 items-center justify-center'
             )}
           >
             <Link href={item.url}>

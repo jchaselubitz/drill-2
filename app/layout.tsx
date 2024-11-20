@@ -3,11 +3,13 @@ import type { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
+import { CreateModalProvider } from '@/contexts/create_modal_context';
 import { UserContextProvider } from '@/contexts/user_context';
 import { getProfile } from '@/lib/actions/userActions';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
 
+import { CreateDialog } from './(components)/create_dialog';
 import { NavService } from './(components)/nav_service';
 
 const fontSans = FontSans({
@@ -73,9 +75,12 @@ export default async function RootLayout({
           > */}
         {user ? (
           <UserContextProvider profile={profile}>
-            <SidebarProvider>
-              <NavService user={user}>{children}</NavService>
-            </SidebarProvider>
+            <CreateModalProvider>
+              <SidebarProvider>
+                <NavService user={user}>{children}</NavService>
+              </SidebarProvider>
+              <CreateDialog />
+            </CreateModalProvider>
           </UserContextProvider>
         ) : (
           <>{children}</>
