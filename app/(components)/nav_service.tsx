@@ -11,6 +11,7 @@ import { LanguagesISO639 } from '@/lib/lists';
 
 import { AppSidebar } from './app_sidebar';
 import MobileNavbar from './mobile_navbar';
+import BackButton from '@/components/back_button';
 
 export function NavService({ user, children }: { user: User; children: React.ReactNode }) {
   const { userLanguage, prefLanguage } = useUserContext();
@@ -85,9 +86,14 @@ export function NavService({ user, children }: { user: User; children: React.Rea
   return (
     <>
       <AppSidebar user={user} setUserLanguages={setUserLanguages} pages={pages} />
-      <main className="w-full h-full flex flex-col pt-14 md:pt-0 md:pb-12">
-        {!isMobile && <SidebarTrigger />}
-        <div className="flex justify-center pb-24 md:justify-normal h-full  ">{children}</div>
+      <main className="w-full h-full flex flex-col pt-4 pb-12">
+        <div className="fixed md:relative flex items-center">
+          {!isMobile && <SidebarTrigger />}
+          <BackButton showLabel={!isMobile} />
+        </div>
+        <div className="flex justify-center pt-8 md:pt-0  md:justify-normal h-full  ">
+          {children}
+        </div>
         {isMobile && <MobileNavbar user={user} setUserLanguages={setUserLanguages} pages={pages} />}
       </main>
     </>

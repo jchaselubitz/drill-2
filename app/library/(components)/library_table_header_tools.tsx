@@ -63,7 +63,7 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
   };
 
   return (
-    <div className="flex items-center py-4 gap-2 justify-between">
+    <div className="flex flex-wrap items-center py-4 gap-2 justify-between">
       <Input
         placeholder="Filter by title..."
         value={(textColumnCurrentFilter as string) ?? ''}
