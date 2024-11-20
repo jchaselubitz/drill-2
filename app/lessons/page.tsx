@@ -16,7 +16,7 @@ export default async function Home() {
           ))}
         </Accordion>
         <Link href="/lessons/create">
-          <Button className="w-full">Create New Subject</Button>
+          <Button className="w-full">Create a new subject</Button>
         </Link>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
