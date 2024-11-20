@@ -1,9 +1,10 @@
 'use client';
 import { PhraseWithTranslations } from 'kysely-codegen';
 import React from 'react';
+
 import TtsButton from '../ai_elements/tts_button';
-import PhraseCardDetails from './phrase_card_details';
 import BaseObjectCard from './base_object_card';
+import PhraseCardDetails from './phrase_card_details';
 
 interface PhraseCardProps {
   phrase: PhraseWithTranslations;

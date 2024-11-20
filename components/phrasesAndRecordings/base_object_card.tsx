@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
 
 interface BaseObjectCardProps {
   withoutDetails: React.ReactNode;

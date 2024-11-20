@@ -2,15 +2,15 @@
 
 import React, { FC, useState } from 'react';
 import { useUserContext } from '@/contexts/user_context';
-
+import { addPhrase } from '@/lib/actions/phraseActions';
 import { recordAudio, RecordAudioResult, savePrivateAudioFile } from '@/lib/helpers/helpersAudio';
 import { createClient } from '@/utils/supabase/client';
 
+import { ButtonLoadingState } from '../ui/button-loading';
 import ImportPodcast from './import_podcast';
 import MediaReview from './media_review';
 import RecordButton, { RecordButtonStateType } from './record_button';
 import UploadButton from './upload_button';
-import { addRecordingText } from '@/lib/actions/recordingActions';
 
 type AudioResponse = {
   blob: Blob;
@@ -26,7 +26,7 @@ const CaptureAudio: FC = () => {
   const [recordingState, setRecordingState] = useState<RecordAudioResult | null>(null);
   const [audioResponse, setAudioResponse] = useState<AudioResponse | undefined | null>(null);
 
-  // const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [saveButtonState, setSaveButtonState] = useState<ButtonLoadingState>('default');
   // const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [importingPodcast, setImportingPodcast] = useState(false);
 
@@ -106,6 +106,7 @@ const CaptureAudio: FC = () => {
 
   const saveRecording = async () => {
     // setIsSaving(true);
+    setSaveButtonState('loading');
     const fileName = `${Date.now()}-recording`;
     const bucketName = 'user_recordings';
     if (audioResponse) {
@@ -123,16 +124,22 @@ const CaptureAudio: FC = () => {
         text: transcript,
       },
     });
+
     if (langError) {
+      setSaveButtonState('error');
       throw Error(`Error checking language: ${langError}`);
     }
     const lang = JSON.parse(data).lng;
+
     try {
-      await addRecordingText({ transcript, filename: fileName, lang });
+      await addPhrase({ text: transcript, filename: fileName, lang, type: 'recording' });
+      setSaveButtonState('success');
+      return;
     } catch (error) {
+      setSaveButtonState('error');
+      resetRecordingButtonState();
       throw Error(`Error saving recording: ${error}`);
     }
-    resetRecordingButtonState();
   };
 
   const handleClick = () => {
@@ -164,6 +171,7 @@ const CaptureAudio: FC = () => {
           saveRecording={saveRecording}
           resetRecordingButtonState={resetRecordingButtonState}
           isTranscript={transcript !== ''}
+          saveButtonState={saveButtonState}
         />
       ) : null}
 

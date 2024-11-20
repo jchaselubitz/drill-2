@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
+import { getPhraseType } from '@/lib/helpers/helpersPhrase';
 import { Languages, LanguagesISO639 } from '@/lib/lists';
 
 import { Button } from '../ui/button';
@@ -34,7 +35,7 @@ const CaptureText: React.FC = () => {
   const onSubmit = async (data: FormValues) => {
     const text = data.text;
     const lang = data.lang as LanguagesISO639;
-    await addPhrase({ text, lang, source: 'home' });
+    await addPhrase({ text, lang, source: 'home', type: getPhraseType(text) });
   };
 
   return (

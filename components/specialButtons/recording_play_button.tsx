@@ -1,24 +1,20 @@
-'use client';
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { BasePhrase } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { useUserContext } from '@/contexts/user_context';
 import { playSavedAudio } from '@/lib/helpers/helpersAudio';
 import { createClient } from '@/utils/supabase/client';
 
 import { AudioPlayButton } from '../ui/audio-play-button';
-import BaseObjectCard from './base_object_card';
-import RecordingCardDetails from './recording_card_details';
 
-interface RecordingCardProps {
-  phrase: PhraseWithTranslations;
+interface RecordingPlayButtonProps {
+  phrase: BasePhrase;
 }
 
-const RecordingCard: React.FC<RecordingCardProps> = ({ phrase }) => {
-  const { userId } = useUserContext();
+const RecordingPlayButton: React.FC<RecordingPlayButtonProps> = ({ phrase }) => {
   const supabase = createClient();
+  const { userId } = useUserContext();
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioObject, setAudioObject] = useState<false | HTMLAudioElement | undefined>(undefined);
-  const date = new Date(phrase.createdAt);
 
   const setIsPlayingFalse = () => {
     setIsPlaying(false);
@@ -41,27 +37,13 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ phrase }) => {
   };
 
   return (
-    <BaseObjectCard
-      withoutDetails={
-        <AudioPlayButton
-          handleClick={handlePlayClick}
-          isPlaying={isPlaying}
-          isLoading={false}
-          exists={true}
-        />
-      }
-      objectDetails={
-        <RecordingCardDetails
-          recording={phrase}
-          userId={userId}
-          handlePlayClick={handlePlayClick}
-          isPlaying={isPlaying}
-        />
-      }
-      text={phrase.text}
-      date={date}
+    <AudioPlayButton
+      handleClick={handlePlayClick}
+      isPlaying={isPlaying}
+      isLoading={false}
+      exists={true}
     />
   );
 };
 
-export default RecordingCard;
+export default RecordingPlayButton;

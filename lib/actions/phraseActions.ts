@@ -10,6 +10,7 @@ import {
   NewTag,
   NewTranslation,
   Phrase,
+  PhraseType,
   PhraseWithTranslations,
 } from 'kysely-codegen';
 import { LanguagesISO639, SourceOptionType } from '../lists';
@@ -36,6 +37,8 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithT
       'phrase.source',
       'phrase.userId',
       'phrase.favorite',
+      'phrase.type',
+      'phrase.filename',
       jsonArrayFrom(
         eb
           .selectFrom('tag')
@@ -96,10 +99,14 @@ export const addPhrase = async ({
   text,
   lang,
   source,
+  filename,
+  type,
 }: {
   text: string;
   lang: LanguagesISO639;
   source?: string;
+  filename?: string;
+  type: PhraseType;
 }) => {
   const supabase = createClient();
   const {
@@ -109,7 +116,7 @@ export const addPhrase = async ({
   try {
     await db
       .insertInto('phrase')
-      .values({ text, lang, userId, source } as NewPhrase)
+      .values({ text, lang, userId, source, type, filename } as NewPhrase)
       .execute();
   } catch (error) {
     if (error) {
@@ -326,4 +333,34 @@ export const addTranslation = async ({
     });
     return translation.id;
   }
+};
+
+export const deletePhrase = async (phraseId: string) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+
+  if (!userId) {
+    return;
+  }
+
+  try {
+    const deletedPhrase = await db
+      .deleteFrom('phrase')
+      .where('id', '=', phraseId)
+      .where('userId', '=', userId)
+      .returning('filename')
+      .execute();
+    if (deletedPhrase.length > 0) {
+      const filename = deletedPhrase[0].filename;
+      if (filename) {
+        await supabase.storage.from('user_recordings').remove([`${userId}/${filename}`]);
+      }
+    }
+  } catch (error) {
+    throw Error(`Failed to delete phrase: ${error}`);
+  }
+  revalidatePath('/library');
 };

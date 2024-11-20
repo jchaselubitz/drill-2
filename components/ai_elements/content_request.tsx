@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
+import { getPhraseType } from '@/lib/helpers/helpersPhrase';
 import { LanguagesISO639 } from '@/lib/lists';
 import { createClient } from '@/utils/supabase/client';
 
@@ -126,7 +127,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 
   const saveContent = async (content: string): Promise<boolean> => {
     try {
-      await addPhrase({ source, text: content.trim(), lang });
+      await addPhrase({ source, text: content.trim(), lang, type: getPhraseType(text) });
     } catch (error) {
       throw Error(`Error saving content: ${error}`);
     }

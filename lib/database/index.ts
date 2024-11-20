@@ -13,7 +13,6 @@ import {
   Phrase,
   PhraseTag,
   Profile,
-  Recording,
   Subject,
   Tag,
   Translation,
@@ -95,10 +94,6 @@ declare module 'kysely-codegen' {
   export type ProfileWithMedia = BaseProfile & { media: BaseMedia[] };
   export type NewProfile = Insertable<Profile>;
   export type EditedProfile = Updateable<Profile>;
-
-  export type BaseRecording = Selectable<Recording>;
-  export type NewRecording = Insertable<Recording>;
-  export type EditedRecording = Updateable<Recording>;
 
   export type BaseSubject = Selectable<Subject>;
   export type SubjectWithLessons = BaseSubject & {

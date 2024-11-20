@@ -1,13 +1,15 @@
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import { ColumnDef } from '@tanstack/react-table';
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseType, PhraseWithTranslations } from 'kysely-codegen';
 import { ArrowUpDown, Languages } from 'lucide-react';
 import TtsButton from '@/components/ai_elements/tts_button';
+import RecordingPlayButton from '@/components/specialButtons/recording_play_button';
 import TagList from '@/components/tags/tag_list';
+import { AudioPlayButton } from '@/components/ui/audio-play-button';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
-import { getLangIcon } from '@/lib/lists';
+import { getLangIcon, getPhraseTypeIcon } from '@/lib/lists';
 
 export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
   {
@@ -82,7 +84,7 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     },
     cell: ({ row }) => (
       <span className="flex font-medium max-w-full whitespace-normal w-full">
-        <div className="capitalize">{row.getValue('text')}</div>
+        <div className="capitalize line-clamp-2">{row.getValue('text')}</div>
       </span>
     ),
     size: 1000,
@@ -111,7 +113,11 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     header: '',
     cell: ({ row }) => (
       <div className="w-12">
-        <TtsButton text={row.original.text} bucket={'text_to_speech'} lacksAudio={false} />
+        {row.original.type === 'recording' ? (
+          <RecordingPlayButton phrase={row.original} />
+        ) : (
+          <TtsButton text={row.original.text} bucket={'text_to_speech'} lacksAudio={false} />
+        )}
       </div>
     ),
     size: 1,
@@ -125,6 +131,18 @@ export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
     },
     cell: ({ row }) => (
       <div className="flex justify-center">{getLangIcon(row.getValue('lang'))}</div>
+    ),
+    size: 1,
+    enableHiding: true,
+  },
+
+  {
+    accessorKey: 'type',
+    header: 'Type',
+    cell: ({ row }) => (
+      <div className="flex justify-center">
+        {getPhraseTypeIcon(row.getValue('type') as PhraseType, 20)}
+      </div>
     ),
     size: 1,
     enableHiding: true,

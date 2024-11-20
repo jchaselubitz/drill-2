@@ -122,7 +122,7 @@ const TrimAudio: React.FC<{
           <Scissors />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[325px]">
+      <DialogContent className="max-w-[425px]">
         <div className="rounded-lg  mx-auto bg-white w-full  flex flex-col gap-2" ref={modalRef}>
           {newAudioURL && <audio src={newAudioURL} controls />}
           <div className="flex flex-row gap-3 items-center">

@@ -1,6 +1,5 @@
-import React from 'react';
-
 import { Loader2Icon, TrashIcon } from 'lucide-react';
+import React from 'react';
 
 export interface DeleteButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading: boolean;

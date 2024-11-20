@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Button } from '../ui/button';
+import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
 import TrimAudio from './trim_audio';
 
 interface MediaReviewProps {
@@ -11,6 +12,7 @@ interface MediaReviewProps {
   saveRecording: () => Promise<void>;
   resetRecordingButtonState: () => void;
   isTranscript: boolean;
+  saveButtonState: ButtonLoadingState;
 }
 
 const maxDuration = 120;
@@ -23,8 +25,10 @@ const MediaReview: React.FC<MediaReviewProps> = ({
   saveRecording,
   resetRecordingButtonState,
   isTranscript,
+  saveButtonState,
 }) => {
   const [audioDuration, setAudioDuration] = useState(0);
+
   const origAudioURL = audioResponse.url ?? null;
 
   useEffect(() => {
@@ -70,7 +74,14 @@ const MediaReview: React.FC<MediaReviewProps> = ({
       </div>
 
       {isTranscript ? (
-        <Button onClick={saveRecording}>Save Recording</Button>
+        <LoadingButton
+          onClick={saveRecording}
+          buttonState={saveButtonState}
+          text={'Save recording'}
+          loadingText={'Saving ...'}
+          successText="Saved"
+          errorText="Error saving"
+        />
       ) : (
         <Button
           className="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"

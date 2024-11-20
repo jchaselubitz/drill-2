@@ -1,3 +1,6 @@
+import { PhraseType } from 'kysely-codegen';
+import { Ear, LucideIcon, LucideWholeWord, Text } from 'lucide-react';
+
 export enum LanguagesISO639 {
   'German' = 'de',
   'English' = 'en',
@@ -91,6 +94,32 @@ export const Levels = [
   { name: 'C1', value: 'C1' },
   { name: 'C2', value: 'C2' },
 ];
+
+export type PhraseListType = {
+  name: string;
+  value: PhraseType;
+  icon: LucideIcon;
+};
+export const PhraseTypes = [
+  { name: 'Word', value: 'word' as PhraseType, icon: LucideWholeWord, color: 'blue' },
+  { name: 'Phrase', value: 'phrase' as PhraseType, icon: Text, color: 'black' },
+  { name: 'Recording', value: 'recording' as PhraseType, icon: Ear, color: 'green' },
+];
+
+export const getPhraseTypeName = (phraseType: string) => {
+  return PhraseTypes.find((type) => type.value === phraseType)?.name ?? '';
+};
+
+export const getPhraseTypeValue = (phraseTypeName: string) => {
+  return PhraseTypes.find((type) => type.name === phraseTypeName)?.value ?? '';
+};
+
+export const getPhraseTypeIcon = (phraseType: string, size?: number) => {
+  const type = PhraseTypes.find((type) => type.value === phraseType);
+  if (!type) return <></>;
+  const icon = <type.icon size={size} color={type.color} />;
+  return icon;
+};
 
 export const ContentSuggestions = [
   `Computer science and AI`,

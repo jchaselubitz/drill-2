@@ -1,16 +1,16 @@
+import { PhraseWithTranslations } from 'kysely-codegen';
 import React, { useState } from 'react';
-
-import { AudioPlayButton } from '../ui/audio-play-button';
-import { getContentSuggestions, LanguagesISO639, TranscriptRequestSuggestions } from '@/lib/lists';
-import { BaseRecording } from 'kysely-codegen';
 import { useUserContext } from '@/contexts/user_context';
+import { deletePhrase } from '@/lib/actions/phraseActions';
+import { getContentSuggestions, LanguagesISO639, TranscriptRequestSuggestions } from '@/lib/lists';
+
 import ContentRequest from '../ai_elements/content_request';
 import DeleteButton from '../specialButtons/delete_button';
-import { deleteRecording } from '@/lib/actions/recordingActions';
+import { AudioPlayButton } from '../ui/audio-play-button';
 
 interface RecordingCardDetailsProps {
   userId?: string;
-  recording: BaseRecording;
+  recording: PhraseWithTranslations;
   isPlaying: boolean;
   handlePlayClick: () => void;
 }
@@ -25,7 +25,7 @@ const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({
 
   const handleDelete = async () => {
     setDeleteLoading(true);
-    await deleteRecording(recording.id);
+    await deletePhrase(recording.id);
     setDeleteLoading(false);
   };
 
@@ -41,7 +41,7 @@ const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({
         />
       </div>
       <ContentRequest
-        text={recording.transcript}
+        text={recording.text}
         lang={recording.lang as LanguagesISO639}
         userId={userId}
         source="transcript"

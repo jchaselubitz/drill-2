@@ -1,5 +1,5 @@
 import { Table } from '@tanstack/react-table';
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseType, PhraseWithTranslations } from 'kysely-codegen';
 import { ChevronDown, Hash, Languages } from 'lucide-react';
 import React from 'react';
 import Tag from '@/components/tags/tag';
@@ -11,7 +11,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { getLangIcon, getLangName, LanguagesISO639 } from '@/lib/lists';
+import {
+  getLangIcon,
+  getLangName,
+  getPhraseTypeIcon,
+  getPhraseTypeName,
+  LanguagesISO639,
+  PhraseListType,
+  PhraseTypes,
+} from '@/lib/lists';
 
 interface LibraryTableHeaderToolsProps {
   table: Table<PhraseWithTranslations>;
@@ -33,6 +41,9 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
   const langColumn = table.getColumn('lang');
   const langColumnCurrentFilter = langColumn?.getFilterValue();
 
+  const typeColumn = table.getColumn('type');
+  const typeColumnCurrentFilter = typeColumn?.getFilterValue();
+
   const handleFilterText = (event: React.ChangeEvent<HTMLInputElement>) => {
     textColumn?.setFilterValue(event.target.value);
   };
@@ -45,6 +56,10 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
 
   const handleFilterLang = (v: boolean, lang: LanguagesISO639) => {
     langColumn?.setFilterValue(v ? lang : undefined);
+  };
+
+  const handleFilterType = (v: boolean, type: PhraseType) => {
+    typeColumn?.setFilterValue(v ? type : undefined);
   };
 
   return (
@@ -68,7 +83,7 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
               return (
                 <DropdownMenuCheckboxItem
                   key={tag}
-                  className="capitalize flex items-center gap-1"
+                  className="capitalize flex items-center gap-2"
                   checked={tagsColumnCurrentFilter.includes(tag)}
                   onCheckedChange={(v) => {
                     handleFilterTags(v, tag);
@@ -91,7 +106,7 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
               return (
                 <DropdownMenuCheckboxItem
                   key={lang}
-                  className="capitalize flex items-center gap-1"
+                  className="capitalize flex items-center gap-2 justify-between"
                   checked={langColumnCurrentFilter === lang}
                   onCheckedChange={(v) => handleFilterLang(v, lang)}
                 >
@@ -101,6 +116,29 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
             })}
           </DropdownMenuContent>
         </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Type <ChevronDown />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {PhraseTypes.map((type: PhraseListType) => {
+              return (
+                <DropdownMenuCheckboxItem
+                  key={type.value}
+                  className="capitalize flex items-center gap-3 justify-between"
+                  checked={typeColumnCurrentFilter === type.value}
+                  onCheckedChange={(v) => handleFilterType(v, type.value)}
+                >
+                  {getPhraseTypeName(type.value)}
+                  {type.value && getPhraseTypeIcon(type.value, 18)}
+                </DropdownMenuCheckboxItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

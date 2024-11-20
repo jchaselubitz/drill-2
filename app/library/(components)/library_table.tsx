@@ -49,6 +49,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     lang: false,
     tts: true,
     tags: false,
+    type: true,
     createdAt: false,
     actions: !isMobile,
   });
