@@ -1,6 +1,5 @@
 'use client';
 import { playSavedAudio } from '@/lib/helpers/helpersAudio';
-
 import { BaseRecording } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { AudioPlayButton } from '../ui/audio-play-button';
@@ -17,7 +16,6 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
   const { userId } = useUserContext();
   const supabase = createClient();
   const [isPlaying, setIsPlaying] = useState(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const [audioObject, setAudioObject] = useState<false | HTMLAudioElement | undefined>(undefined);
 
   const date = new Date(recording.createdAt);

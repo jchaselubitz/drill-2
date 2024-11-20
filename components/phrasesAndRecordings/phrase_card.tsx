@@ -1,7 +1,6 @@
 'use client';
 import { PhraseWithTranslations } from 'kysely-codegen';
-import React, { useState } from 'react';
-
+import React from 'react';
 import TtsButton from '../ai_elements/tts_button';
 import PhraseCardDetails from './phrase_card_details';
 import BaseObjectCard from './base_object_card';
@@ -11,7 +10,6 @@ interface PhraseCardProps {
 }
 
 const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const bucket = 'text_to_speech';
 
   return (
