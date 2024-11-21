@@ -203,7 +203,7 @@ export const addSubjectLessonWithTranslations = async ({
           } as NewPhrase)
           .returning('id')
           .executeTakeFirstOrThrow();
-        trx
+        await trx
           .insertInto('translation')
           .values({
             lessonId: lesson.id,
@@ -211,7 +211,7 @@ export const addSubjectLessonWithTranslations = async ({
             phraseSecondaryId: phrase2.id,
             userId,
           } as NewTranslation)
-          .execute();
+          .executeTakeFirstOrThrow();
       });
       return { subjectId: newSubjectId, lessonId: lesson.id };
     });
@@ -262,7 +262,7 @@ export const addTranslationsToLesson = async ({
             .returning('id')
             .executeTakeFirstOrThrow();
 
-          trx
+          await trx
             .insertInto('translation')
             .values({
               userId,
@@ -270,7 +270,7 @@ export const addTranslationsToLesson = async ({
               phrasePrimaryId: phrase1.id,
               phraseSecondaryId: phrase2.id,
             } as NewTranslation)
-            .execute();
+            .executeTakeFirstOrThrow();
         });
       })
     );
