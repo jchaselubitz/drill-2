@@ -1,9 +1,8 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Home, Inbox, Library, LucidePartyPopper, Plus, Search, Sparkles } from 'lucide-react';
+import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useWindowSize } from 'react-use';
 import BackButton from '@/components/back_button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useUserContext } from '@/contexts/user_context';
@@ -40,6 +39,15 @@ export function NavService({ user, children }: { user: User; children: React.Rea
     }
   };
 
+  useEffect(() => {
+    const hasUserLanguage = userLanguage !== null && userLanguage !== undefined;
+    if (!hasUserLanguage) {
+      const userLanguage = navigator.language;
+      const iso639Code = userLanguage.split('-')[0] as LanguagesISO639;
+      setUserLanguages({ lang: iso639Code, name: 'userLanguage' });
+    }
+  }, [userLanguage]);
+
   const pages = [
     {
       title: 'Home',
@@ -63,25 +71,25 @@ export function NavService({ user, children }: { user: User; children: React.Rea
       mobile: true,
     },
 
-    {
-      title: 'Inbox',
-      url: '#',
-      icon: Inbox,
-      badge: '10',
-      mobile: false,
-    },
-    {
-      title: 'Ask AI',
-      url: '#',
-      icon: Sparkles,
-      mobile: false,
-    },
-    {
-      title: 'Search',
-      url: '#',
-      icon: Search,
-      mobile: false,
-    },
+    // {
+    //   title: 'Inbox',
+    //   url: '#',
+    //   icon: Inbox,
+    //   badge: '10',
+    //   mobile: false,
+    // },
+    // {
+    //   title: 'Ask AI',
+    //   url: '#',
+    //   icon: Sparkles,
+    //   mobile: false,
+    // },
+    // {
+    //   title: 'Search',
+    //   url: '#',
+    //   icon: Search,
+    //   mobile: false,
+    // },
   ];
 
   return (

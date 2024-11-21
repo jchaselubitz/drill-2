@@ -4,13 +4,10 @@ import CaptureText from '@/components/capture_text';
 import PhraseRecordingCardList from '@/components/phrasesAndRecordings/phrase_recording_list';
 import { Button } from '@/components/ui/button';
 import { getPhrases } from '@/lib/actions/phraseActions';
-import { getProfile } from '@/lib/actions/userActions';
 
 export default async function Home() {
   const phrases = await getPhrases('home');
   const recentPhrases = phrases.slice(0, 6);
-
-  const profile = await getProfile();
 
   return (
     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">

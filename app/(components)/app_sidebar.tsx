@@ -1,7 +1,6 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
 import Logo from '@/components/logo';
 import {
   Sidebar,
@@ -39,7 +38,7 @@ export function AppSidebar({ user, pages, setUserLanguages }: AppSidebarProps) {
         </SidebarMenu>
         <SidebarMenu className="">
           <SidebarMenuItem>
-            <UserMenu user={user} setUserLanguages={setUserLanguages} />
+            <UserMenu user={user} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -1,5 +1,5 @@
 import { flexRender, Row } from '@tanstack/react-table';
-import { BaseTag, NewTag, PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseWithTranslations } from 'kysely-codegen';
 import React, { Fragment } from 'react';
 import PhraseCardDetails from '@/components/phrasesAndRecordings/phrase_card_details';
 import TagList from '@/components/tags/tag_list';
@@ -17,7 +17,6 @@ interface LibraryRowProps {
 const LibraryRow: React.FC<LibraryRowProps> = ({ row, userTags, setOptPhraseData }) => {
   const visibleCells = row.getVisibleCells();
   const expanded = row.getIsExpanded();
-  // const [tags, setTags] = React.useState<BaseTag[]>(row.original.tags);
 
   return (
     <Fragment key={row.id}>
