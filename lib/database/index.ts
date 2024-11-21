@@ -114,4 +114,6 @@ declare module 'kysely-codegen' {
   export type EditedTranslation = Updateable<Translation>;
 }
 
+export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };
+
 export default db;

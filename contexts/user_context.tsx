@@ -1,6 +1,6 @@
 'use client';
-import { BaseMedia, Media, ProfileWithMedia } from 'kysely-codegen';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { BaseMedia, ProfileWithMedia } from 'kysely-codegen';
+import React, { createContext, ReactNode, useContext } from 'react';
 import { LanguagesISO639 } from '@/lib/lists';
 
 type UserContextType = {
@@ -21,20 +21,19 @@ export const UserContextProvider = ({
   profile: ProfileWithMedia | undefined | null;
   children: ReactNode;
 }) => {
-  const [userProfile] = useState<ProfileWithMedia | undefined | null>(profile);
-  if (!userProfile) {
+  if (!profile) {
     return <> {children}</>;
   }
 
   return (
     <UserContext.Provider
       value={{
-        userId: userProfile.id,
-        userLanguage: userProfile.userLanguage as LanguagesISO639,
-        prefLanguage: userProfile.prefLanguage as LanguagesISO639,
-        imageUrl: userProfile.imageUrl,
-        username: userProfile.username,
-        media: userProfile.media,
+        userId: profile.id,
+        userLanguage: profile.userLanguage as LanguagesISO639,
+        prefLanguage: profile.prefLanguage as LanguagesISO639,
+        imageUrl: profile.imageUrl,
+        username: profile.username,
+        media: profile.media,
       }}
     >
       {children}

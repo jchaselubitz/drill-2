@@ -23,7 +23,7 @@ const LightSuggestionList: React.FC<LightSuggestionListProps> = ({
     'flex-col justify-start items-center rounded-lg border border-blue-300 bg-blue-100 bg-opacity-70 text-blue-800 font-semibold text-sm min-w-max hover:text-blue-100 hover:bg-opacity-80 transition-all';
 
   return (
-    <div className="flex flex-row flex-wrap md:flex-wrap gap-4 my-4 overflow-x-scroll">
+    <div className="flex flex-row flex-wrap md:flex-wrap gap-4  overflow-x-scroll">
       {suggestions.map((suggestion, index) => (
         <LightSuggestion
           key={index}

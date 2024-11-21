@@ -11,9 +11,6 @@ export function CreateDialog({}) {
   const { modalOpen, setModalOpen } = useCreateModal();
   return (
     <Dialog open={modalOpen} onOpenChange={() => setModalOpen(!modalOpen)}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Share</Button>
-      </DialogTrigger>
       <DialogContent>
         <DialogTitle>Create Media </DialogTitle>
         <CaptureAudio />

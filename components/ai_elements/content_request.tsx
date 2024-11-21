@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
@@ -29,10 +30,17 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   source,
 }) => {
   const supabase = createClient();
+  const pathname = usePathname();
   const [genResponse, setGenResponse] = useState<GenResponseType | undefined>();
   const [requestLoading, setRequestLoading] = useState(false);
   const [requestText, setRequestText] = useState('');
   const firstWord = requestText.split(' ')[0];
+
+  useEffect(() => {
+    if (requestText.length < 4) {
+      setGenResponse(undefined);
+    }
+  }, [requestText, setGenResponse]);
 
   const setCommand = (firstWord: string) => {
     const word = firstWord ? firstWord[0].toUpperCase() + firstWord.slice(1) : '';
@@ -141,7 +149,8 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     if (!genResponse) {
       throw Error('No genResponse');
     }
-    if (primaryPhraseIds && primaryPhraseIds.length === 0) {
+
+    if (primaryPhraseIds && primaryPhraseIds.length !== 0) {
       await addTranslation({
         primaryPhraseIds,
         genResponse: {
@@ -151,6 +160,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
           output_lang: genResponse.output_lang,
         },
         source,
+        revalidationPath: { path: pathname },
       });
     }
   };
@@ -159,8 +169,10 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setRequestText(suggestion);
   };
 
+  const isTranslation = setCommand(firstWord) === 'Translate' && primaryPhraseIds;
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-3">
       <Textarea
         className="w-full"
         value={requestText}
@@ -168,13 +180,13 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
         placeholder="Type your request here"
       />
       <LoadingButton
-        className="bg-blue-600 rounded-lg text-white p-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-blue-600 rounded-lg text-white p-2  disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleRequest}
         text={setCommand(firstWord) ?? 'Request'}
         loadingText="Requesting"
         buttonState={requestLoading ? 'loading' : 'default'}
       />
-      {suggestions.length > 0 && (
+      {suggestions.length > 0 && requestText === '' && (
         <LightSuggestionList
           suggestions={suggestions}
           setMaterialSuggestion={setMaterialSuggestion}
@@ -183,8 +195,8 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
           handleGenerateLessonSuggestions={() => {}}
         />
       )}
-      <div>
-        {setCommand(firstWord) === 'Translate' && primaryPhraseIds
+      <div className="mt-5">
+        {isTranslation
           ? genResponse && (
               <SaveTranslationButton
                 input_text={genResponse.input_text}

@@ -3,6 +3,7 @@ import CaptureAudio from '@/components/capture_audio';
 import CaptureText from '@/components/capture_text';
 import PhraseRecordingCardList from '@/components/phrasesAndRecordings/phrase_recording_list';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { getPhrases } from '@/lib/actions/phraseActions';
 
 export default async function Home() {
@@ -11,9 +12,14 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
-      <main className="flex flex-col gap-8 md:items-center w-full">
+      <main className="flex flex-col gap-4 md:items-center w-full">
         <CaptureAudio />
         <CaptureText />
+        {recentPhrases.length > 0 && (
+          <div className="flex flex-col items-center justify-center">
+            <Separator className="w-2/3" />
+          </div>
+        )}
         <div className="flex flex-col items-center gap-4 w-full">
           <PhraseRecordingCardList phrases={recentPhrases} />
 

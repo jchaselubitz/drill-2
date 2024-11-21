@@ -5,7 +5,6 @@ import { ArrowUpDown, Languages } from 'lucide-react';
 import TtsButton from '@/components/ai_elements/tts_button';
 import RecordingPlayButton from '@/components/specialButtons/recording_play_button';
 import TagList from '@/components/tags/tag_list';
-import { AudioPlayButton } from '@/components/ui/audio-play-button';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getHumanDate } from '@/lib/helpers/helpersDate';

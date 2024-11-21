@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { getLangIcon } from '@/lib/lists';
 
-import { Button } from '../ui/button';
+import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
 
 interface SaveTranslationButtonProps {
   output_text: string | null;
@@ -18,24 +18,37 @@ const SaveTranslationButton: React.FC<SaveTranslationButtonProps> = ({
   input_lang,
   saveTranslation,
 }) => {
-  const [saved, setSaved] = useState(false);
+  const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
 
   const handleSaveTranslation = async () => {
-    await saveTranslation();
-    setSaved(true);
+    try {
+      setButtonState('loading');
+      await saveTranslation();
+      setButtonState('success');
+    } catch (error) {
+      setButtonState('error');
+    }
   };
 
   return (
-    <div className="flex items-center justify-between border border-gray-300 rounded p-2 hover:bg-gray-100">
-      <span>
-        {getLangIcon(output_lang)}: {output_text}
-      </span>
-      <span>
-        {getLangIcon(input_lang)}: {input_text}
-      </span>
-      <Button disabled={saved} onClick={handleSaveTranslation}>
-        {saved ? 'Saved' : 'Save Translation'}
-      </Button>
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between border border-gray-300 rounded p-2 hover:bg-gray-100 gap-2 ">
+      <div className="flex gap-2">
+        <span>
+          {getLangIcon(output_lang)}: {output_text}
+        </span>
+        <span>
+          {getLangIcon(input_lang)}: {input_text}
+        </span>
+      </div>
+      <LoadingButton
+        disabled={buttonState === 'loading' || buttonState === 'success'}
+        size="sm"
+        onClick={handleSaveTranslation}
+        buttonState={buttonState}
+        text={'Save Translation'}
+        loadingText={'Saving ...'}
+        successText="Saved"
+      />
     </div>
   );
 };

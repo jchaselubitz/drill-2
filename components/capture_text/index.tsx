@@ -4,18 +4,23 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useCreateModal } from '@/contexts/create_modal_context';
 import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
 import { Languages, LanguagesISO639 } from '@/lib/lists';
 
 import { Button } from '../ui/button';
+import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
 const CaptureText: React.FC = () => {
   const { prefLanguage } = useUserContext();
+  const { setModalOpen } = useCreateModal();
+
+  const [buttonState, setButtonState] = React.useState<ButtonLoadingState>('default');
 
   const formSchema = z.object({
     text: z.string().min(3, 'Text is required'),
@@ -35,11 +40,18 @@ const CaptureText: React.FC = () => {
   const onSubmit = async (data: FormValues) => {
     const text = data.text;
     const lang = data.lang as LanguagesISO639;
-    await addPhrase({ text, lang, source: 'home', type: getPhraseType(text) });
+    setButtonState('loading');
+    try {
+      await addPhrase({ text, lang, source: 'home', type: getPhraseType(text) });
+      setButtonState('success');
+    } catch (error) {
+      setButtonState('error');
+    }
+    setModalOpen(false);
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 rounded-lg shadow-lg bg-gray-50 w-full">
+    <div className="flex flex-col gap-4 rounded-lg w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full gap-2">
           <FormField
@@ -48,7 +60,7 @@ const CaptureText: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Textarea {...field} placeholder="Enter your text here" />
+                  <Textarea {...field} placeholder="Enter text you want to save" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -80,7 +92,13 @@ const CaptureText: React.FC = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Submit</Button>{' '}
+              <LoadingButton
+                type="submit"
+                buttonState={buttonState}
+                text={'Submit'}
+                loadingText={'Saving ...'}
+                errorText="Something went wrong."
+              />
             </>
           )}
         </form>

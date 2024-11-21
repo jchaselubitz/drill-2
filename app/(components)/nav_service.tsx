@@ -1,16 +1,15 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Home, Inbox, Library, LucidePartyPopper, Search, Sparkles } from 'lucide-react';
+import { Home, Library, LucidePartyPopper } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import BackButton from '@/components/back_button';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useUserContext } from '@/contexts/user_context';
 import { updateUserLanguage } from '@/lib/actions/userActions';
 import { LanguagesISO639 } from '@/lib/lists';
 
 import { AppSidebar } from './app_sidebar';
 import MobileNavbar from './mobile_navbar';
+import TopNav from './top_nav';
 
 export function NavService({ user, children }: { user: User; children: React.ReactNode }) {
   const { userLanguage, prefLanguage } = useUserContext();
@@ -46,7 +45,7 @@ export function NavService({ user, children }: { user: User; children: React.Rea
       const iso639Code = userLanguage.split('-')[0] as LanguagesISO639;
       setUserLanguages({ lang: iso639Code, name: 'userLanguage' });
     }
-  }, [userLanguage]);
+  });
 
   const pages = [
     {
@@ -94,13 +93,10 @@ export function NavService({ user, children }: { user: User; children: React.Rea
 
   return (
     <>
-      <AppSidebar user={user} setUserLanguages={setUserLanguages} pages={pages} />
-      <main className="w-full h-full flex flex-col pt-4 pb-12">
-        <div className="fixed md:relative flex items-center">
-          {!isMobile && <SidebarTrigger />}
-          <BackButton showLabel={!isMobile} />
-        </div>
-        <div className="flex justify-center pt-8 md:pt-0  md:justify-normal h-full  ">
+      {!isMobile && <AppSidebar user={user} setUserLanguages={setUserLanguages} pages={pages} />}
+      <main className="w-full h-full flex flex-col pb-12">
+        <TopNav isMobile={isMobile} />
+        <div className="flex justify-center pt-12 md:pt-0  md:justify-normal h-full  ">
           {children}
         </div>
         {isMobile && <MobileNavbar user={user} setUserLanguages={setUserLanguages} pages={pages} />}

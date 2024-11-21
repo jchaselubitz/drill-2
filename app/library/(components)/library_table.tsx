@@ -13,7 +13,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseType, PhraseWithTranslations } from 'kysely-codegen';
 import * as React from 'react';
 import { FC, startTransition, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useUserContext } from '@/contexts/user_context';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 import { LanguagesISO639 } from '@/lib/lists';
 
@@ -40,8 +41,29 @@ type LibraryTableProps = {
 
 const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) => {
   const isMobile = useWindowSize().width < 768;
+  const { prefLanguage } = useUserContext();
+  const storedSortLang = localStorage.getItem('sort_lang');
+  const setSortLang = !storedSortLang
+    ? prefLanguage
+    : storedSortLang === '*'
+      ? ''
+      : (storedSortLang as LanguagesISO639);
+
+  const storedSortType = localStorage.getItem('sort_type');
+  const setSortType =
+    !storedSortType || storedSortType === '*' ? '' : (storedSortType as PhraseType);
+
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    {
+      id: 'lang',
+      value: setSortLang,
+    },
+    {
+      id: 'type',
+      value: setSortType,
+    },
+  ]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     select: !isMobile,
     favorite: true,
@@ -145,7 +167,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
                 .getRowModel()
                 .rows.map((row) => (
                   <LibraryRow
-                    key={row.id}
+                    key={row.original.id}
                     row={row}
                     setOptPhraseData={setOptPhraseData}
                     userTags={userTags}

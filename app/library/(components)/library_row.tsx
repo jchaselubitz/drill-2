@@ -19,9 +19,8 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row, userTags, setOptPhraseData
   const expanded = row.getIsExpanded();
 
   return (
-    <Fragment key={row.id}>
+    <Fragment key={row.original.id}>
       <TableRow
-        key={row.id}
         data-state={row.getIsSelected() && 'selected'}
         className={cn(expanded && 'border-b-0 bg-zinc-100 dark:bg-zinc-800')}
         onClick={() => {

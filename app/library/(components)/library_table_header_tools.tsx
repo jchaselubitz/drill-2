@@ -39,10 +39,10 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
   const tagsColumnCurrentFilter = (tagsColumn?.getFilterValue() as string[]) ?? [];
 
   const langColumn = table.getColumn('lang');
-  const langColumnCurrentFilter = langColumn?.getFilterValue();
+  const langColumnCurrentFilter = langColumn?.getFilterValue() as LanguagesISO639;
 
   const typeColumn = table.getColumn('type');
-  const typeColumnCurrentFilter = typeColumn?.getFilterValue();
+  const typeColumnCurrentFilter = typeColumn?.getFilterValue() as PhraseType;
 
   const handleFilterText = (event: React.ChangeEvent<HTMLInputElement>) => {
     textColumn?.setFilterValue(event.target.value);
@@ -56,10 +56,12 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
 
   const handleFilterLang = (v: boolean, lang: LanguagesISO639) => {
     langColumn?.setFilterValue(v ? lang : undefined);
+    localStorage.setItem('sort_lang', v ? lang : '*');
   };
 
   const handleFilterType = (v: boolean, type: PhraseType) => {
     typeColumn?.setFilterValue(v ? type : undefined);
+    localStorage.setItem('sort_type', v ? type : '*');
   };
 
   return (
@@ -98,7 +100,12 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              <Languages size={18} /> <ChevronDown />
+              {langColumnCurrentFilter ? (
+                getLangIcon(langColumnCurrentFilter)
+              ) : (
+                <Languages size={18} />
+              )}
+              <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -119,7 +126,8 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Type <ChevronDown />
+              {typeColumnCurrentFilter ? getPhraseTypeName(typeColumnCurrentFilter) : 'Type'}{' '}
+              <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

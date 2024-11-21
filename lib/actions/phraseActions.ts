@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import db from '../database';
+import db, { RevalidationPath } from '../database';
 import { createClient } from '@/utils/supabase/server';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import {
@@ -257,12 +257,14 @@ type AddTranslationProps = {
   primaryPhraseIds?: string[];
   genResponse: GenResponseType;
   source: string;
+  revalidationPath?: RevalidationPath;
 };
 
 export const addTranslation = async ({
   primaryPhraseIds,
   genResponse,
   source,
+  revalidationPath,
 }: AddTranslationProps) => {
   const supabase = createClient();
   const {
@@ -276,7 +278,7 @@ export const addTranslation = async ({
 
   if (primaryPhraseIds && primaryPhraseIds.length > 0) {
     const primaryPhraseId = primaryPhraseIds[0];
-    const translation = await db.transaction().execute(async (trx) => {
+    await db.transaction().execute(async (trx) => {
       const secondaryPhrase = await trx
         .insertInto('phrase')
         .values({
@@ -298,9 +300,8 @@ export const addTranslation = async ({
         .returning('id')
         .executeTakeFirstOrThrow();
     });
-    return translation.id;
   } else {
-    const translation = await db.transaction().execute(async (trx) => {
+    await db.transaction().execute(async (trx) => {
       const primaryPhrase = await trx
         .insertInto('phrase')
         .values({
@@ -331,8 +332,10 @@ export const addTranslation = async ({
         .returning('id')
         .executeTakeFirstOrThrow();
     });
-    return translation.id;
   }
+  revalidationPath
+    ? revalidatePath(revalidationPath.path, revalidationPath.type)
+    : revalidatePath('/library', 'page');
 };
 
 export const deletePhrase = async (phraseId: string) => {
@@ -362,5 +365,5 @@ export const deletePhrase = async (phraseId: string) => {
   } catch (error) {
     throw Error(`Failed to delete phrase: ${error}`);
   }
-  revalidatePath('/library');
+  revalidatePath('/library', 'page');
 };
