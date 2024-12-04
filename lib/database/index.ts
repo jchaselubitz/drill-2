@@ -7,6 +7,7 @@ import {
   Updateable,
 } from 'kysely';
 import {
+  Association,
   DB,
   Lesson,
   Media,
@@ -73,14 +74,23 @@ declare module 'kysely-codegen' {
       lessonId: string | null;
       phraseId: string;
     }[];
-    translationsWhereSecondary: {
+    // translationsWhereSecondary: {
+    //   createdAt: Date;
+    //   id: string;
+    //   userId: string;
+    //   lessonId: string | null;
+    //   phraseId: string;
+    // }[];
+  };
+  export type PhraseWithAssociations = PhraseWithTranslations & {
+    associations: {
       createdAt: Date;
       id: string;
       userId: string;
-      lessonId: string | null;
       phraseId: string;
     }[];
   };
+
   export type NewPhrase = Insertable<Phrase>;
   export type EditedPhrase = Updateable<Phrase>;
 
@@ -112,6 +122,10 @@ declare module 'kysely-codegen' {
     | null;
   export type NewTranslation = Insertable<Translation>;
   export type EditedTranslation = Updateable<Translation>;
+
+  export type BaseAssociation = Selectable<Association>;
+  export type EditedAssociation = Updateable<Association>;
+  export type NewAssociation = Insertable<Association>;
 }
 
 export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };

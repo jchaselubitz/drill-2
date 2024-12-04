@@ -90,6 +90,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
     }
   };
 
+  const submitForm = form.handleSubmit((data) => {
+    handleSubmission(data);
+  });
+
   const fieldClass = 'flex flex-col gap-2';
   const buttonText = isPasswordReset
     ? 'Update'
@@ -103,12 +107,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
 
   return (
     <Form {...form}>
-      <form
-        className="animate-in flex-1 flex flex-col w-full justify-center gap-3 text-foreground"
-        onSubmit={form.handleSubmit((data) => {
-          handleSubmission(data);
-        })}
-      >
+      <form className="animate-in flex-1 flex flex-col w-full justify-center gap-3 text-foreground">
         <div className={fieldClass}>
           <FormField
             control={form.control}
@@ -160,7 +159,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
         )}
         <div className={fieldClass}>
           <LoadingButton
-            type="submit"
+            onClick={submitForm}
             variant={'default'}
             buttonState={signInButtonState}
             disabled={

@@ -11,11 +11,11 @@ import {
   NewTranslation,
   Phrase,
   PhraseType,
-  PhraseWithTranslations,
+  PhraseWithAssociations,
 } from 'kysely-codegen';
 import { LanguagesISO639, SourceOptionType } from '../lists';
 
-export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithTranslations[]> => {
+export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithAssociations[]> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -67,11 +67,10 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithT
       ).as('translationsWherePrimary'),
       jsonArrayFrom(
         eb
-          .selectFrom('translation')
-          .innerJoin('phrase as p1', 'p1.id', 'translation.phraseSecondaryId')
+          .selectFrom('association')
+          .innerJoin('phrase as p1', 'p1.id', 'association.phraseSecondaryId')
           .select([
-            'translation.id',
-            'translation.lessonId as lessonId',
+            'association.id',
             'p1.id as phraseId',
             'p1.text',
             'p1.lang',
@@ -80,8 +79,25 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithT
             'p1.source',
             'p1.userId',
           ])
-          .whereRef('phraseSecondaryId', '=', 'phrase.id')
-      ).as('translationsWhereSecondary'),
+          .whereRef('association.phraseSecondaryId', '=', 'phrase.id')
+      ).as('associations'),
+      // jsonArrayFrom(
+      //   eb
+      //     .selectFrom('translation')
+      //     .innerJoin('phrase as p1', 'p1.id', 'translation.phraseSecondaryId')
+      //     .select([
+      //       'translation.id',
+      //       'translation.lessonId as lessonId',
+      //       'p1.id as phraseId',
+      //       'p1.text',
+      //       'p1.lang',
+      //       'p1.createdAt',
+      //       'p1.partSpeech',
+      //       'p1.source',
+      //       'p1.userId',
+      //     ])
+      //     .whereRef('phraseSecondaryId', '=', 'phrase.id')
+      // ).as('translationsWhereSecondary'),
     ])
     .where('phrase.userId', '=', userId)
     .orderBy('phrase.createdAt', 'desc');
@@ -90,9 +106,9 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithT
     phrases = phrases.where('phrase.source', '=', source);
   }
 
-  const phrasesWithTranslations = await phrases.execute();
+  const phraseWithAssociations = await phrases.execute();
 
-  return phrasesWithTranslations as PhraseWithTranslations[];
+  return phraseWithAssociations as PhraseWithAssociations[];
 };
 
 export const addPhrase = async ({

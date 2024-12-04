@@ -1,7 +1,13 @@
+import { XIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
-import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
+import {
+  getModelSelection,
+  getOpenAiKey,
+  gptFormatType,
+  selectSystemMessage,
+} from '@/lib/helpers/helpersAI';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
 import { LanguagesISO639 } from '@/lib/lists';
 import { createClient } from '@/utils/supabase/client';
@@ -9,9 +15,14 @@ import { createClient } from '@/utils/supabase/client';
 import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
+import PhraseChat from './phrase_chat';
 import SaveTranslationButton from './save_translation_button';
 import LightSuggestionList from './suggestions/light_suggestion_list';
 
+export interface ChatMessage {
+  role: string;
+  content: string;
+}
 interface ContentRequestProps {
   text: string | null;
   lang: LanguagesISO639;
@@ -34,7 +45,10 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   const [genResponse, setGenResponse] = useState<GenResponseType | undefined>();
   const [requestLoading, setRequestLoading] = useState(false);
   const [requestText, setRequestText] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[] | []>([]);
   const firstWord = requestText.split(' ')[0];
+
+  const presentableMessages = chatMessages.filter((message) => message.role !== 'system').slice(2);
 
   useEffect(() => {
     if (requestText.length < 4) {
@@ -44,9 +58,13 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 
   const setCommand = (firstWord: string) => {
     const word = firstWord ? firstWord[0].toUpperCase() + firstWord.slice(1) : '';
+    //should I use a simple model to find words that are close to the command words?
     if (
       word === 'Explain' ||
       word === 'Why' ||
+      word === 'How' ||
+      word === 'Can' ||
+      word === 'Summarize' ||
       word === 'Extract' ||
       word === 'Translate' ||
       word === 'List' ||
@@ -55,6 +73,14 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       return word;
     }
   };
+  const isTranslation = setCommand(firstWord) === 'Translate' && primaryPhraseIds;
+  const isExplanation =
+    setCommand(firstWord) === 'Explain' ||
+    setCommand(firstWord) === 'Why' ||
+    setCommand(firstWord) === 'How' ||
+    setCommand(firstWord) === 'Can';
+
+  const chatIsLive = isExplanation && presentableMessages.length > 0;
 
   const captureCommand = () => {
     if (setCommand(firstWord)) {
@@ -63,37 +89,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     return { request: requestText, command: '' };
   };
 
-  const selectSystemMessage = (command: string | undefined) => {
-    const message =
-      'The user will send you a text and a request for how to handle that content. Return as a JSON.';
-    if (command === 'Explain' || command === 'Why') {
-      return (
-        message + `Return a JSON with key: "explanation" and value: <a string of the explanation>.`
-      );
-    }
-
-    if (command === 'Translate') {
-      return (
-        message +
-        `If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation> }.`
-      );
-    }
-
-    if (command === 'List' || command === 'Extract') {
-      return (
-        message +
-        `The user will request a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. `
-      );
-    }
-
-    if (command === 'Generate') {
-      return message + `The user wants you to generate new content based on the text`;
-    }
-
-    return `The user will send you a text and a request for how to handle that content. Return as a JSON. The user will often be requesting a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. If the user asks for an explanation, return a JSON with key: "explanation" and value: <a string of the explanation>. If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.`;
-  };
-
-  const handleRequest = async () => {
+  const handleRequest = async (newMessage?: string) => {
     setRequestLoading(true);
     const { request, command } = captureCommand();
     const modelParams = {
@@ -102,14 +98,30 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       temperature: 0.9,
     };
 
-    const messages = [
+    let messages = [
       {
         role: 'system',
-        content: selectSystemMessage(command),
+        content: selectSystemMessage(command, isExplanation),
       },
       { role: 'user', content: `text: ${text}` },
       { role: 'user', content: `request: ${request}` },
     ];
+
+    if (isExplanation) {
+      const formNewMessage = {
+        role: 'user',
+        content: newMessage ?? '',
+      };
+
+      messages =
+        chatMessages.length < 1
+          ? messages
+          : formNewMessage
+            ? [...chatMessages, formNewMessage]
+            : chatMessages;
+
+      setChatMessages(messages);
+    }
 
     const { data, error } = await supabase.functions.invoke('gen-text', {
       body: {
@@ -124,7 +136,12 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       throw Error('Error:', error);
     }
     try {
-      setGenResponse(JSON.parse(data));
+      const response = JSON.parse(data);
+      setGenResponse(response);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { role: 'assistant', content: response.explanation },
+      ]);
     } catch (error) {
       alert('Sorry, it looks like the model returned the wrong format. Please try again.');
       setRequestLoading(false);
@@ -169,23 +186,36 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setRequestText(suggestion);
   };
 
-  const isTranslation = setCommand(firstWord) === 'Translate' && primaryPhraseIds;
-
   return (
     <div className="flex flex-col gap-3">
-      <Textarea
-        className="w-full"
-        value={requestText}
-        onChange={(e) => setRequestText(e.target.value)}
-        placeholder="Type your request here"
-      />
-      <LoadingButton
-        className="bg-blue-600 rounded-lg text-white p-2  disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={handleRequest}
-        text={setCommand(firstWord) ?? 'Request'}
-        loadingText="Requesting"
-        buttonState={requestLoading ? 'loading' : 'default'}
-      />
+      {chatIsLive ? (
+        <button
+          className="flex  items-center gap-4 rounded-lg p-3 bg-gray-200"
+          onClick={() => {
+            setRequestText('');
+            setChatMessages([]);
+          }}
+        >
+          {requestText}
+          <XIcon />
+        </button>
+      ) : (
+        <>
+          <Textarea
+            className="w-full"
+            value={requestText}
+            onChange={(e) => setRequestText(e.target.value)}
+            placeholder="Type your request here"
+          />
+          <LoadingButton
+            className="bg-blue-600 rounded-lg text-white p-2  disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => handleRequest()}
+            text={setCommand(firstWord) ?? 'Request'}
+            loadingText="Requesting"
+            buttonState={requestLoading ? 'loading' : 'default'}
+          />
+        </>
+      )}
       {suggestions.length > 0 && requestText === '' && (
         <LightSuggestionList
           suggestions={suggestions}
@@ -196,23 +226,27 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
         />
       )}
       <div className="mt-5">
-        {isTranslation
-          ? genResponse && (
-              <SaveTranslationButton
-                input_text={genResponse.input_text}
-                input_lang={genResponse.input_lang}
-                output_text={genResponse.output_text}
-                output_lang={genResponse.output_lang}
-                saveTranslation={saveTranslation}
-              />
-            )
-          : genResponse && (
-              <NestedObject
-                data={genResponse}
-                saveContent={saveContent}
-                command={setCommand(firstWord)}
-              />
-            )}
+        {isTranslation ? (
+          genResponse && (
+            <SaveTranslationButton
+              input_text={genResponse.input_text}
+              input_lang={genResponse.input_lang}
+              output_text={genResponse.output_text}
+              output_lang={genResponse.output_lang}
+              saveTranslation={saveTranslation}
+            />
+          )
+        ) : chatIsLive ? (
+          <PhraseChat messages={presentableMessages} handleRequest={handleRequest} />
+        ) : (
+          genResponse && (
+            <NestedObject
+              data={genResponse}
+              saveContent={saveContent}
+              command={setCommand(firstWord)}
+            />
+          )
+        )}
       </div>
     </div>
   );

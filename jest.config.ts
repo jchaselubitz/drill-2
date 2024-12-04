@@ -10,6 +10,9 @@ const createJestConfig = nextJest({
 const config: Config = {
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
+  transform: {
+    '^.+.tsx?$': ['ts-jest', {}],
+  },
   setupFilesAfterEnv: ['<rootDir>/_testing_/jest.setup.js'], // Custom setup file
   testMatch: [
     // Match test files next to components
