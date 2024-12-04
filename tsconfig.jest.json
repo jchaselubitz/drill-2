@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "allowSyntheticDefaultImports": true,
+  "compilerOptions": {
+    "types": ["jest", "node", "jest-environment-jsdom-sixteen"],
+    "module": "commonjs",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["types/**/*.d.ts", "**/*.spec.ts", "**/*.test.ts", "**/_testing_/**/*"]
+
+}
