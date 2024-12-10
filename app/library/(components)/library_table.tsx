@@ -8,17 +8,15 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  RowSelection,
   SortingState,
-  Updater,
+  Table as TableType,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
 import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
-import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { FC, startTransition, useOptimistic, useState } from 'react';
-import { useSearchParam, useWindowSize } from 'react-use';
+import { FC, startTransition, useCallback, useEffect, useOptimistic, useState } from 'react';
+import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -39,9 +37,10 @@ import LibraryTableHeaderTools from './library_table_header_tools';
 type LibraryTableProps = {
   phrases: PhraseWithAssociations[];
   setOptPhraseData: (action: PhraseWithAssociations) => void;
+  openPhrase?: string;
 };
 
-const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) => {
+const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, openPhrase }) => {
   const isMobile = useWindowSize().width < 768;
   const { prefLanguage } = useUserContext();
   const storedSortLang = localStorage.getItem('sort_lang');
@@ -104,34 +103,29 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     });
   };
 
-  const toggleExpanded = (phraseId: string) => {
-    const tableRows = table.getCoreRowModel().rows;
-    const row = tableRows.find((row) => row.original.id === phraseId.toString());
-    if (!row) {
-      return;
-    }
-    const rowId = row.id;
-    const rowIndex = row.index;
-    const pageSize = pagination.pageSize;
-    const rowPage = Math.floor(rowIndex / pageSize);
-    setPagination((prev) => ({
-      ...prev,
-      pageIndex: rowPage,
-    }));
+  const toggleExpanded = useCallback(
+    (phraseId: string, table: TableType<PhraseWithAssociations>) => {
+      const tableRows = table.getCoreRowModel().rows;
+      const row = tableRows.find((row) => row.original.id === phraseId.toString());
+      if (!row) {
+        return;
+      }
+      const rowId = row.id;
+      const rowIndex = row.index;
+      const pageSize = pagination.pageSize;
+      const rowPage = Math.floor(rowIndex / pageSize);
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: rowPage,
+      }));
 
-    setExpanded((prev) => ({
-      // @ts-ignore
-      [rowId]: !prev[rowId],
-    }));
-  };
-
-  const searchParams = useSearchParams();
-  React.useEffect(() => {
-    const phraseFromUrl = searchParams.get('phrase');
-    if (phraseFromUrl) {
-      toggleExpanded(phraseFromUrl);
-    }
-  });
+      setExpanded((prev) => ({
+        // @ts-ignore
+        [rowId]: !prev[rowId],
+      }));
+    },
+    [setExpanded, setPagination, pagination.pageSize]
+  );
 
   const table = useReactTable({
     data: phrases,
@@ -155,6 +149,12 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
       expanded,
     },
   });
+
+  useEffect(() => {
+    if (openPhrase) {
+      toggleExpanded(openPhrase, table);
+    }
+  }, [toggleExpanded, openPhrase, table]);
 
   return (
     <div className="w-full">
@@ -240,7 +240,13 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
   );
 };
 
-export default function LibraryTable({ phrases }: { phrases: PhraseWithAssociations[] }) {
+export default function LibraryTable({
+  phrases,
+  openPhrase,
+}: {
+  phrases: PhraseWithAssociations[];
+  openPhrase: string;
+}) {
   const [optPhraseData, setOptPhraseData] = useOptimistic<
     PhraseWithAssociations[],
     PhraseWithAssociations
@@ -256,5 +262,11 @@ export default function LibraryTable({ phrases }: { phrases: PhraseWithAssociati
     ];
   });
 
-  return <LibraryTableBase phrases={optPhraseData} setOptPhraseData={setOptPhraseData} />;
+  return (
+    <LibraryTableBase
+      phrases={optPhraseData}
+      setOptPhraseData={setOptPhraseData}
+      openPhrase={openPhrase}
+    />
+  );
 }

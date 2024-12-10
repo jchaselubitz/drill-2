@@ -20,7 +20,7 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row, table, userTags, setOptPhr
   const expanded = row.getIsExpanded();
 
   const toggleExpanded = (phraseId: string) => {
-    table.options.meta?.toggleExpanded(phraseId.toString());
+    table.options.meta?.toggleExpanded(phraseId.toString(), table);
   };
 
   return (
