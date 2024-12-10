@@ -1,5 +1,5 @@
 import { Table } from '@tanstack/react-table';
-import { PhraseType, PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import { ChevronDown, Hash, Languages } from 'lucide-react';
 import React from 'react';
 import Tag from '@/components/tags/tag';
@@ -22,7 +22,7 @@ import {
 } from '@/lib/lists';
 
 interface LibraryTableHeaderToolsProps {
-  table: Table<PhraseWithTranslations>;
+  table: Table<PhraseWithAssociations>;
   uniqueLanguages: LanguagesISO639[];
   userTags: string[];
 }

@@ -8,15 +8,17 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  RowSelection,
   SortingState,
   Updater,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { PhraseType, PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
+import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { FC, startTransition, useOptimistic, useState } from 'react';
-import { useWindowSize } from 'react-use';
+import { useSearchParam, useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -35,8 +37,8 @@ import LibraryColumns from './library_table_columns';
 import LibraryTableHeaderTools from './library_table_header_tools';
 
 type LibraryTableProps = {
-  phrases: PhraseWithTranslations[];
-  setOptPhraseData: (action: PhraseWithTranslations) => void;
+  phrases: PhraseWithAssociations[];
+  setOptPhraseData: (action: PhraseWithAssociations) => void;
 };
 
 const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) => {
@@ -81,7 +83,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     pageIndex: 0, // Default page index
     pageSize: 20, // Default number of rows per page
   });
-
   const mentionedLanguages = phrases.map((phrase) => phrase.lang);
   const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as LanguagesISO639[];
   const userTags = [...new Set(phrases.flatMap((phrase) => phrase.tags.map((tag) => tag.label)))];
@@ -103,14 +104,39 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     });
   };
 
-  const handleExpanded = (updater: Updater<ExpandedState>) => {
-    setExpanded(updater);
+  const toggleExpanded = (phraseId: string) => {
+    const tableRows = table.getCoreRowModel().rows;
+    const row = tableRows.find((row) => row.original.id === phraseId.toString());
+    if (!row) {
+      return;
+    }
+    const rowId = row.id;
+    const rowIndex = row.index;
+    const pageSize = pagination.pageSize;
+    const rowPage = Math.floor(rowIndex / pageSize);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: rowPage,
+    }));
+
+    setExpanded((prev) => ({
+      // @ts-ignore
+      [rowId]: !prev[rowId],
+    }));
   };
+
+  const searchParams = useSearchParams();
+  React.useEffect(() => {
+    const phraseFromUrl = searchParams.get('phrase');
+    if (phraseFromUrl) {
+      toggleExpanded(phraseFromUrl);
+    }
+  });
 
   const table = useReactTable({
     data: phrases,
     columns: LibraryColumns,
-    meta: { uniqueLanguages, toggleFavorite },
+    meta: { uniqueLanguages, toggleFavorite, toggleExpanded },
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -120,7 +146,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onExpandedChange: (value) => handleExpanded(value),
     state: {
       pagination,
       sorting,
@@ -169,6 +194,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
                   <LibraryRow
                     key={row.original.id}
                     row={row}
+                    table={table}
                     setOptPhraseData={setOptPhraseData}
                     userTags={userTags}
                   />
@@ -197,7 +223,9 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
           >
             Previous
           </Button>
-
+          <span>
+            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+          </span>
           <Button
             variant="outline"
             size="sm"
@@ -212,10 +240,10 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData }) 
   );
 };
 
-export default function LibraryTable({ phrases }: { phrases: PhraseWithTranslations[] }) {
+export default function LibraryTable({ phrases }: { phrases: PhraseWithAssociations[] }) {
   const [optPhraseData, setOptPhraseData] = useOptimistic<
-    PhraseWithTranslations[],
-    PhraseWithTranslations
+    PhraseWithAssociations[],
+    PhraseWithAssociations
   >(phrases, (state, updatedPhrase) => {
     const updatedPhrasesIndex = state.findIndex((phrase) => phrase.id === updatedPhrase.id);
     if (updatedPhrasesIndex === -1) {

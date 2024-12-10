@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/server';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import {
   BaseTag,
+  NewAssociation,
   NewPhrase,
   NewPhraseTag,
   NewTag,
@@ -42,7 +43,6 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithA
       jsonArrayFrom(
         eb
           .selectFrom('tag')
-
           .innerJoin('phraseTag', 'phraseTag.tagId', 'tag.id')
           .where('tag.userId', '=', userId)
           .whereRef('phraseId', '=', 'phrase.id')
@@ -51,53 +51,62 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithA
       jsonArrayFrom(
         eb
           .selectFrom('translation')
-          .innerJoin('phrase as p1', 'p1.id', 'translation.phraseSecondaryId')
+          .where(({ or, eb }) =>
+            or([
+              eb('phrase.id', '=', eb.ref('phrasePrimaryId')),
+              eb('phrase.id', '=', eb.ref('phraseSecondaryId')),
+            ])
+          )
+          .leftJoin('phrase as p1', 'p1.id', 'translation.phrasePrimaryId')
+          .leftJoin('phrase as p2', 'p2.id', 'translation.phraseSecondaryId')
           .select([
             'translation.id',
             'translation.lessonId as lessonId',
-            'p1.id as phraseId',
-            'p1.text',
-            'p1.lang',
-            'p1.createdAt',
-            'p1.partSpeech',
-            'p1.source',
-            'p1.userId',
+            'p1.id as p1_Id',
+            'p1.text as p1_text',
+            'p1.lang as p1_lang',
+            'p1.createdAt as p1_createdAt',
+            'p1.partSpeech as p1_partSpeech',
+            'p1.source as p1_source',
+            'p1.userId as p1_userId',
+            'p2.id as p2_Id',
+            'p2.text as p2_text',
+            'p2.lang as p2_lang',
+            'p2.createdAt as p2_createdAt',
+            'p2.partSpeech as p2_partSpeech',
+            'p2.source as p2_source',
+            'p2.userId as p2_userId',
           ])
-          .whereRef('phrasePrimaryId', '=', 'phrase.id')
-      ).as('translationsWherePrimary'),
+      ).as('rawTranslations'),
       jsonArrayFrom(
         eb
           .selectFrom('association')
-          .innerJoin('phrase as p1', 'p1.id', 'association.phraseSecondaryId')
+          .where(({ or, eb }) =>
+            or([
+              eb('phrase.id', '=', eb.ref('phrasePrimaryId')),
+              eb('phrase.id', '=', eb.ref('phraseSecondaryId')),
+            ])
+          )
+          .leftJoin('phrase as p1', 'p1.id', 'association.phrasePrimaryId')
+          .leftJoin('phrase as p2', 'p2.id', 'association.phraseSecondaryId')
           .select([
             'association.id',
-            'p1.id as phraseId',
-            'p1.text',
-            'p1.lang',
-            'p1.createdAt',
-            'p1.partSpeech',
-            'p1.source',
-            'p1.userId',
+            'p1.id as p1_Id',
+            'p1.text as p1_text',
+            'p1.lang as p1_lang',
+            'p1.createdAt as p1_createdAt',
+            'p1.partSpeech as p1_partSpeech',
+            'p1.source as p1_source',
+            'p1.userId as p1_userId',
+            'p2.id as p2_Id',
+            'p2.text as p2_text',
+            'p2.lang as p2_lang',
+            'p2.createdAt as p2_createdAt',
+            'p2.partSpeech as p2_partSpeech',
+            'p2.source as p2_source',
+            'p2.userId as p2_userId',
           ])
-          .whereRef('association.phraseSecondaryId', '=', 'phrase.id')
-      ).as('associations'),
-      // jsonArrayFrom(
-      //   eb
-      //     .selectFrom('translation')
-      //     .innerJoin('phrase as p1', 'p1.id', 'translation.phraseSecondaryId')
-      //     .select([
-      //       'translation.id',
-      //       'translation.lessonId as lessonId',
-      //       'p1.id as phraseId',
-      //       'p1.text',
-      //       'p1.lang',
-      //       'p1.createdAt',
-      //       'p1.partSpeech',
-      //       'p1.source',
-      //       'p1.userId',
-      //     ])
-      //     .whereRef('phraseSecondaryId', '=', 'phrase.id')
-      // ).as('translationsWhereSecondary'),
+      ).as('rawAssociations'),
     ])
     .where('phrase.userId', '=', userId)
     .orderBy('phrase.createdAt', 'desc');
@@ -106,9 +115,49 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithA
     phrases = phrases.where('phrase.source', '=', source);
   }
 
-  const phraseWithAssociations = await phrases.execute();
+  const phrasesWithAssociations = await phrases.execute();
 
-  return phraseWithAssociations as PhraseWithAssociations[];
+  const preparedPhrases = phrasesWithAssociations.map((phrase) => {
+    const polishRelationships = (phraseId: string, phrasesWithRelationships: any) => {
+      return phrasesWithRelationships.map((relationship: any) => {
+        let phrases = [];
+        if (relationship.p1Id.toString() !== phraseId) {
+          phrases.push({
+            id: relationship.p1Id,
+            text: relationship.p1Text,
+            lang: relationship.p1Lang,
+            createdAt: relationship.p1CreatedAt,
+            partSpeech: relationship.p1PartSpeech,
+            source: relationship.p1Source,
+            userId: relationship.p1UserId,
+          });
+        }
+        if (relationship.p2Id.toString() !== phraseId) {
+          phrases.push({
+            id: relationship.p2Id,
+            text: relationship.p2Text,
+            lang: relationship.p2Lang,
+            createdAt: relationship.p2CreatedAt,
+            partSpeech: relationship.p2PartSpeech,
+            source: relationship.p2Source,
+            userId: relationship.p2UserId,
+          });
+        }
+        return {
+          id: relationship.id,
+          lessonId: relationship.lessonId,
+          phrases,
+        };
+      });
+    };
+    return {
+      ...phrase,
+      translations: polishRelationships(phrase.id, phrase.rawTranslations),
+      associations: polishRelationships(phrase.id, phrase.rawAssociations),
+    };
+  });
+
+  return preparedPhrases as PhraseWithAssociations[];
 };
 
 export const addPhrase = async ({
@@ -117,12 +166,14 @@ export const addPhrase = async ({
   source,
   filename,
   type,
+  associationId,
 }: {
   text: string;
   lang: LanguagesISO639;
   source?: string;
   filename?: string;
   type: PhraseType;
+  associationId?: string;
 }) => {
   const supabase = createClient();
   const {
@@ -130,10 +181,23 @@ export const addPhrase = async ({
   } = await supabase.auth.getUser();
   const userId = user?.id;
   try {
-    await db
-      .insertInto('phrase')
-      .values({ text, lang, userId, source, type, filename } as NewPhrase)
-      .execute();
+    await db.transaction().execute(async (trx) => {
+      const newPhrase = await trx
+        .insertInto('phrase')
+        .values({ text, lang, userId, source, type, filename } as NewPhrase)
+        .returning('id')
+        .executeTakeFirstOrThrow();
+
+      if (associationId) {
+        await trx
+          .insertInto('association')
+          .values({
+            phrasePrimaryId: associationId,
+            phraseSecondaryId: newPhrase.id,
+          } as NewAssociation)
+          .executeTakeFirstOrThrow();
+      }
+    });
   } catch (error) {
     if (error) {
       throw error;

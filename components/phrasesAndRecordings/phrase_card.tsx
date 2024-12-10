@@ -1,5 +1,6 @@
 'use client';
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseWithAssociations } from 'kysely-codegen';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import TtsButton from '../ai_elements/tts_button';
@@ -7,16 +8,21 @@ import BaseObjectCard from './base_object_card';
 import PhraseCardDetails from './phrase_card_details';
 
 interface PhraseCardProps {
-  phrase: PhraseWithTranslations;
+  phrase: PhraseWithAssociations;
 }
 
 const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
   const bucket = 'text_to_speech';
+  const router = useRouter();
+
+  const toggleExpanded = (id: string) => {
+    router.push(`/library/?phrase=${id}`);
+  };
 
   return (
     <BaseObjectCard
       withoutDetails={<TtsButton text={phrase.text} bucket={bucket} lacksAudio={false} />}
-      objectDetails={<PhraseCardDetails phrase={phrase} />}
+      objectDetails={<PhraseCardDetails phrase={phrase} toggleExpanded={toggleExpanded} />}
       text={phrase.text}
       date={phrase.createdAt}
     />

@@ -1,6 +1,6 @@
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import { ColumnDef } from '@tanstack/react-table';
-import { PhraseType, PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import { ArrowUpDown, Languages } from 'lucide-react';
 import TtsButton from '@/components/ai_elements/tts_button';
 import RecordingPlayButton from '@/components/specialButtons/recording_play_button';
@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon, getPhraseTypeIcon } from '@/lib/lists';
 
-export const LibraryColumns: ColumnDef<PhraseWithTranslations>[] = [
+export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
   {
     id: 'select',
     header: ({ table }) => (

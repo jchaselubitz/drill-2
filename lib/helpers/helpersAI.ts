@@ -56,7 +56,7 @@ export const selectSystemMessage = (command: string | undefined, isExplanation: 
   if (command === 'List' || command === 'Extract') {
     return (
       message +
-      `The user will request a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. `
+      `The user will request a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user in the same language as the content the user is asking you to list. The goal is to organize the data. `
     );
   }
 

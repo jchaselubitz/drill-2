@@ -1,4 +1,4 @@
-import { BaseTag, PhraseWithTranslations } from 'kysely-codegen';
+import { BaseTag, PhraseWithAssociations } from 'kysely-codegen';
 import { Plus } from 'lucide-react';
 import { startTransition, useState } from 'react';
 import { addPhraseTags } from '@/lib/actions/phraseActions';
@@ -8,9 +8,9 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
 interface TagListProps {
-  phrase: PhraseWithTranslations;
+  phrase: PhraseWithAssociations;
   userTags: string[];
-  setOptPhraseData: (action: PhraseWithTranslations) => void;
+  setOptPhraseData: (action: PhraseWithAssociations) => void;
 }
 
 export default function TagSelector({ phrase, userTags, setOptPhraseData }: TagListProps) {
@@ -70,7 +70,7 @@ export default function TagSelector({ phrase, userTags, setOptPhraseData }: TagL
     >
       {!showInput ? (
         <Button onClick={() => setShowInput(true)} variant={'ghost'}>
-          <Plus size={20} />
+          <Plus size={20} /> Add tag
         </Button>
       ) : (
         <div className="flex items-center gap-2">

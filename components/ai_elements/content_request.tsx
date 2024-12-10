@@ -1,4 +1,4 @@
-import { XIcon } from 'lucide-react';
+import { Stars, XIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
@@ -27,6 +27,7 @@ interface ContentRequestProps {
   text: string | null;
   lang: LanguagesISO639;
   userId: string | undefined;
+  phraseId?: string;
   primaryPhraseIds?: string[];
   suggestions: string[];
   source: string;
@@ -36,6 +37,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   text,
   lang,
   userId,
+  phraseId,
   primaryPhraseIds,
   suggestions,
   source,
@@ -81,7 +83,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setCommand(firstWord) === 'Can';
 
   const chatIsLive = isExplanation && presentableMessages.length > 0;
-
+  // const chatIsLive = true;
   const captureCommand = () => {
     if (setCommand(firstWord)) {
       return { request: requestText, command: setCommand(firstWord) };
@@ -152,7 +154,13 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 
   const saveContent = async (content: string): Promise<boolean> => {
     try {
-      await addPhrase({ source, text: content.trim(), lang, type: getPhraseType(text) });
+      await addPhrase({
+        source,
+        text: content.trim(),
+        lang,
+        type: getPhraseType(text),
+        associationId: phraseId,
+      });
     } catch (error) {
       throw Error(`Error saving content: ${error}`);
     }
@@ -189,16 +197,22 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   return (
     <div className="flex flex-col gap-3">
       {chatIsLive ? (
-        <button
-          className="flex  items-center gap-4 rounded-lg p-3 bg-gray-200"
-          onClick={() => {
-            setRequestText('');
-            setChatMessages([]);
-          }}
-        >
-          {requestText}
-          <XIcon />
-        </button>
+        <div className="flex justify-end">
+          <span className="flex gap-2 items-start rounded-lg p-3 text-white font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 ">
+            <div className="animate-pulse mr-1">
+              <Stars />
+            </div>
+            {requestText}
+            <button
+              onClick={() => {
+                setRequestText('');
+                setChatMessages([]);
+              }}
+            >
+              <XIcon size={20} />
+            </button>
+          </span>
+        </div>
       ) : (
         <>
           <Textarea

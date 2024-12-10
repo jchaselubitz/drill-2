@@ -1,4 +1,4 @@
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { PhraseWithAssociations } from 'kysely-codegen';
 import { startTransition } from 'react';
 import { removePhraseTag } from '@/lib/actions/phraseActions';
 
@@ -6,9 +6,9 @@ import Tag from './tag';
 import TagSelector from './tag_selector';
 
 interface TagListProps {
-  phrase: PhraseWithTranslations;
+  phrase: PhraseWithAssociations;
   userTags?: string[];
-  setOptPhraseData?: (action: PhraseWithTranslations) => void;
+  setOptPhraseData?: (action: PhraseWithAssociations) => void;
 }
 
 export default function TagList({ phrase, userTags, setOptPhraseData }: TagListProps) {

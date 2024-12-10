@@ -1,5 +1,5 @@
-import { flexRender, Row } from '@tanstack/react-table';
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { flexRender, Row, Table } from '@tanstack/react-table';
+import { PhraseWithAssociations } from 'kysely-codegen';
 import React, { Fragment } from 'react';
 import PhraseCardDetails from '@/components/phrasesAndRecordings/phrase_card_details';
 import TagList from '@/components/tags/tag_list';
@@ -9,14 +9,19 @@ import { getLangIcon } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 interface LibraryRowProps {
-  row: Row<PhraseWithTranslations>;
-  setOptPhraseData: (action: PhraseWithTranslations) => void;
+  row: Row<PhraseWithAssociations>;
+  table: Table<PhraseWithAssociations>;
+  setOptPhraseData: (action: PhraseWithAssociations) => void;
   userTags: string[];
 }
 
-const LibraryRow: React.FC<LibraryRowProps> = ({ row, userTags, setOptPhraseData }) => {
+const LibraryRow: React.FC<LibraryRowProps> = ({ row, table, userTags, setOptPhraseData }) => {
   const visibleCells = row.getVisibleCells();
   const expanded = row.getIsExpanded();
+
+  const toggleExpanded = (phraseId: string) => {
+    table.options.meta?.toggleExpanded(phraseId.toString());
+  };
 
   return (
     <Fragment key={row.original.id}>
@@ -24,7 +29,7 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row, userTags, setOptPhraseData
         data-state={row.getIsSelected() && 'selected'}
         className={cn(expanded && 'border-b-0 bg-zinc-100 dark:bg-zinc-800')}
         onClick={() => {
-          row.toggleExpanded();
+          toggleExpanded(row.original.id);
         }}
       >
         {visibleCells.map((cell) => (
@@ -49,7 +54,7 @@ const LibraryRow: React.FC<LibraryRowProps> = ({ row, userTags, setOptPhraseData
                   userTags={userTags}
                 />
               </div>
-              <PhraseCardDetails phrase={row.original} />
+              <PhraseCardDetails phrase={row.original} toggleExpanded={toggleExpanded} />
             </div>
           </TableCell>
         </TableRow>

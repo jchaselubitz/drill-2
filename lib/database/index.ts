@@ -67,20 +67,13 @@ declare module 'kysely-codegen' {
   export type BasePhrase = Selectable<Phrase>;
   export type PhraseWithTags = BasePhrase & { tags: BaseTag[] };
   export type PhraseWithTranslations = PhraseWithTags & {
-    translationsWherePrimary: {
+    translations: {
       createdAt: Date;
       id: string;
       userId: string;
       lessonId: string | null;
       phraseId: string;
     }[];
-    // translationsWhereSecondary: {
-    //   createdAt: Date;
-    //   id: string;
-    //   userId: string;
-    //   lessonId: string | null;
-    //   phraseId: string;
-    // }[];
   };
   export type PhraseWithAssociations = PhraseWithTranslations & {
     associations: {
