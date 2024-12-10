@@ -33,6 +33,7 @@ import { LanguagesISO639 } from '@/lib/lists';
 import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
 import LibraryTableHeaderTools from './library_table_header_tools';
+import { set } from 'zod';
 
 type LibraryTableProps = {
   phrases: PhraseWithAssociations[];
@@ -77,7 +78,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
     actions: !isMobile,
   });
   const [rowSelection, setRowSelection] = useState({});
-  const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [expanded, setExpanded] = useState<ExpandedState | {}>({});
   const [pagination, setPagination] = useState({
     pageIndex: 0, // Default page index
     pageSize: 20, // Default number of rows per page
@@ -104,9 +105,10 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
   };
 
   const toggleExpanded = useCallback(
-    (phraseId: string, table: TableType<PhraseWithAssociations>) => {
+    (phraseId: string, table: TableType<PhraseWithAssociations>, openPhrase?: string) => {
       const tableRows = table.getCoreRowModel().rows;
       const row = tableRows.find((row) => row.original.id === phraseId.toString());
+
       if (!row) {
         return;
       }
@@ -114,15 +116,25 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
       const rowIndex = row.index;
       const pageSize = pagination.pageSize;
       const rowPage = Math.floor(rowIndex / pageSize);
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: rowPage,
-      }));
-
-      setExpanded((prev) => ({
-        // @ts-ignore
-        [rowId]: !prev[rowId],
-      }));
+      if (openPhrase) {
+        setPagination({
+          pageIndex: rowPage,
+          pageSize: 20,
+        });
+        setExpanded({
+          [rowId]: true,
+        });
+        return;
+      } else {
+        setPagination((prev) => ({
+          ...prev,
+          pageIndex: rowPage,
+        }));
+        setExpanded((prev) => ({
+          // @ts-ignore
+          [rowId]: !prev[rowId],
+        }));
+      }
     },
     [setExpanded, setPagination, pagination.pageSize]
   );
@@ -152,7 +164,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
 
   useEffect(() => {
     if (openPhrase) {
-      toggleExpanded(openPhrase, table);
+      toggleExpanded(openPhrase, table, openPhrase);
     }
   }, [toggleExpanded, openPhrase, table]);
 
