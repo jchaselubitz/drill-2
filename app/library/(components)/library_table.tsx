@@ -33,15 +33,18 @@ import { LanguagesISO639 } from '@/lib/lists';
 import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
 import LibraryTableHeaderTools from './library_table_header_tools';
-import { set } from 'zod';
 
 type LibraryTableProps = {
   phrases: PhraseWithAssociations[];
   setOptPhraseData: (action: PhraseWithAssociations) => void;
-  openPhrase?: string;
+  setSelectedPhraseId: (id: string) => void;
 };
 
-const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, openPhrase }) => {
+const LibraryTableBase: FC<LibraryTableProps> = ({
+  phrases,
+  setOptPhraseData,
+  setSelectedPhraseId,
+}) => {
   const isMobile = useWindowSize().width < 768;
   const { prefLanguage } = useUserContext();
   const storedSortLang = localStorage.getItem('sort_lang');
@@ -104,7 +107,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
     });
   };
 
-  const toggleExpanded = useCallback(
+  const setSelectedPhrase = useCallback(
     (phraseId: string, table: TableType<PhraseWithAssociations>, openPhrase?: string) => {
       const tableRows = table.getCoreRowModel().rows;
       const row = tableRows.find((row) => row.original.id === phraseId.toString());
@@ -112,37 +115,23 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
       if (!row) {
         return;
       }
-      const rowId = row.id;
       const rowIndex = row.index;
       const pageSize = pagination.pageSize;
       const rowPage = Math.floor(rowIndex / pageSize);
-      if (openPhrase) {
-        setPagination({
-          pageIndex: rowPage,
-          pageSize: 20,
-        });
-        setExpanded({
-          [rowId]: true,
-        });
-        return;
-      } else {
-        setPagination((prev) => ({
-          ...prev,
-          pageIndex: rowPage,
-        }));
-        setExpanded((prev) => ({
-          // @ts-ignore
-          [rowId]: !prev[rowId],
-        }));
-      }
+
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: rowPage,
+      }));
+      setSelectedPhraseId(phraseId);
     },
-    [setExpanded, setPagination, pagination.pageSize]
+    [setPagination, pagination.pageSize, setSelectedPhraseId]
   );
 
   const table = useReactTable({
     data: phrases,
     columns: LibraryColumns,
-    meta: { uniqueLanguages, toggleFavorite, toggleExpanded },
+    meta: { uniqueLanguages, toggleFavorite, setSelectedPhrase },
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -161,12 +150,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
       expanded,
     },
   });
-
-  useEffect(() => {
-    if (openPhrase) {
-      toggleExpanded(openPhrase, table, openPhrase);
-    }
-  }, [toggleExpanded, openPhrase, table]);
 
   return (
     <div className="w-full">
@@ -202,15 +185,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
             {table.getRowModel().rows?.length ? (
               table
                 .getRowModel()
-                .rows.map((row) => (
-                  <LibraryRow
-                    key={row.original.id}
-                    row={row}
-                    table={table}
-                    setOptPhraseData={setOptPhraseData}
-                    userTags={userTags}
-                  />
-                ))
+                .rows.map((row) => <LibraryRow key={row.original.id} row={row} table={table} />)
             ) : (
               <TableRow>
                 <TableCell colSpan={LibraryColumns.length} className="h-24 text-center">
@@ -254,10 +229,11 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, op
 
 export default function LibraryTable({
   phrases,
-  openPhrase,
+  setSelectedPhraseId,
 }: {
   phrases: PhraseWithAssociations[];
   openPhrase: string;
+  setSelectedPhraseId: (id: string) => void;
 }) {
   const [optPhraseData, setOptPhraseData] = useOptimistic<
     PhraseWithAssociations[],
@@ -278,7 +254,7 @@ export default function LibraryTable({
     <LibraryTableBase
       phrases={optPhraseData}
       setOptPhraseData={setOptPhraseData}
-      openPhrase={openPhrase}
+      setSelectedPhraseId={setSelectedPhraseId}
     />
   );
 }

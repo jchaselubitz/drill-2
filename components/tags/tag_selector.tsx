@@ -118,7 +118,7 @@ export default function TagSelector({ phrase, userTags, setOptPhraseData }: TagL
             Add
           </Button>
           <Button variant={'outline'} size="sm" onClick={() => setShowInput(false)}>
-            Cancel
+            Done
           </Button>
         </div>
       )}

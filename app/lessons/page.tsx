@@ -4,7 +4,7 @@ import { Accordion } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { getSubjects } from '@/lib/actions/lessonActions';
 
-export default async function Home() {
+export default async function LessonsPage() {
   const subjects = await getSubjects();
 
   return (

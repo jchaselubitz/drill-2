@@ -239,9 +239,10 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
           handleGenerateLessonSuggestions={() => {}}
         />
       )}
-      <div className="mt-5">
-        {isTranslation ? (
-          genResponse && (
+
+      {genResponse &&
+        (isTranslation ? (
+          <div className="mt-5">
             <SaveTranslationButton
               input_text={genResponse.input_text}
               input_lang={genResponse.input_lang}
@@ -249,19 +250,20 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
               output_lang={genResponse.output_lang}
               saveTranslation={saveTranslation}
             />
-          )
+          </div>
         ) : chatIsLive ? (
-          <PhraseChat messages={presentableMessages} handleRequest={handleRequest} />
+          <div className="mt-5">
+            <PhraseChat messages={presentableMessages} handleRequest={handleRequest} />
+          </div>
         ) : (
-          genResponse && (
+          <div className="mt-5">
             <NestedObject
               data={genResponse}
               saveContent={saveContent}
               command={setCommand(firstWord)}
             />
-          )
-        )}
-      </div>
+          </div>
+        ))}
     </div>
   );
 };

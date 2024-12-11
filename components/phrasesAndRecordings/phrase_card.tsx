@@ -15,14 +15,14 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
   const bucket = 'text_to_speech';
   const router = useRouter();
 
-  const toggleExpanded = (id: string) => {
+  const setSelectedPhrase = (id: string) => {
     router.push(`/library/?phrase=${id}`);
   };
 
   return (
     <BaseObjectCard
       withoutDetails={<TtsButton text={phrase.text} bucket={bucket} lacksAudio={false} />}
-      objectDetails={<PhraseCardDetails phrase={phrase} toggleExpanded={toggleExpanded} />}
+      objectDetails={<PhraseCardDetails phrase={phrase} setSelectedPhraseId={setSelectedPhrase} />}
       text={phrase.text}
       date={phrase.createdAt}
     />

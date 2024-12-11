@@ -83,7 +83,7 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
     },
     cell: ({ row }) => (
       <span className="flex font-medium max-w-full whitespace-normal w-full">
-        <div className="capitalize line-clamp-2">{row.getValue('text')}</div>
+        <div className="line-clamp-2">{row.getValue('text')}</div>
       </span>
     ),
     size: 1000,

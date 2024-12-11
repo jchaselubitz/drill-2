@@ -6,6 +6,6 @@ declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
     uniqueLanguages: LanguagesISO639[];
     toggleFavorite: (phraseId: string) => void;
-    toggleExpanded: (phraseId: string, table: Table<PhraseWithAssociations>) => void;
+    setSelectedPhrase: (phraseId: string, table: Table<PhraseWithAssociations>) => void;
   }
 }
