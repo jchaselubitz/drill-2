@@ -2,6 +2,7 @@ import { flexRender, Row, Table } from '@tanstack/react-table';
 import { PhraseWithAssociations } from 'kysely-codegen';
 import React, { Fragment } from 'react';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { useLibraryContext } from '../LibraryContext';
 
 interface LibraryRowProps {
   row: Row<PhraseWithAssociations>;
@@ -10,9 +11,11 @@ interface LibraryRowProps {
 
 const LibraryRow: React.FC<LibraryRowProps> = ({ row, table }) => {
   const visibleCells = row.getVisibleCells();
+  const { setSelectedPhraseId } = useLibraryContext();
 
   const setPhrase = (phraseId: string) => {
     table.options.meta?.setSelectedPhrase(phraseId.toString(), table);
+    setSelectedPhraseId(phraseId);
   };
 
   return (

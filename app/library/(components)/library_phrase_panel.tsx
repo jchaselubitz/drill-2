@@ -6,22 +6,35 @@ import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
+import { useLibraryContext } from '../LibraryContext';
+import { useEffect, useMemo, useState } from 'react';
 
 interface LibraryPhrasePanelProps {
-  phrase: PhraseWithAssociations;
+  phrases: PhraseWithAssociations[];
   userTags: string[];
   setOptPhraseData: (data: any) => void;
-  setSelectedPhraseId: (id: string | null) => void;
 }
 
 const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
-  phrase,
-
+  phrases,
   userTags,
-
   setOptPhraseData,
-  setSelectedPhraseId,
 }) => {
+  const { setSelectedPhraseId, selectedPhraseId } = useLibraryContext();
+  const [phrase, setPhrase] = useState<PhraseWithAssociations | null>(null);
+
+  useEffect(() => {
+    const phrase = phrases.find((p) => p.id === selectedPhraseId) ?? null;
+    setPhrase(phrase);
+  }, [selectedPhraseId, phrases]);
+
+  if (!phrase)
+    return (
+      <div className="flex h-full items-center justify-center p-6 w-full">
+        <div className="text-center">Select a phrase to view details</div>
+      </div>
+    );
+
   return (
     <div className="flex flex-col w-full h-full z-40 bg-white">
       <div className="flex flex-col p-4 border-b border-slate-200 gap-3">
@@ -45,7 +58,7 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
         </div>
       </div>
 
-      <PhraseCardDetails phrase={phrase} setSelectedPhraseId={setSelectedPhraseId} />
+      <PhraseCardDetails phrase={phrase} />
     </div>
   );
 };

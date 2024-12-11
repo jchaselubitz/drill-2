@@ -15,10 +15,9 @@ import TranslationRow from './translationAndAssociation/translation_row';
 
 interface PhraseCardDetailsProps {
   phrase: PhraseWithAssociations;
-  setSelectedPhraseId: (id: string) => void;
 }
 
-const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, setSelectedPhraseId }) => {
+const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
   const { userId, userLanguage, prefLanguage } = useUserContext();
   const text = phrase.text;
   const lang = phrase.lang as LanguagesISO639;
@@ -47,7 +46,6 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, setSelect
                   <TranslationRow
                     key={translationsPhrase.id}
                     translationsPhrase={translationsPhrase}
-                    setSelectedPhraseId={setSelectedPhraseId}
                   />
                 ))}
               </AccordionContent>
@@ -58,11 +56,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, setSelect
               <AccordionTrigger className={accordionClass}>Associations</AccordionTrigger>
               <AccordionContent>
                 {associatedPhrases.map((associatedPhrase: any) => (
-                  <AssociationRow
-                    key={associatedPhrase.id}
-                    associatedPhrase={associatedPhrase}
-                    setSelectedPhraseId={setSelectedPhraseId}
-                  />
+                  <AssociationRow key={associatedPhrase.id} associatedPhrase={associatedPhrase} />
                 ))}
               </AccordionContent>
             </AccordionItem>

@@ -1,6 +1,7 @@
 import React from 'react';
 import TtsButton from '@/components/ai_elements/tts_button';
 import { getLangIcon, LanguagesISO639 } from '@/lib/lists';
+import { useLibraryContext } from '@/app/library/LibraryContext';
 
 interface AssociationRowProps {
   associatedPhrase: {
@@ -10,16 +11,11 @@ interface AssociationRowProps {
     lessonLink: string;
     lessonTitle: string;
   };
-
-  setSelectedPhraseId: (id: string) => void;
 }
 
-const AssociationRow: React.FC<AssociationRowProps> = ({
-  associatedPhrase,
-
-  setSelectedPhraseId,
-}) => {
+const AssociationRow: React.FC<AssociationRowProps> = ({ associatedPhrase }) => {
   const bucket = 'text_to_speech';
+  const { setSelectedPhraseId } = useLibraryContext();
 
   return (
     <div

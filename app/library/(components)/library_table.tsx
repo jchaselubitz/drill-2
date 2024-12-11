@@ -39,16 +39,11 @@ type LibraryTableProps = {
   phrases: PhraseWithAssociations[];
   className?: string;
   setOptPhraseData: (action: PhraseWithAssociations) => void;
-  setSelectedPhraseId: (id: string) => void;
 };
 
-const LibraryTableBase: FC<LibraryTableProps> = ({
-  phrases,
-  setOptPhraseData,
-  setSelectedPhraseId,
-  className,
-}) => {
+const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, className }) => {
   const isMobile = useWindowSize().width < 768;
+
   const { prefLanguage } = useUserContext();
   const storedSortLang = localStorage.getItem('sort_lang');
   const setSortLang = !storedSortLang
@@ -56,7 +51,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
     : storedSortLang === '*'
       ? ''
       : (storedSortLang as LanguagesISO639);
-
   const storedSortType = localStorage.getItem('sort_type');
   const setSortType =
     !storedSortType || storedSortType === '*' ? '' : (storedSortType as PhraseType);
@@ -84,7 +78,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
     actions: !isMobile,
   });
   const [rowSelection, setRowSelection] = useState({});
-  const [expanded, setExpanded] = useState<ExpandedState | {}>({});
   const [pagination, setPagination] = useState({
     pageIndex: 0, // Default page index
     pageSize: 20, // Default number of rows per page
@@ -126,9 +119,8 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
         ...prev,
         pageIndex: rowPage,
       }));
-      setSelectedPhraseId(phraseId);
     },
-    [setPagination, pagination.pageSize, setSelectedPhraseId]
+    [setPagination, pagination.pageSize]
   );
 
   const table = useReactTable({
@@ -150,7 +142,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
       columnFilters,
       columnVisibility,
       rowSelection,
-      expanded,
     },
   });
 
@@ -233,12 +224,9 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
 export default function LibraryTable({
   phrases,
   className,
-  setSelectedPhraseId,
 }: {
   phrases: PhraseWithAssociations[];
-  openPhrase: string;
   className?: string;
-  setSelectedPhraseId: (id: string) => void;
 }) {
   const [optPhraseData, setOptPhraseData] = useOptimistic<
     PhraseWithAssociations[],
@@ -259,7 +247,6 @@ export default function LibraryTable({
     <LibraryTableBase
       phrases={optPhraseData}
       setOptPhraseData={setOptPhraseData}
-      setSelectedPhraseId={setSelectedPhraseId}
       className={className}
     />
   );

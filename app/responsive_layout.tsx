@@ -1,55 +1,28 @@
 'use client';
 
 import { PhraseWithAssociations } from 'kysely-codegen';
-import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+
+import { useMemo } from 'react';
 import { useWindowSize } from 'react-use';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 
 import TopNav from './(components)/top_nav';
 import LibraryPhrasePanel from './library/(components)/library_phrase_panel';
 import LibraryTable from './library/(components)/library_table';
+import { LibraryContextProvider, useLibraryContext } from './library/LibraryContext';
 
-export default function ResponsiveLayout({
-  phrases,
-  openPhrase,
-}: {
-  phrases: PhraseWithAssociations[];
-  openPhrase: string;
-}) {
-  const [selectedPhraseId, setSelectedPhraseId] = useState<string | null>(openPhrase);
-  const router = useRouter();
+function _ResponsiveLayout({ phrases }: { phrases: PhraseWithAssociations[] }) {
+  const { selectedPhraseId } = useLibraryContext();
   const isMobile = useWindowSize().width < 768;
   const userTags = [...new Set(phrases.flatMap((phrase) => phrase.tags.map((tag) => tag.label)))];
-
-  const memoizedPhrase = useMemo(() => {
-    return phrases.find((p) => p.id === selectedPhraseId) ?? null;
-  }, [selectedPhraseId, phrases]);
-
-  const selectPhrase = (id: string | null) => {
-    setSelectedPhraseId(id);
-    if (id === null) {
-      router.push('/library');
-    } else router.push(`?phrase=${id}`);
-  };
 
   return isMobile ? (
     <div className="min-h-screen  w-full">
       <main className="flex flex-col gap-8 md:items-center w-full h-full">
-        {memoizedPhrase ? (
-          <LibraryPhrasePanel
-            phrase={memoizedPhrase}
-            setOptPhraseData={() => {}}
-            userTags={userTags}
-            setSelectedPhraseId={selectPhrase}
-          />
+        {selectedPhraseId ? (
+          <LibraryPhrasePanel phrases={phrases} setOptPhraseData={() => {}} userTags={userTags} />
         ) : (
-          <LibraryTable
-            className="p-2 pb-24"
-            phrases={phrases}
-            openPhrase={openPhrase}
-            setSelectedPhraseId={selectPhrase}
-          />
+          <LibraryTable className="p-2 pb-24" phrases={phrases} />
         )}
       </main>
     </div>
@@ -59,31 +32,30 @@ export default function ResponsiveLayout({
         <ResizablePanel defaultSize={50}>
           <TopNav isMobile={false} />
           <div className="flex h-full items-center justify-center p-6 pt-40 pb-12 overflow-y-scroll">
-            <LibraryTable
-              phrases={phrases}
-              openPhrase={openPhrase}
-              setSelectedPhraseId={selectPhrase}
-            />
+            <LibraryTable phrases={phrases} />
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={50}>
-          {memoizedPhrase ? (
-            <div className="flex h-full overflow-y-scroll">
-              <LibraryPhrasePanel
-                phrase={memoizedPhrase}
-                setOptPhraseData={() => {}}
-                userTags={userTags}
-                setSelectedPhraseId={selectPhrase}
-              />
-            </div>
-          ) : (
-            <div className="flex h-full items-center justify-center p-6">
-              <div className="text-center">Select a phrase to view details</div>
-            </div>
-          )}
+          <div className="flex h-full overflow-y-scroll">
+            <LibraryPhrasePanel phrases={phrases} setOptPhraseData={() => {}} userTags={userTags} />
+          </div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
+  );
+}
+
+export default function ResponsiveLayout({
+  phrases,
+  openPhrase,
+}: {
+  phrases: PhraseWithAssociations[];
+  openPhrase: string | null;
+}) {
+  return (
+    <LibraryContextProvider openPhrase={openPhrase}>
+      <_ResponsiveLayout phrases={phrases} />
+    </LibraryContextProvider>
   );
 }
