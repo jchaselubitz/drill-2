@@ -7,7 +7,6 @@ import { useWindowSize } from 'react-use';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 
 import TopNav from './(components)/top_nav';
-import LibraryPhrase from './library/(components)/library_phrase';
 import LibraryPhrasePanel from './library/(components)/library_phrase_panel';
 import LibraryTable from './library/(components)/library_table';
 
@@ -38,9 +37,8 @@ export default function ResponsiveLayout({
     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
       <main className="flex flex-col gap-8 md:items-center w-full">
         {memoizedPhrase ? (
-          <LibraryPhrase
+          <LibraryPhrasePanel
             phrase={memoizedPhrase}
-            isMobile={isMobile}
             setOptPhraseData={() => {}}
             userTags={userTags}
             setSelectedPhraseId={selectPhrase}
@@ -59,7 +57,7 @@ export default function ResponsiveLayout({
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={50}>
           <TopNav isMobile={false} />
-          <div className="flex h-full items-center justify-center p-6 pt-32 overflow-y-scroll">
+          <div className="flex h-full items-center justify-center p-6 pt-40 pb-12 overflow-y-scroll">
             <LibraryTable
               phrases={phrases}
               openPhrase={openPhrase}
@@ -70,12 +68,14 @@ export default function ResponsiveLayout({
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={50}>
           {memoizedPhrase ? (
-            <LibraryPhrasePanel
-              phrase={memoizedPhrase}
-              setOptPhraseData={() => {}}
-              userTags={userTags}
-              setSelectedPhraseId={selectPhrase}
-            />
+            <div className="flex h-full overflow-y-scroll">
+              <LibraryPhrasePanel
+                phrase={memoizedPhrase}
+                setOptPhraseData={() => {}}
+                userTags={userTags}
+                setSelectedPhraseId={selectPhrase}
+              />
+            </div>
           ) : (
             <div className="flex h-full items-center justify-center p-6">
               <div className="text-center">Select a phrase to view details</div>

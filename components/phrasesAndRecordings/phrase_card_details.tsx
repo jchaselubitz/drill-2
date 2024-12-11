@@ -34,13 +34,13 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, setSelect
       .map((p) => p)
       .flat() || [];
 
-  const accordionClass = 'p-2 mb-2 w-full rounded-md text-xs font-medium uppercase';
+  const accordionClass = 'p-2 mb-2 w-full rounded-md text-xs font-medium uppercase border-b-0';
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col w-full border-b border-slate-200 p-4 py-6">
         <Accordion type="single" collapsible>
           {translationsPhrases && translationsPhrases.length > 0 && (
-            <AccordionItem value="translations">
+            <AccordionItem value="translations" className="border-0">
               <AccordionTrigger className={accordionClass}>Translations</AccordionTrigger>
               <AccordionContent>
                 {translationsPhrases.map((translationsPhrase: any) => (

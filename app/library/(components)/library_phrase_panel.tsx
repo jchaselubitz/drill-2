@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
 
-import LibraryPhrase from './library_phrase';
-
 interface LibraryPhrasePanelProps {
   phrase: PhraseWithAssociations;
   userTags: string[];

@@ -1,7 +1,9 @@
+import { ColumnsIcon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import { ChevronDown, Hash, Languages } from 'lucide-react';
 import React from 'react';
+import { useWindowSize } from 'react-use';
 import Tag from '@/components/tags/tag';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +34,7 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
   uniqueLanguages,
   userTags,
 }) => {
+  const isMobile = useWindowSize().width < 768;
   const textColumn = table.getColumn('text');
   const textColumnCurrentFilter = textColumn?.getFilterValue();
 
@@ -126,7 +129,11 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              {typeColumnCurrentFilter ? getPhraseTypeName(typeColumnCurrentFilter) : 'Type'}{' '}
+              {!typeColumnCurrentFilter
+                ? 'Type'
+                : isMobile
+                  ? getPhraseTypeIcon(typeColumnCurrentFilter)
+                  : getPhraseTypeName(typeColumnCurrentFilter)}{' '}
               <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
@@ -150,7 +157,8 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
+              {isMobile ? <ColumnsIcon /> : 'Columns'}
+              <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
