@@ -34,8 +34,8 @@ export default function ResponsiveLayout({
   };
 
   return isMobile ? (
-    <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
-      <main className="flex flex-col gap-8 md:items-center w-full">
+    <div className="min-h-screen  w-full">
+      <main className="flex flex-col gap-8 md:items-center w-full h-full">
         {memoizedPhrase ? (
           <LibraryPhrasePanel
             phrase={memoizedPhrase}
@@ -45,6 +45,7 @@ export default function ResponsiveLayout({
           />
         ) : (
           <LibraryTable
+            className="p-2 pb-24"
             phrases={phrases}
             openPhrase={openPhrase}
             setSelectedPhraseId={selectPhrase}

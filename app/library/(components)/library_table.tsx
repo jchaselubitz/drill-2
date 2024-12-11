@@ -29,6 +29,7 @@ import {
 import { useUserContext } from '@/contexts/user_context';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 import { LanguagesISO639 } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 
 import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
@@ -36,6 +37,7 @@ import LibraryTableHeaderTools from './library_table_header_tools';
 
 type LibraryTableProps = {
   phrases: PhraseWithAssociations[];
+  className?: string;
   setOptPhraseData: (action: PhraseWithAssociations) => void;
   setSelectedPhraseId: (id: string) => void;
 };
@@ -44,6 +46,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
   phrases,
   setOptPhraseData,
   setSelectedPhraseId,
+  className,
 }) => {
   const isMobile = useWindowSize().width < 768;
   const { prefLanguage } = useUserContext();
@@ -152,7 +155,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
   });
 
   return (
-    <div className="w-full">
+    <div className={cn('w-full', className)}>
       <LibraryTableHeaderTools
         table={table}
         uniqueLanguages={uniqueLanguages}
@@ -229,10 +232,12 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
 
 export default function LibraryTable({
   phrases,
+  className,
   setSelectedPhraseId,
 }: {
   phrases: PhraseWithAssociations[];
   openPhrase: string;
+  className?: string;
   setSelectedPhraseId: (id: string) => void;
 }) {
   const [optPhraseData, setOptPhraseData] = useOptimistic<
@@ -255,6 +260,7 @@ export default function LibraryTable({
       phrases={optPhraseData}
       setOptPhraseData={setOptPhraseData}
       setSelectedPhraseId={setSelectedPhraseId}
+      className={className}
     />
   );
 }

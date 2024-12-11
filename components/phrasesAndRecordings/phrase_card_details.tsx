@@ -37,7 +37,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, setSelect
   const accordionClass = 'p-2 mb-2 w-full rounded-md text-xs font-medium uppercase border-b-0';
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col w-full border-b border-slate-200 p-4 py-6">
+      <div className="flex flex-col h-fit w-full border-b border-slate-200 p-4 py-6">
         <Accordion type="single" collapsible>
           {translationsPhrases && translationsPhrases.length > 0 && (
             <AccordionItem value="translations" className="border-0">
@@ -54,7 +54,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, setSelect
             </AccordionItem>
           )}
           {associatedPhrases && associatedPhrases.length > 0 && (
-            <AccordionItem value="associations">
+            <AccordionItem value="associations" className="border-0">
               <AccordionTrigger className={accordionClass}>Associations</AccordionTrigger>
               <AccordionContent>
                 {associatedPhrases.map((associatedPhrase: any) => (

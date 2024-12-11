@@ -26,6 +26,9 @@ const config: Config = {
           ring: 'hsl(var(--sidebar-ring))',
         },
       },
+      boxShadow: {
+        smallAbove: '0 -1px 2px 0 rgba(0, 0, 0, 0.05)',
+      },
 
       borderRadius: {
         iPhone: 'calc(var(--radius) + 35px)',

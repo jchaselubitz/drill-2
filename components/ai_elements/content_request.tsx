@@ -1,4 +1,3 @@
-import { Stars, XIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
@@ -15,14 +14,10 @@ import { createClient } from '@/utils/supabase/client';
 import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
-import PhraseChat from './phrase_chat';
+import PhraseChat, { ChatMessage } from './phrase_chat';
 import SaveTranslationButton from './save_translation_button';
 import LightSuggestionList from './suggestions/light_suggestion_list';
 
-export interface ChatMessage {
-  role: string;
-  content: string;
-}
 interface ContentRequestProps {
   text: string | null;
   lang: LanguagesISO639;
@@ -83,7 +78,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setCommand(firstWord) === 'Can';
 
   const chatIsLive = isExplanation && presentableMessages.length > 0;
-  // const chatIsLive = true;
+
   const captureCommand = () => {
     if (setCommand(firstWord)) {
       return { request: requestText, command: setCommand(firstWord) };
@@ -194,36 +189,25 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setRequestText(suggestion);
   };
 
+  const endSession = () => {
+    setRequestText('');
+    setChatMessages([]);
+  };
+
   return (
-    <div className="flex flex-col gap-3">
-      {chatIsLive ? (
-        <div className="flex justify-end">
-          <span className="flex gap-2 items-start rounded-lg p-3 text-white font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 ">
-            <div className="animate-pulse mr-1">
-              <Stars />
-            </div>
-            {requestText}
-            <button
-              onClick={() => {
-                setRequestText('');
-                setChatMessages([]);
-              }}
-            >
-              <XIcon size={20} />
-            </button>
-          </span>
-        </div>
-      ) : (
+    <div className="relative flex flex-col gap-2 h-full">
+      {!chatIsLive && (
         <>
           <Textarea
             className="w-full"
             value={requestText}
             onChange={(e) => setRequestText(e.target.value)}
-            placeholder="Type your request here"
+            placeholder="Make me 15 sentences using this word."
           />
           <LoadingButton
-            className="bg-blue-600 rounded-lg text-white p-2  disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-fit"
             onClick={() => handleRequest()}
+            onKeyDown={(e) => e.key === 'Enter' && handleRequest()}
             text={setCommand(firstWord) ?? 'Request'}
             loadingText="Requesting"
             buttonState={requestLoading ? 'loading' : 'default'}
@@ -231,18 +215,20 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
         </>
       )}
       {suggestions.length > 0 && requestText === '' && (
-        <LightSuggestionList
-          suggestions={suggestions}
-          setMaterialSuggestion={setMaterialSuggestion}
-          isLoading={requestLoading}
-          includeSuggestionCreator={false}
-          handleGenerateLessonSuggestions={() => {}}
-        />
+        <div className="mt-1">
+          <LightSuggestionList
+            suggestions={suggestions}
+            setMaterialSuggestion={setMaterialSuggestion}
+            isLoading={requestLoading}
+            includeSuggestionCreator={false}
+            handleGenerateLessonSuggestions={() => {}}
+          />
+        </div>
       )}
 
       {genResponse &&
         (isTranslation ? (
-          <div className="mt-5">
+          <div className="mt-5 ">
             <SaveTranslationButton
               input_text={genResponse.input_text}
               input_lang={genResponse.input_lang}
@@ -252,8 +238,14 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
             />
           </div>
         ) : chatIsLive ? (
-          <div className="mt-5">
-            <PhraseChat messages={presentableMessages} handleRequest={handleRequest} />
+          <div className=" max-h-screen">
+            <PhraseChat
+              messages={presentableMessages}
+              handleRequest={handleRequest}
+              requestText={requestText}
+              endSession={endSession}
+              requestLoading={requestLoading}
+            />
           </div>
         ) : (
           <div className="mt-5">
