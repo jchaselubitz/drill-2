@@ -24,7 +24,7 @@ export const LessonsContextProvider: React.FC<{
     setSelectedSubjectId(id);
     if (id === null) {
       router.push('/subjects');
-    } else router.push(`?subject=${id}`);
+    } else router.push(`?subject=${id}&`);
   };
 
   return (

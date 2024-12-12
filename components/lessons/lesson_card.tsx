@@ -3,7 +3,6 @@
 import { BaseLesson } from 'kysely-codegen';
 import { Loader2Icon } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useLessonsContext } from '@/app/lessons/lessons_context';
 
@@ -13,13 +12,11 @@ interface LessonCardProps {
 
 const LessonCard: React.FC<LessonCardProps> = ({ lesson }) => {
   const { setSelectedSubjectId } = useLessonsContext();
-  const router = useRouter();
 
   const [loadingState, setLoadingState] = React.useState(false);
 
   const handleClick = () => {
     setSelectedSubjectId(lesson.subjectId);
-    router.push(`?lesson=${lesson.id}`);
     setLoadingState(true);
   };
 
