@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
       'id, title, translation ( phrase_primary_id (text, lang), phrase_secondary_id (text, lang))'
     )
     .eq('id', lessonId);
+
   if (errorLessons) {
     return new Response(errorLessons.message, { status: 500 });
   }

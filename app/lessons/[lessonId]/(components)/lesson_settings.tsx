@@ -81,7 +81,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
               downloadApkg({ lesson, setLoadingFalse: () => setLoadingAPKG(false) });
             }}
           >
-            {loadingAPKG ? 'Downloading' : 'Download APKG'}
+            {loadingAPKG ? 'Downloading' : 'Download Anki Deck'}
           </button>
         </div>
         <GenerateMorePhrases

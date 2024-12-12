@@ -15,10 +15,10 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
+  const bucket = 'text_to_speech';
 
   const data = await req.json();
   const lessonId = data.lessonId;
-  const bucket = 'text_to_speech';
 
   const supabase = createClient(
     Deno.env.get('DB_SUPABASE_URL') ?? '',
@@ -30,7 +30,8 @@ Deno.serve(async (req) => {
     .from('lesson')
     .select(
       'id, title, translation ( phrase_primary_id (text, lang), phrase_secondary_id (text, lang))'
-    );
+    )
+    .eq('id', lessonId);
 
   if (errorLessons) {
     return new Response(errorLessons.message, { status: 500 });
