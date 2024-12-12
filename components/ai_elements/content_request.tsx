@@ -139,6 +139,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
         ...prevMessages,
         { role: 'assistant', content: response.explanation },
       ]);
+      setRequestLoading(false);
     } catch (error) {
       alert('Sorry, it looks like the model returned the wrong format. Please try again.');
       setRequestLoading(false);
@@ -194,6 +195,12 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setChatMessages([]);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter') {
+      handleRequest();
+    }
+  };
+
   return (
     <div className="relative flex flex-col gap-2 h-full">
       {!chatIsLive && (
@@ -207,7 +214,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
           <LoadingButton
             className="w-fit"
             onClick={() => handleRequest()}
-            onKeyDown={(e) => e.key === 'Enter' && handleRequest()}
+            onKeyDown={(e) => handleKeyPress(e)}
             text={setCommand(firstWord) ?? 'Request'}
             loadingText="Requesting"
             buttonState={requestLoading ? 'loading' : 'default'}

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { ScrollArea } from '../ui/scroll-area';
 
 // const messages = [
 //   {
@@ -92,29 +93,38 @@ const PhraseChat: React.FC<PhraseChatProps> = ({
   }
 
   const assistantButton = (
-    <div className="absolute flex justify-end right-0 m-3">
-      <span className="flex gap-2 items-start rounded-lg p-3 text-white font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 shadow-lg">
-        <div className="animate-pulse mr-1">
-          <Stars />
-        </div>
-        {requestText}
-        <button onClick={endSession}>
-          <XIcon size={20} />
-        </button>
-      </span>
+    <div className="absolute flex gap-2 items-start p-3 text-white font-semibold justify-end right-0 m-3 bg-gradient-to-r from-blue-600 to-cyan-600 shadow-lg rounded-lg ">
+      <div className="animate-pulse mr-1">
+        <Stars />
+      </div>
+      {requestText}
+      <button onClick={endSession}>
+        <XIcon size={20} />
+      </button>
     </div>
   );
 
   return (
     <div className="fixed z-50 bottom-0 right-0 md:right-4 flex flex-col  md:min-h-96 md:max-h-[700px] rounded-lg border bg-white shadow-inner h-full">
-      <div className="flex justify-end bg-slate-100 p-1 px-4">
-        <button onClick={() => setIsOpen(false)}>
-          <Minus size={20} />
-        </button>
+      <div className="flex justify-between bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-1 px-4 rounded-t ">
+        <div className="flex justify-start gap-2 items-center">
+          <div className="animate-pulse mr-1">
+            <Stars />
+          </div>
+          {requestText}
+        </div>
+
+        <div className="flex justify-end gap-2 items-center w-fit">
+          <button onClick={() => setIsOpen(false)}>
+            <Minus size={20} />
+          </button>
+          <button onClick={endSession}>
+            <XIcon size={20} />
+          </button>
+        </div>
       </div>
       <div className="flex flex-col h-full relative ">
-        {assistantButton}
-        <div className="pt-14 md:pb-14 pb-20 overflow-y-scroll px-4">
+        <ScrollArea className=" pb-24 overflow-y-scroll px-4">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -142,7 +152,7 @@ const PhraseChat: React.FC<PhraseChatProps> = ({
               <Loader2 size={24} className="animate-spin" />
             </div>
           )}
-        </div>
+        </ScrollArea>
       </div>
       <div className="absolute bottom-0 right-0 w-full bg-zinc-100 py-3 shadow-smallAbove">
         <form className="flex gap-2 px-4 ">

@@ -41,6 +41,7 @@ describe('Phrase Management Functions', () => {
         select: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
+
         execute: mockExecute,
       };
 
@@ -66,8 +67,18 @@ describe('Phrase Management Functions', () => {
       const mockValues = jest.fn().mockReturnThis();
       const mockExecute = jest.fn().mockResolvedValue([]);
       mockInsertInto.mockReturnValue({
-        values: mockValues,
-        execute: mockExecute,
+        // values: mockValues,
+        transaction: jest.fn().mockReturnValue({
+          execute: jest.fn((callback) =>
+            callback({
+              insertInto: jest.fn().mockReturnValue({
+                values: jest.fn().mockReturnThis(),
+                returning: jest.fn().mockReturnThis(),
+                executeTakeFirstOrThrow: jest.fn().mockResolvedValue({ id: 'mocked-id' }),
+              }),
+            })
+          ),
+        }),
       });
 
       await addPhrase({
