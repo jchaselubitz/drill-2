@@ -1,5 +1,8 @@
+'use client';
+
 import { useRouter } from 'next/navigation';
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { useSearchParam } from 'react-use';
 
 interface LibraryContextProps {
   selectedPhraseId: string | null;
@@ -10,9 +13,10 @@ const LibraryContext = createContext<LibraryContextProps | undefined>(undefined)
 
 export const LibraryContextProvider: React.FC<{
   children: ReactNode;
-  openPhrase: string | null;
-}> = ({ children, openPhrase }) => {
-  const [selectedPhraseId, setSelectedPhraseId] = useState<string | null>(openPhrase);
+}> = ({ children }) => {
+  const searchParams = useSearchParam('lesson');
+  const { phrase } = searchParams ? { phrase: searchParams } : { phrase: null };
+  const [selectedPhraseId, setSelectedPhraseId] = useState<string | null>(phrase);
 
   const router = useRouter();
 

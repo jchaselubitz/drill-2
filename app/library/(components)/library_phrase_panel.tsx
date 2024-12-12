@@ -6,27 +6,21 @@ import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
-import { useLibraryContext } from '../LibraryContext';
-import { useEffect, useMemo, useState } from 'react';
+
+import { useLibraryContext } from '../library_context';
 
 interface LibraryPhrasePanelProps {
-  phrases: PhraseWithAssociations[];
+  phrase: PhraseWithAssociations | null;
   userTags: string[];
   setOptPhraseData: (data: any) => void;
 }
 
 const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
-  phrases,
+  phrase,
   userTags,
   setOptPhraseData,
 }) => {
-  const { setSelectedPhraseId, selectedPhraseId } = useLibraryContext();
-  const [phrase, setPhrase] = useState<PhraseWithAssociations | null>(null);
-
-  useEffect(() => {
-    const phrase = phrases.find((p) => p.id === selectedPhraseId) ?? null;
-    setPhrase(phrase);
-  }, [selectedPhraseId, phrases]);
+  const { setSelectedPhraseId } = useLibraryContext();
 
   if (!phrase)
     return (

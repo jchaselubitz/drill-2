@@ -133,7 +133,7 @@ const PhraseChat: React.FC<PhraseChatProps> = ({
               </div>
             </div>
           ))}
-          {!requestLoading && (
+          {requestLoading && (
             <div
               className={cn(
                 'flex my-4 justify-start bg-blue-200 w-fit p-3 rounded-lg text-gray-800'

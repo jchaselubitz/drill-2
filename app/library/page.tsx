@@ -1,8 +1,8 @@
 import { getPhrases } from '@/lib/actions/phraseActions';
 
-import ResponsiveLayout from '../responsive_layout';
+import LibraryLayout from './library_layout';
 
-export default async function Home({
+export default async function Library({
   searchParams,
 }: {
   searchParams: Promise<{ phrase: string }>;
@@ -10,5 +10,5 @@ export default async function Home({
   const phrases = await getPhrases();
   const { phrase } = await searchParams;
 
-  return <ResponsiveLayout phrases={phrases} openPhrase={phrase} />;
+  return <LibraryLayout phrases={phrases} phrase={phrase} />;
 }

@@ -33,7 +33,7 @@ import LessonOptionList from './lesson_option_list';
 
 interface LessonCreationFormProps {
   subjectId?: string | undefined;
-  subjectLanguage?: LanguagesISO639;
+  subjectLanguage?: LanguagesISO639 | null;
   subjectLevel?: string | null;
   startOpen?: boolean;
 }
@@ -50,7 +50,9 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
   const [showCreationForm, setShowCreationForm] = useState(startOpen);
   const { userLanguage, prefLanguage } = useUserContext();
   const [level, setLevel] = useState(subjectLevel);
-  const [studyLanguage, setStudyLanguage] = useState<LanguagesISO639 | undefined>(subjectLanguage);
+  const [studyLanguage, setStudyLanguage] = useState<LanguagesISO639 | null>(
+    subjectLanguage ?? null
+  );
   const [request, setRequest] = useState('');
   const [optionListObject, setOptionListObject] = useState<OptionType[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -154,7 +156,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
 
   if (!showCreationForm) {
     return (
-      <Button onClick={() => setShowCreationForm(true)} variant={'default'}>
+      <Button onClick={() => setShowCreationForm(true)} variant={'outline'} className="w-fit">
         Create a new lesson
       </Button>
     );

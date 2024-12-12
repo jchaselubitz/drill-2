@@ -95,6 +95,7 @@ export function NavService({ user, children }: { user: User; children: React.Rea
     <>
       {!isMobile && <AppSidebar user={user} setUserLanguages={setUserLanguages} pages={pages} />}
       <main className="w-full h-full flex flex-col">
+        {isMobile && <TopNav isMobile={true} />}
         <div className="flex justify-center pt-12 md:pt-0 md:justify-normal h-full ">
           {children}
         </div>

@@ -3,19 +3,31 @@
 import { BaseLesson } from 'kysely-codegen';
 import { Loader2Icon } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
+import { useLessonsContext } from '@/app/lessons/lessons_context';
 
 interface LessonCardProps {
   lesson: BaseLesson;
 }
 
 const LessonCard: React.FC<LessonCardProps> = ({ lesson }) => {
+  const { setSelectedSubjectId } = useLessonsContext();
+  const router = useRouter();
+
   const [loadingState, setLoadingState] = React.useState(false);
+
+  const handleClick = () => {
+    setSelectedSubjectId(lesson.subjectId);
+    router.push(`?lesson=${lesson.id}`);
+    setLoadingState(true);
+  };
+
   return (
     <Link key={lesson.id} href={`/lessons/${lesson.id}`}>
       <button
         className="flex justify-between p-3 border border-zinc-300 rounded-lg w-full shadow-sm hover:bg-zinc-50 items-center"
-        onClick={() => setLoadingState(true)}
+        onClick={() => handleClick()}
       >
         <div className="text-left">
           <div className="">{lesson.title}</div>

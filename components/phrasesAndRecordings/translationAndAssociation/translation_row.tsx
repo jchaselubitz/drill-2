@@ -1,7 +1,7 @@
 import React from 'react';
+import { useLibraryContext } from '@/app/library/library_context';
 import TtsButton from '@/components/ai_elements/tts_button';
 import { getLangIcon, LanguagesISO639 } from '@/lib/lists';
-import { useLibraryContext } from '@/app/library/LibraryContext';
 
 interface TranslationRowProps {
   translationsPhrase: {

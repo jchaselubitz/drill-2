@@ -1,4 +1,4 @@
-import { getLesson } from '@/lib/actions/lessonActions';
+import { getLessons } from '@/lib/actions/lessonActions';
 import { getFileList } from '@/lib/helpers/helpersAudio';
 import { hashString } from '@/lib/helpers/helpersDB';
 import { createClient } from '@/utils/supabase/server';
@@ -10,7 +10,8 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
   const { lessonId } = await params;
   const supabase = createClient();
 
-  const lesson = await getLesson(lessonId);
+  const resp = await getLessons(lessonId);
+  const lesson = resp[0];
 
   if (!lesson) {
     return <div>Lesson not found</div>;
@@ -32,7 +33,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
   const translationsWithoutAudio = withoutAudio.filter(Boolean);
 
   return (
-    <div className="m-4 rounded-lg flex flex-col h-full w-full">
+    <div className="m-4 p-2 rounded-lg flex flex-col h-full w-full">
       <LessonControlBar lesson={lesson} />
       <LessonSettings lesson={lesson} translationsWithoutAudio={translationsWithoutAudio} />
     </div>

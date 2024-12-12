@@ -1,45 +1,29 @@
 import { SubjectWithLessons } from 'kysely-codegen';
 import React from 'react';
-import LessonCreationForm from '@/app/lessons/(components)/lesson_creation_form';
-
-import { AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { Separator } from '../ui/separator';
-import LessonCard from './lesson_card';
+import { useLessonsContext } from '@/app/lessons/lessons_context';
+import { cn } from '@/lib/utils';
 
 type SubjectItemProps = {
   subject: SubjectWithLessons;
 };
 
 const SubjectItem: React.FC<SubjectItemProps> = ({ subject }) => {
-  const lessons = subject.lessons;
-  const subjectLevel = subject.level;
-  const subjectLanguage = subject.lang;
-
+  const { setSelectedSubjectId } = useLessonsContext();
+  const numLessons = subject.lessons.length;
   return (
-    <AccordionItem
-      value={subject.id}
-      className="px-3 border border-zinc-300 rounded-lg w-full hover:shadow-sm data-[state=open]:shadow-lg"
+    <button
+      className={cn(
+        'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-zinc-50'
+        // mail.selected === item.id && 'bg-muted'
+      )}
+      onClick={() => setSelectedSubjectId(subject.id)}
     >
-      <AccordionTrigger className="hover:no-underline ">
-        <div className="flex flex-col items-start ">
-          <h2 className="text-sm text-zinc-600 uppercase">{subject.name}</h2>
-          <div className="text-base text-zinc-800 font-medium">{subject.level}</div>
-        </div>
-      </AccordionTrigger>
-      <AccordionContent>
-        <div className="flex flex-col gap-4 mb-4">
-          {lessons.map((lesson) => (
-            <LessonCard key={lesson.id} lesson={lesson} />
-          ))}
-        </div>
-        <Separator className="my-6" />
-        <LessonCreationForm
-          subjectId={subject.id}
-          subjectLanguage={subjectLanguage}
-          subjectLevel={subjectLevel}
-        />
-      </AccordionContent>
-    </AccordionItem>
+      <h2 className="text-base font-bold">{subject.level}</h2>
+      <h1 className="text-sm">{subject.name}</h1>
+      <div>
+        {numLessons} lesson{`${numLessons > 1 ? 's' : ''}`}
+      </div>
+    </button>
   );
 };
 

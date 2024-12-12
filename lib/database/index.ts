@@ -54,6 +54,8 @@ declare module 'kysely-codegen' {
   export type LessonWithTranslations = BaseLesson & {
     translations: TranslationWithPhrase[];
     level: string | null;
+    subjectName: string | null;
+    lang: LanguagesISO639 | null;
   };
   export type NewLesson = Insertable<Lesson>;
   export type EditedLesson = Updateable<Lesson>;

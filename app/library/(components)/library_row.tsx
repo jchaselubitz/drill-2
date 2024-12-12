@@ -2,7 +2,8 @@ import { flexRender, Row, Table } from '@tanstack/react-table';
 import { PhraseWithAssociations } from 'kysely-codegen';
 import React, { Fragment } from 'react';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { useLibraryContext } from '../LibraryContext';
+
+import { useLibraryContext } from '../library_context';
 
 interface LibraryRowProps {
   row: Row<PhraseWithAssociations>;

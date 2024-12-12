@@ -1,9 +1,4 @@
-import { getSubjects } from '@/lib/actions/lessonActions';
-
-import LessonsLayout from './lessons_layout';
-
-// export default async function LessonsPage() {
-//   const subjects = await getLessons();
+import { LessonsContextProvider } from './lessons_context';
 
 //   return (
 //     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
@@ -22,8 +17,10 @@ import LessonsLayout from './lessons_layout';
 //   );
 // }
 
-export default async function LessonsPage() {
-  const subjects = await getSubjects();
-
-  return <LessonsLayout subjects={subjects} />;
+export default async function LessonsLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return <LessonsContextProvider> {children} </LessonsContextProvider>;
 }

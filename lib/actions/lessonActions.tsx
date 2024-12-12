@@ -2,20 +2,23 @@
 
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import {
+  BaseLesson,
   BasePhrase,
   LessonWithTranslations,
   NewLesson,
   NewPhrase,
   NewSubject,
   NewTranslation,
+  SubjectWithLessons,
 } from 'kysely-codegen';
 import { revalidatePath } from 'next/cache';
 import { PhraseType } from '@/app/lessons/(components)/lesson_option';
 import { createClient } from '@/utils/supabase/server';
 
 import db from '../database';
+import { LanguagesISO639 } from '../lists';
 
-export const getSubjects = async () => {
+export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -38,7 +41,7 @@ export const getSubjects = async () => {
       'phrase.lang as lang',
       jsonArrayFrom(
         db
-          .selectFrom('lesson' as never)
+          .selectFrom('lesson')
           .select([
             'lesson.id',
             'lesson.title',
@@ -48,6 +51,8 @@ export const getSubjects = async () => {
             'lesson.createdAt',
             'lesson.reviewDate',
             'lesson.reviewDeck',
+            'lesson.subjectId',
+            // 'subject.level as level',
           ])
           //@ts-ignore
           .whereRef('lesson.subjectId', '=', 'subject.id')
@@ -57,7 +62,7 @@ export const getSubjects = async () => {
     .execute();
 };
 
-export const getLesson = async (lessonId: string): Promise<LessonWithTranslations | null> => {
+export const getLessons = async (lessonId?: string): Promise<LessonWithTranslations[]> => {
   const supabase = createClient();
 
   const {
@@ -65,12 +70,12 @@ export const getLesson = async (lessonId: string): Promise<LessonWithTranslation
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return null;
+    return [];
   }
-  const lesson = await db
+  let lessons = db
     .selectFrom('lesson' as never)
     .selectAll()
-    .where('lesson.id', '=', lessonId)
+
     .where('lesson.userId', '=', user.id)
     .leftJoin('subject', 'lesson.subjectId', 'subject.id')
     .select(({ eb }) => [
@@ -82,10 +87,11 @@ export const getLesson = async (lessonId: string): Promise<LessonWithTranslation
       'lesson.content',
       'lesson.createdAt',
       'lesson.recordingUrl',
-      'lesson.subjectId',
       'lesson.reviewDate',
       'lesson.reviewDeck',
       'subject.level as level',
+      'subject.name as subjectName',
+
       jsonArrayFrom(
         eb
           .selectFrom('translation')
@@ -113,20 +119,26 @@ export const getLesson = async (lessonId: string): Promise<LessonWithTranslation
           ])
           .whereRef('translation.lessonId', '=', 'lesson.id')
       ).as('translations'),
-    ])
-    .executeTakeFirstOrThrow();
+    ]);
 
-  const lessonWithTranslations = {
+  if (lessonId) {
+    lessons = lessons.where('lesson.id', '=', lessonId);
+  }
+
+  const response = await lessons.execute();
+
+  const lessonWithTranslationsArray = response.map((lesson) => ({
     ...lesson,
     level: lesson.level,
+    lang: (lesson.translations[0].phrasePrimary?.lang as LanguagesISO639) ?? null,
     translations: lesson.translations.map((translation) => ({
       ...translation,
       phrasePrimary: translation.phrasePrimary as BasePhrase,
       phraseSecondary: translation.phraseSecondary as BasePhrase,
     })),
-  };
+  }));
 
-  return lessonWithTranslations;
+  return lessonWithTranslationsArray;
 };
 
 export const addSubjectLessonWithTranslations = async ({
