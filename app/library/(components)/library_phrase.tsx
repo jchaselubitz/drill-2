@@ -36,7 +36,7 @@ const LibraryPhrase: React.FC<LibraryPhraseProps> = ({
         </div>
         <TagList phrase={phrase} setOptPhraseData={setOptPhraseData} userTags={userTags} />
       </div>
-      <PhraseCardDetails phrase={phrase} setSelectedPhraseId={setSelectedPhraseId} />
+      <PhraseCardDetails phrase={phrase} />
     </div>
   );
 };

@@ -72,7 +72,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
       studyLanguage: language,
       level: level,
       concept: request,
-      numberOfPhrases: 20,
+      numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
     });
 
     const modelParams = { format: format };

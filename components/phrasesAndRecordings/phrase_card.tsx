@@ -22,7 +22,7 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
   return (
     <BaseObjectCard
       withoutDetails={<TtsButton text={phrase.text} bucket={bucket} lacksAudio={false} />}
-      objectDetails={<PhraseCardDetails phrase={phrase} setSelectedPhraseId={setSelectedPhrase} />}
+      objectDetails={<PhraseCardDetails phrase={phrase} navigateToPhrase={setSelectedPhrase} />}
       text={phrase.text}
       date={phrase.createdAt}
     />

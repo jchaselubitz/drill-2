@@ -11,11 +11,19 @@ interface AssociationRowProps {
     lessonLink: string;
     lessonTitle: string;
   };
+  navigateToPhrase?: (id: string) => void;
 }
 
-const AssociationRow: React.FC<AssociationRowProps> = ({ associatedPhrase }) => {
+const AssociationRow: React.FC<AssociationRowProps> = ({ associatedPhrase, navigateToPhrase }) => {
   const bucket = 'text_to_speech';
   const { setSelectedPhraseId } = useLibraryContext();
+
+  const handlePhraseClick = () => {
+    if (navigateToPhrase) {
+      navigateToPhrase(associatedPhrase.id);
+    }
+    setSelectedPhraseId(associatedPhrase.id);
+  };
 
   return (
     <div
@@ -26,10 +34,7 @@ const AssociationRow: React.FC<AssociationRowProps> = ({ associatedPhrase }) => 
         <div className="flex items-center gap-2 ">
           <div>{getLangIcon(associatedPhrase.lang)}</div>
 
-          <button
-            className="flex items-center text-left"
-            onClick={() => setSelectedPhraseId(associatedPhrase.id)}
-          >
+          <button className="flex items-center text-left" onClick={handlePhraseClick}>
             {associatedPhrase.text}
           </button>
         </div>

@@ -11,11 +11,23 @@ interface TranslationRowProps {
     lessonLink: string;
     lessonTitle: string;
   };
+  navigateToPhrase?: (id: string) => void;
 }
 
-const TranslationRow: React.FC<TranslationRowProps> = ({ translationsPhrase }) => {
+const TranslationRow: React.FC<TranslationRowProps> = ({
+  translationsPhrase,
+  navigateToPhrase,
+}) => {
   const bucket = 'text_to_speech';
   const { setSelectedPhraseId } = useLibraryContext();
+
+  const handlePhraseClick = () => {
+    if (navigateToPhrase) {
+      navigateToPhrase(translationsPhrase.id);
+    }
+    setSelectedPhraseId(translationsPhrase.id);
+  };
+
   return (
     <div
       key={translationsPhrase.id}
@@ -25,10 +37,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({ translationsPhrase }) =
         <div className="flex items-center gap-2">
           <div>{getLangIcon(translationsPhrase.lang)}</div>
 
-          <button
-            className="flex items-center gap-1 text-left"
-            onClick={() => setSelectedPhraseId(translationsPhrase.id)}
-          >
+          <button className="flex items-center gap-1 text-left" onClick={handlePhraseClick}>
             {translationsPhrase.text}
           </button>
         </div>

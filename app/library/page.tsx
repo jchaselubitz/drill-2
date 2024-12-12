@@ -10,5 +10,5 @@ export default async function Library({
   const phrases = await getPhrases();
   const { phrase } = await searchParams;
 
-  return <LibraryLayout phrases={phrases} phrase={phrase} />;
+  return <LibraryLayout phrases={phrases} />;
 }

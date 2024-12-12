@@ -49,7 +49,7 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
       studyLanguage,
       userLanguage,
       level: level,
-      numberOfPhrases: 20,
+      numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
     });
 
     const messages = [

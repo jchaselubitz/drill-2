@@ -26,7 +26,7 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
   if (!user) {
     return [];
   }
-  return await db
+  return (await db
     .selectFrom('subject' as never)
     .innerJoin('lesson', 'subject.id', 'lesson.subjectId')
     .limit(1)
@@ -59,7 +59,7 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
       ).as('lessons'),
     ])
     .where('subject.userId', '=', user.id)
-    .execute();
+    .execute()) as SubjectWithLessons[];
 };
 
 export const getLessons = async (lessonId?: string): Promise<LessonWithTranslations[]> => {

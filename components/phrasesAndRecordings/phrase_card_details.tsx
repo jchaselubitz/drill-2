@@ -15,9 +15,10 @@ import TranslationRow from './translationAndAssociation/translation_row';
 
 interface PhraseCardDetailsProps {
   phrase: PhraseWithAssociations;
+  navigateToPhrase?: (id: string) => void;
 }
 
-const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
+const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateToPhrase }) => {
   const { userId, userLanguage, prefLanguage } = useUserContext();
   const text = phrase.text;
   const lang = phrase.lang as LanguagesISO639;
@@ -46,6 +47,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
                   <TranslationRow
                     key={translationsPhrase.id}
                     translationsPhrase={translationsPhrase}
+                    navigateToPhrase={navigateToPhrase}
                   />
                 ))}
               </AccordionContent>
@@ -56,7 +58,11 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase }) => {
               <AccordionTrigger className={accordionClass}>Associations</AccordionTrigger>
               <AccordionContent>
                 {associatedPhrases.map((associatedPhrase: any) => (
-                  <AssociationRow key={associatedPhrase.id} associatedPhrase={associatedPhrase} />
+                  <AssociationRow
+                    key={associatedPhrase.id}
+                    associatedPhrase={associatedPhrase}
+                    navigateToPhrase={navigateToPhrase}
+                  />
                 ))}
               </AccordionContent>
             </AccordionItem>
