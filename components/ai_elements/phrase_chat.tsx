@@ -1,9 +1,15 @@
 'use client';
-
 import { Loader2, Minus, Send, Stars, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
+import Markdown from 'react-markdown';
 import { useChatContext } from '@/contexts/chat_window_context';
-import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
+import { addHistory } from '@/lib/actions/actionsHistory';
+import {
+  generateHistory,
+  getModelSelection,
+  getOpenAiKey,
+  gptFormatType,
+} from '@/lib/helpers/helpersAI';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
 
@@ -46,8 +52,20 @@ const PhraseChat: React.FC = () => {
     }
   };
 
-  const handleCloseChat = () => {
+  const handleEndChat = async () => {
     setChatOpen(false);
+    if (!messages) return;
+    try {
+      const { topic, lang, insight } = await generateHistory(messages);
+      await addHistory({
+        topic,
+        lang,
+        insight,
+      });
+    } catch (error) {
+      console.error('Error adding history:', error);
+    }
+    onEndSession && onEndSession();
     setChatContext(undefined);
     setMessages([]);
   };
@@ -107,7 +125,7 @@ const PhraseChat: React.FC = () => {
         <button onClick={() => setChatOpen(false)}>
           <Minus size={20} />
         </button>
-        <button onClick={onEndSession}>
+        <button onClick={async () => handleEndChat()}>
           <XIcon size={20} />
         </button>
       </div>
@@ -133,14 +151,14 @@ const PhraseChat: React.FC = () => {
                 'justify-end': message.role !== 'assistant',
               })}
             >
-              <div
+              <Markdown
                 className={cn('max-w-prose p-3 rounded-lg text-gray-800', {
                   'bg-blue-200': message.role === 'assistant',
                   'bg-slate-200': message.role !== 'assistant',
                 })}
               >
                 {message.content}
-              </div>
+              </Markdown>
             </div>
           ))}
           {chatLoading && chatLoadingIndicator}

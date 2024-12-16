@@ -8,6 +8,7 @@ import { ChatWindowProvider } from '@/contexts/chat_window_context';
 import { CreateModalProvider } from '@/contexts/create_modal_context';
 import { LibraryContextProvider } from '@/contexts/library_context';
 import { UserContextProvider } from '@/contexts/user_context';
+import { getUserHistory } from '@/lib/actions/actionsHistory';
 import { getProfile } from '@/lib/actions/userActions';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
@@ -62,6 +63,7 @@ export default async function RootLayout({
 }>) {
   const supabase = createClient();
   const profile = await getProfile();
+  const history = await getUserHistory();
 
   const {
     data: { user },
@@ -81,7 +83,7 @@ export default async function RootLayout({
             <CreateModalProvider>
               <SidebarProvider>
                 <LibraryContextProvider>
-                  <ChatWindowProvider>
+                  <ChatWindowProvider userHistory={history}>
                     <NavService user={user}>{children}</NavService>
                     <div className=" max-h-screen">
                       <PhraseChat />

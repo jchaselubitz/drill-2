@@ -18,6 +18,7 @@ import {
   Tag,
   Translation,
   UserMedia,
+  History,
 } from 'kysely-codegen';
 import { Pool } from 'pg';
 import { LanguagesISO639 } from '../lists';
@@ -121,6 +122,8 @@ declare module 'kysely-codegen' {
   export type BaseAssociation = Selectable<Association>;
   export type EditedAssociation = Updateable<Association>;
   export type NewAssociation = Insertable<Association>;
+
+  export type BaseHistory = Selectable<History>;
 }
 
 export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };

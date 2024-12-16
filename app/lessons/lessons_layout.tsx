@@ -4,9 +4,9 @@ import { SubjectWithLessons } from 'kysely-codegen';
 import { useMemo } from 'react';
 import LessonItemList from '@/components/lessons/lesson_item_list';
 import SubjectItemList from '@/components/lessons/subject_item_list';
+import { useLessonsContext } from '@/contexts/lessons_context';
 
 import ResponsiveLayout from '../responsive_layout';
-import { useLessonsContext } from './lessons_context';
 
 interface LessonsLayoutProps {
   subjects: SubjectWithLessons[];

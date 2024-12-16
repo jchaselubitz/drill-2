@@ -4,7 +4,7 @@ import { BaseLesson } from 'kysely-codegen';
 import { Loader2Icon } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
-import { useLessonsContext } from '@/app/lessons/lessons_context';
+import { useLessonsContext } from '@/contexts/lessons_context';
 
 interface LessonCardProps {
   lesson: BaseLesson;

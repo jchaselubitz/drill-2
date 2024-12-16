@@ -4,7 +4,7 @@ import { BaseLesson } from 'kysely-codegen';
 import { XIcon } from 'lucide-react';
 import React from 'react';
 import LessonCreationForm from '@/app/lessons/(components)/lesson_creation_form';
-import { useLessonsContext } from '@/app/lessons/lessons_context';
+import { useLessonsContext } from '@/contexts/lessons_context';
 import { LanguagesISO639 } from '@/lib/lists';
 
 import { Button } from '../ui/button';

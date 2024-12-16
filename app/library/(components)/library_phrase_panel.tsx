@@ -4,10 +4,9 @@ import TtsButton from '@/components/ai_elements/tts_button';
 import PhraseCardDetails from '@/components/phrasesAndRecordings/phrase_card_details';
 import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
+import { useLibraryContext } from '@/contexts/library_context';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
-
-import { useLibraryContext } from '../library_context';
 
 interface LibraryPhrasePanelProps {
   phrase: PhraseWithAssociations | null;

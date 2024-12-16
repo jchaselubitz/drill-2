@@ -1,5 +1,6 @@
 'use client';
 
+import { BaseHistory } from 'kysely-codegen';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { ChatMessage } from '@/components/ai_elements/phrase_chat';
 
@@ -33,9 +34,9 @@ export const ChatWindowProvider = ({
   userHistory,
 }: {
   children: ReactNode;
-  userHistory?: string[];
+  userHistory?: BaseHistory[];
 }) => {
-  const [chatOpen, setChatOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<ChatContextType | undefined>(undefined);
   const [chatMessages, setChatMessages] = useState<ChatMessage[] | null>([]);
   const [onEndSession, setOnEndSession] = useState<() => void>(() => () => {});

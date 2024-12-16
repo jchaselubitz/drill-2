@@ -1,6 +1,6 @@
 import { SubjectWithLessons } from 'kysely-codegen';
 import React from 'react';
-import { useLessonsContext } from '@/app/lessons/lessons_context';
+import { useLessonsContext } from '@/contexts/lessons_context';
 import { cn } from '@/lib/utils';
 
 type SubjectItemProps = {

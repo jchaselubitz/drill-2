@@ -19,10 +19,10 @@ Deno.serve(async (req) => {
     });
 
     const {
-      format,
+      format = 'json_object',
       presence_penalty = 0,
       frequency_penalty = 0,
-      temperature = 0.7,
+      temperature = 0.8,
       max_tokens = 200,
       stream = false,
     } = modelParams;
@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     const completion = await openai.chat.completions.create({
       model: userApiKey ? modelSelection : OpenAiModel.gpt4oMini,
       messages: messages,
-      response_format: { type: format },
+      response_format: format,
       presence_penalty,
       frequency_penalty,
       temperature,
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
       stream,
     });
 
-    const reply = completion.choices[0].message;
+    const reply = completion.choices[0].message.content;
 
     return new Response(JSON.stringify(reply), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

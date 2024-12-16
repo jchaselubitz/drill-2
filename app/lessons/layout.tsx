@@ -1,5 +1,3 @@
-import { LessonsContextProvider } from './lessons_context';
-
 //   return (
 //     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
 //       <main className="flex flex-col gap-8 md:items-center w-full">
@@ -16,6 +14,8 @@ import { LessonsContextProvider } from './lessons_context';
 //     </div>
 //   );
 // }
+
+import { LessonsContextProvider } from '@/contexts/lessons_context';
 
 export default async function LessonsLayout({
   children,

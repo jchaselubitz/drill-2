@@ -1,3 +1,10 @@
+import { ChatMessage } from '@/components/ai_elements/phrase_chat';
+import { HistoryTopicType } from '../actions/actionsHistory';
+import { LanguagesISO639 } from '../lists';
+import { createClient } from '@/utils/supabase/client';
+import { z } from 'zod';
+import { zodResponseFormat } from 'openai/helpers/zod';
+
 export type AiMessage = {
   role: string;
   content: string;
@@ -66,6 +73,52 @@ export const selectSystemMessage = (command: string | undefined, isExplanation: 
 
   return `The user will send you a text and a request for how to handle that content. Return as a JSON. The user will often be requesting a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. If the user asks for an explanation, return a JSON with key: "explanation" and value: <a string of the explanation>. If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.`;
 };
+
+export const generateHistory = async (
+  messages: ChatMessage[]
+): Promise<{ topic: HistoryTopicType; lang: LanguagesISO639; insight: string }> => {
+  const supabase = createClient();
+
+  const HistoryStructure = z.object({
+    topic: z.string(),
+    lang: z.string(),
+    insight: z.string(),
+  });
+
+  const messagesWithSystem = [
+    {
+      role: 'system',
+      content:
+        'The software will submit a message or list of messages including conversation about a subject the user is trying to learn. Return as a JSON object in the following format {"insight": <the insight requested by the user in the last message>, "lang" <the ISO 639-1 code of the language the user is studying>, "topic": <return one of the following that best matches the insight: "grammar" | "vocab" | "preposition" }.',
+    },
+    ...messages,
+    {
+      role: 'user',
+      content: `review the previous messages and identify the grammatical concepts and vocabulary the I am trying to learn and make a concise note describing what I struggle with. The insight you return should include only the substance. Don't refer to yourself or the user.`,
+    },
+  ];
+
+  const modelParams = {
+    format: zodResponseFormat(HistoryStructure, 'history'),
+    max_tokens: 1000,
+    temperature: 0.9,
+  };
+  const { data, error } = await supabase.functions.invoke('gen-history', {
+    body: {
+      userApiKey: getOpenAiKey(),
+      modelSelection: getModelSelection(),
+      modelParams: modelParams,
+      messages: messagesWithSystem,
+    },
+  });
+
+  if (error) {
+    throw new Error('Error:', error);
+  }
+  const response = JSON.parse(data);
+  return response;
+};
+
 // const AITESTSTRING = `{"concepts":[
 //   {
 //     "title": "Noun Gender",
