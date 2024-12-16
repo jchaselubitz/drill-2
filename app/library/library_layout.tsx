@@ -2,11 +2,11 @@
 
 import { PhraseWithAssociations } from 'kysely-codegen';
 import { useMemo } from 'react';
+import { useLibraryContext } from '@/contexts/library_context';
 
 import ResponsiveLayout from '../responsive_layout';
 import LibraryPhrasePanel from './(components)/library_phrase_panel';
 import LibraryTable from './(components)/library_table';
-import { useLibraryContext } from './library_context';
 
 interface LibraryLayoutProps {
   phrases: PhraseWithAssociations[];

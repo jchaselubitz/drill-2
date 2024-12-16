@@ -1,5 +1,6 @@
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useChatContext } from '@/contexts/chat_window_context';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import {
   getModelSelection,
@@ -14,7 +15,6 @@ import { createClient } from '@/utils/supabase/client';
 import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
-import PhraseChat, { ChatMessage } from './phrase_chat';
 import SaveTranslationButton from './save_translation_button';
 import LightSuggestionList from './suggestions/light_suggestion_list';
 
@@ -39,13 +39,13 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 }) => {
   const supabase = createClient();
   const pathname = usePathname();
+  const { setChatOpen, setChatContext, setMessages } = useChatContext();
+
   const [genResponse, setGenResponse] = useState<GenResponseType | undefined>();
   const [requestLoading, setRequestLoading] = useState(false);
   const [requestText, setRequestText] = useState('');
-  const [chatMessages, setChatMessages] = useState<ChatMessage[] | []>([]);
-  const firstWord = requestText.split(' ')[0];
 
-  const presentableMessages = chatMessages.filter((message) => message.role !== 'system').slice(2);
+  const firstWord = requestText.split(' ')[0];
 
   useEffect(() => {
     if (requestText.length < 4) {
@@ -77,8 +77,6 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setCommand(firstWord) === 'How' ||
     setCommand(firstWord) === 'Can';
 
-  const chatIsLive = isExplanation && presentableMessages.length > 0;
-
   const captureCommand = () => {
     if (setCommand(firstWord)) {
       return { request: requestText, command: setCommand(firstWord) };
@@ -86,7 +84,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     return { request: requestText, command: '' };
   };
 
-  const handleRequest = async (newMessage?: string) => {
+  const handleRequest = async () => {
     setRequestLoading(true);
     const { request, command } = captureCommand();
     const modelParams = {
@@ -104,22 +102,6 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       { role: 'user', content: `request: ${request}` },
     ];
 
-    if (isExplanation) {
-      const formNewMessage = {
-        role: 'user',
-        content: newMessage ?? '',
-      };
-
-      messages =
-        chatMessages.length < 1
-          ? messages
-          : formNewMessage
-            ? [...chatMessages, formNewMessage]
-            : chatMessages;
-
-      setChatMessages(messages);
-    }
-
     const { data, error } = await supabase.functions.invoke('gen-text', {
       body: {
         userApiKey: getOpenAiKey(),
@@ -135,10 +117,10 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     try {
       const response = JSON.parse(data);
       setGenResponse(response);
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { role: 'assistant', content: response.explanation },
-      ]);
+      if (isExplanation) {
+        setChatContext({ matterText: text, requestText, assistantAnswer: response?.explanation });
+        setChatOpen(true);
+      }
       setRequestLoading(false);
     } catch (error) {
       alert('Sorry, it looks like the model returned the wrong format. Please try again.');
@@ -192,7 +174,6 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 
   const endSession = () => {
     setRequestText('');
-    setChatMessages([]);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -203,24 +184,23 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 
   return (
     <div className="relative flex flex-col gap-2 h-full">
-      {!chatIsLive && (
-        <>
-          <Textarea
-            className="w-full"
-            value={requestText}
-            onChange={(e) => setRequestText(e.target.value)}
-            placeholder="Make me 15 sentences using this word."
-          />
-          <LoadingButton
-            className="w-fit"
-            onClick={() => handleRequest()}
-            onKeyDown={(e) => handleKeyPress(e)}
-            text={setCommand(firstWord) ?? 'Request'}
-            loadingText="Requesting"
-            buttonState={requestLoading ? 'loading' : 'default'}
-          />
-        </>
-      )}
+      <>
+        <Textarea
+          className="w-full"
+          value={requestText}
+          onChange={(e) => setRequestText(e.target.value)}
+          placeholder="Make me 15 sentences using this word."
+        />
+        <LoadingButton
+          className="w-fit"
+          onClick={() => handleRequest()}
+          onKeyDown={(e) => handleKeyPress(e)}
+          text={setCommand(firstWord) ?? 'Request'}
+          loadingText="Requesting"
+          buttonState={requestLoading ? 'loading' : 'default'}
+        />
+      </>
+
       {suggestions.length > 0 && requestText === '' && (
         <div className="mt-1">
           <LightSuggestionList
@@ -242,16 +222,6 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
               output_text={genResponse.output_text}
               output_lang={genResponse.output_lang}
               saveTranslation={saveTranslation}
-            />
-          </div>
-        ) : chatIsLive ? (
-          <div className=" max-h-screen">
-            <PhraseChat
-              messages={presentableMessages}
-              handleRequest={handleRequest}
-              requestText={requestText}
-              endSession={endSession}
-              requestLoading={requestLoading}
             />
           </div>
         ) : (

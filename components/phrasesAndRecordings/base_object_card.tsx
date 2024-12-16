@@ -35,7 +35,7 @@ const BaseObjectCard: React.FC<BaseObjectCardProps> = ({
           {withoutDetails}
         </div>
       </div>
-      {detailsOpen && <div className="p-4">{objectDetails}</div>}
+      {detailsOpen && <div className="p-2">{objectDetails}</div>}
     </div>
   );
 };

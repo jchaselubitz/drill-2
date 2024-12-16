@@ -1,9 +1,12 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
+import PhraseChat from '@/components/ai_elements/phrase_chat';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
+import { ChatWindowProvider } from '@/contexts/chat_window_context';
 import { CreateModalProvider } from '@/contexts/create_modal_context';
+import { LibraryContextProvider } from '@/contexts/library_context';
 import { UserContextProvider } from '@/contexts/user_context';
 import { getProfile } from '@/lib/actions/userActions';
 import { cn } from '@/lib/utils';
@@ -77,7 +80,14 @@ export default async function RootLayout({
           <UserContextProvider profile={profile}>
             <CreateModalProvider>
               <SidebarProvider>
-                <NavService user={user}>{children}</NavService>
+                <LibraryContextProvider>
+                  <ChatWindowProvider>
+                    <NavService user={user}>{children}</NavService>
+                    <div className=" max-h-screen">
+                      <PhraseChat />
+                    </div>
+                  </ChatWindowProvider>
+                </LibraryContextProvider>
               </SidebarProvider>
               <CreateDialog />
             </CreateModalProvider>

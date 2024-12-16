@@ -1,49 +1,15 @@
+'use client';
+
 import { Loader2, Minus, Send, Stars, XIcon } from 'lucide-react';
 import React, { useState } from 'react';
+import { useChatContext } from '@/contexts/chat_window_context';
+import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
 import { cn } from '@/lib/utils';
+import { createClient } from '@/utils/supabase/client';
 
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { ScrollArea } from '../ui/scroll-area';
-
-// const messages = [
-//   {
-//     role: 'assistant',
-//     content:
-//       "In the provided text, 'Darbietung' refers to a performance or presentation, particularly in the context of dance. It signifies the act of showcasing the dancers' skills and artistry. The term conveys a sense of admiration and respect for the quality of the performance, suggesting that it captivated and impressed the audience deeply.",
-//   },
-//   {
-//     role: 'user',
-//     content: 'What is another word I could use that means something similar?',
-//   },
-//   {
-//     role: 'assistant',
-//     content:
-//       "Another word you could use that means something similar to 'Darbietung' is 'Vorführung.' This also refers to a performance or demonstration, particularly in an artistic context.",
-//   },
-//   {
-//     role: 'user',
-//     content: 'What is another word I could use that means something similar?',
-//   },
-//   {
-//     role: 'assistant',
-//     content:
-//       "In the provided text, 'Darbietung' refers to a performance or presentation, particularly in the context of dance. It signifies the act of showcasing the dancers' skills and artistry. The term conveys a sense of admiration and respect for the quality of the performance, suggesting that it captivated and impressed the audience deeply.",
-//   },
-//   {
-//     role: 'user',
-//     content: 'What is another word I could use that means something similar?',
-//   },
-//   {
-//     role: 'assistant',
-//     content:
-//       "Another word you could use that means something similar to 'Darbietung' is 'Vorführung.' This also refers to a performance or demonstration, particularly in an artistic context.",
-//   },
-//   {
-//     role: 'user',
-//     content: 'What is another word I could use that means something similar?',
-//   },
-// ];
 
 export interface ChatMessage {
   role: string;
@@ -51,23 +17,28 @@ export interface ChatMessage {
   requestText?: string;
 }
 
-interface PhraseChatProps {
-  messages: ChatMessage[];
-  requestText?: string;
-  handleRequest: (request: string) => void;
-  endSession?: () => void;
-  requestLoading?: boolean;
-}
+const PhraseChat: React.FC = () => {
+  const supabase = createClient();
+  const {
+    chatOpen,
+    setChatOpen,
+    messages,
+    setMessages,
+    chatContext,
+    setChatContext,
+    onEndSession,
+    chatLoading,
+    setChatLoading,
+  } = useChatContext();
 
-const PhraseChat: React.FC<PhraseChatProps> = ({
-  messages,
-  requestText,
-  handleRequest,
-  endSession,
-  requestLoading,
-}) => {
+  const requestText = chatContext?.requestText;
   const [newMessage, setNewMessage] = useState<string>('');
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+
+  const modelParams = {
+    format: 'text' as gptFormatType,
+    max_tokens: 1000,
+    temperature: 0.9,
+  };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === 'Enter') {
@@ -75,57 +46,86 @@ const PhraseChat: React.FC<PhraseChatProps> = ({
     }
   };
 
-  const handleSend = () => {
-    if (newMessage.trim() === '') return;
+  const handleCloseChat = () => {
+    setChatOpen(false);
+    setChatContext(undefined);
+    setMessages([]);
+  };
 
-    handleRequest(newMessage);
+  const handleSend = async () => {
+    setChatLoading(true);
+
+    const messagePackage = [
+      ...(messages ?? []),
+      newMessage && { role: 'user', content: newMessage },
+    ] as ChatMessage[];
+
+    const { data, error } = await supabase.functions.invoke('gen-chat', {
+      body: {
+        userApiKey: getOpenAiKey(),
+        modelSelection: getModelSelection(),
+        modelParams: modelParams,
+        messages: messagePackage,
+      },
+    });
+    try {
+      setMessages([...messagePackage, { role: data.role, content: data.content }]);
+      setChatLoading(false);
+    } catch (error) {
+      alert('Sorry, something went wrong. Please try again.');
+      setChatLoading(false);
+      throw Error('Error parsing JSON:', data);
+    }
+    setChatLoading(false);
     setNewMessage('');
   };
 
-  if (!isOpen) {
+  const presentableMessages = messages?.filter(
+    (message) => message.role !== 'system' && message.content !== ''
+  );
+
+  if (!chatOpen) {
     return (
       <div className="fixed bottom-4 max-w-prose right-4 flex flex-col bg-slate-200 p-3 rounded-md ">
         <div className="flex justify-end ">
-          <button onClick={() => setIsOpen(true)}>Open Chat</button>
+          <button onClick={() => setChatOpen(true)}>Open Chat</button>
         </div>
       </div>
     );
   }
 
-  const assistantButton = (
-    <div className="absolute flex gap-2 items-start p-3 text-white font-semibold justify-end right-0 m-3 bg-gradient-to-r from-blue-600 to-cyan-600 shadow-lg rounded-lg ">
-      <div className="animate-pulse mr-1">
-        <Stars />
+  const chatTopBar = (
+    <div className="flex justify-between bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-1 px-4 rounded-t ">
+      <div className="flex justify-start gap-2 items-center">
+        <div className="animate-pulse mr-1">
+          <Stars />
+        </div>
+        {requestText}
       </div>
-      {requestText}
-      <button onClick={endSession}>
-        <XIcon size={20} />
-      </button>
+
+      <div className="flex justify-end gap-2 items-center w-fit">
+        <button onClick={() => setChatOpen(false)}>
+          <Minus size={20} />
+        </button>
+        <button onClick={onEndSession}>
+          <XIcon size={20} />
+        </button>
+      </div>
+    </div>
+  );
+
+  const chatLoadingIndicator = (
+    <div className={cn('flex my-4 justify-start bg-blue-200 w-fit p-3 rounded-lg text-gray-800')}>
+      <Loader2 size={24} className="animate-spin" />
     </div>
   );
 
   return (
-    <div className="fixed z-50 bottom-0 right-0 md:right-4 flex flex-col  md:min-h-96 md:max-h-[700px] rounded-lg border bg-white shadow-inner h-full">
-      <div className="flex justify-between bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-1 px-4 rounded-t ">
-        <div className="flex justify-start gap-2 items-center">
-          <div className="animate-pulse mr-1">
-            <Stars />
-          </div>
-          {requestText}
-        </div>
-
-        <div className="flex justify-end gap-2 items-center w-fit">
-          <button onClick={() => setIsOpen(false)}>
-            <Minus size={20} />
-          </button>
-          <button onClick={endSession}>
-            <XIcon size={20} />
-          </button>
-        </div>
-      </div>
+    <div className="fixed z-50 bottom-0 right-0 md:right-4 flex flex-col md:min-h-96 max-h-dvh md:max-h-[700px] rounded-lg border bg-white shadow-inner h-full md:min-w-96">
+      {chatTopBar}
       <div className="flex flex-col h-full relative ">
         <ScrollArea className=" pb-24 overflow-y-scroll px-4">
-          {messages.map((message, index) => (
+          {presentableMessages?.map((message, index) => (
             <div
               key={index}
               className={cn('flex my-4', {
@@ -143,15 +143,7 @@ const PhraseChat: React.FC<PhraseChatProps> = ({
               </div>
             </div>
           ))}
-          {requestLoading && (
-            <div
-              className={cn(
-                'flex my-4 justify-start bg-blue-200 w-fit p-3 rounded-lg text-gray-800'
-              )}
-            >
-              <Loader2 size={24} className="animate-spin" />
-            </div>
-          )}
+          {chatLoading && chatLoadingIndicator}
         </ScrollArea>
       </div>
       <div className="absolute bottom-0 right-0 w-full bg-zinc-100 py-3 shadow-smallAbove">
