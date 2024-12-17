@@ -28,7 +28,7 @@ export function NavMain({
 
   return (
     <SidebarMenu
-      className={cn(className, mobile && 'flex flex-row gap-3 items-center justify-center w-58')}
+      className={cn(className, mobile && 'flex flex-row gap-1 items-center justify-center w-58')}
     >
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>

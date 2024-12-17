@@ -1,6 +1,6 @@
 'use client';
 import { Loader2, Minus, Send, Stars, XIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { addHistory } from '@/lib/actions/actionsHistory';
@@ -15,7 +15,6 @@ import { createClient } from '@/utils/supabase/client';
 
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { ScrollArea } from '../ui/scroll-area';
 
 export interface ChatMessage {
   role: string;
@@ -37,8 +36,34 @@ const PhraseChat: React.FC = () => {
     setChatLoading,
   } = useChatContext();
 
-  const requestText = chatContext?.requestText;
+  const handleMouseEvent = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   const [newMessage, setNewMessage] = useState<string>('');
+  const requestText = chatContext?.requestText;
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  const presentableMessages = useMemo(
+    () => messages?.filter((message) => message.role !== 'system' && message.content !== ''),
+    [messages]
+  );
+
+  useEffect(() => {
+    if (chatOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [chatOpen]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [messages]);
 
   const modelParams = {
     format: 'text' as gptFormatType,
@@ -72,12 +97,12 @@ const PhraseChat: React.FC = () => {
 
   const handleSend = async () => {
     setChatLoading(true);
-
     const messagePackage = [
       ...(messages ?? []),
       newMessage && { role: 'user', content: newMessage },
     ] as ChatMessage[];
-
+    setMessages(messagePackage);
+    setNewMessage('');
     const { data, error } = await supabase.functions.invoke('gen-chat', {
       body: {
         userApiKey: getOpenAiKey(),
@@ -98,19 +123,7 @@ const PhraseChat: React.FC = () => {
     setNewMessage('');
   };
 
-  const presentableMessages = messages?.filter(
-    (message) => message.role !== 'system' && message.content !== ''
-  );
-
-  if (!chatOpen) {
-    return (
-      <div className="fixed bottom-4 max-w-prose right-4 flex flex-col bg-slate-200 p-3 rounded-md ">
-        <div className="flex justify-end ">
-          <button onClick={() => setChatOpen(true)}>Open Chat</button>
-        </div>
-      </div>
-    );
-  }
+  if (!chatOpen) return null;
 
   const chatTopBar = (
     <div className="flex justify-between bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-1 px-4 rounded-t ">
@@ -139,40 +152,48 @@ const PhraseChat: React.FC = () => {
   );
 
   return (
-    <div className="fixed z-50 bottom-0 right-0 md:right-4 flex flex-col md:min-h-96 max-h-dvh md:max-h-[700px] rounded-lg border bg-white shadow-inner h-full md:min-w-96">
+    <div
+      className="fixed z-50 bottom-0 right-0 md:right-4 flex flex-col rounded-lg border bg-white shadow-inner h-dvh md:min-h-96 md:h-[900px] md:max-h-svh w-full md:w-[500px]"
+      onWheel={handleMouseEvent}
+      onMouseMove={handleMouseEvent}
+      onClick={handleMouseEvent}
+    >
       {chatTopBar}
-      <div className="flex flex-col h-full relative ">
-        <ScrollArea className=" pb-24 overflow-y-scroll px-4">
+      <div className="flex h-full flex-col relative">
+        <div className="pb-24 w-full overflow-y-scroll px-4" ref={scrollRef}>
           {presentableMessages?.map((message, index) => (
             <div
               key={index}
-              className={cn('flex my-4', {
+              className={cn('flex my-4 w-full', {
                 'justify-start': message.role === 'assistant',
                 'justify-end': message.role !== 'assistant',
               })}
             >
-              <Markdown
-                className={cn('max-w-prose p-3 rounded-lg text-gray-800', {
-                  'bg-blue-200': message.role === 'assistant',
-                  'bg-slate-200': message.role !== 'assistant',
+              <div
+                className={cn('max-w-full p-3 rounded-lg text-gray-800', {
+                  'bg-blue-200 mr-8': message.role === 'assistant',
+                  'bg-slate-200 ml-8': message.role !== 'assistant',
                 })}
               >
-                {message.content}
-              </Markdown>
+                <Markdown className="max-w-full prose">{message.content}</Markdown>
+              </div>
             </div>
           ))}
           {chatLoading && chatLoadingIndicator}
-        </ScrollArea>
+        </div>
       </div>
       <div className="absolute bottom-0 right-0 w-full bg-zinc-100 py-3 shadow-smallAbove">
         <form className="flex gap-2 px-4 ">
           <Input
+            ref={inputRef}
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             className="py-2"
           />
           <Button
+            className="p-3 rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
+            disabled={newMessage === '' || chatLoading}
             onClick={(e) => {
               e.preventDefault();
               handleSend();

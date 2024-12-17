@@ -36,7 +36,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
         <SidebarMenuButton
           size="lg"
           className={
-            'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-fit md:w-full'
+            'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-fit md:w-full p-0 pl-1 md:p-2'
           }
         >
           <div className="flex items-center gap-2">

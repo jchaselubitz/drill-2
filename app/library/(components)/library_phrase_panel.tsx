@@ -23,7 +23,7 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
 
   if (!phrase)
     return (
-      <div className="flex h-full items-center justify-center p-6 w-full">
+      <div className="flex h-svh items-center justify-center p-6 w-full">
         <div className="text-center">Select a phrase to view details</div>
       </div>
     );

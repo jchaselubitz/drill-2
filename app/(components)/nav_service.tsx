@@ -3,9 +3,11 @@
 import { User } from '@supabase/supabase-js';
 import { Home, Library, LucidePartyPopper } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
 import { updateUserLanguage } from '@/lib/actions/userActions';
 import { LanguagesISO639 } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 
 import { AppSidebar } from './app_sidebar';
 import MobileNavbar from './mobile_navbar';
@@ -13,6 +15,7 @@ import TopNav from './top_nav';
 
 export function NavService({ user, children }: { user: User; children: React.ReactNode }) {
   const { userLanguage, prefLanguage } = useUserContext();
+  const { chatOpen } = useChatContext();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -94,9 +97,9 @@ export function NavService({ user, children }: { user: User; children: React.Rea
   return (
     <>
       {!isMobile && <AppSidebar user={user} setUserLanguages={setUserLanguages} pages={pages} />}
-      <main className="w-full h-full flex flex-col">
-        {isMobile && <TopNav isMobile={true} />}
-        <div className="flex justify-center pt-12 md:pt-0 md:justify-normal h-full ">
+      <main className={cn('w-full h-full flex flex-col')}>
+        {isMobile && <TopNav isMobile={true} user={user} setUserLanguages={setUserLanguages} />}
+        <div className={cn('flex justify-center pt-12 md:pt-0 md:justify-normal h-full ')}>
           {children}
         </div>
         {isMobile && <MobileNavbar user={user} setUserLanguages={setUserLanguages} pages={pages} />}

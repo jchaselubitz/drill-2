@@ -1,5 +1,7 @@
+import { Stars } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { set } from 'zod';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import {
@@ -10,8 +12,10 @@ import {
 } from '@/lib/helpers/helpersAI';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
 import { LanguagesISO639 } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
 
+import { Button } from '../ui/button';
 import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
@@ -39,7 +43,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 }) => {
   const supabase = createClient();
   const pathname = usePathname();
-  const { setChatOpen, setChatContext, setMessages } = useChatContext();
+  const { setChatOpen, setChatContext, setOnEndSession } = useChatContext();
 
   const [genResponse, setGenResponse] = useState<GenResponseType | undefined>();
   const [requestLoading, setRequestLoading] = useState(false);
@@ -182,24 +186,40 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     }
   };
 
+  const buttonText = isExplanation ? (
+    <div className="flex items-center gap-2">
+      <Stars /> Explain in chat
+    </div>
+  ) : (
+    (setCommand(firstWord) ?? 'Request')
+  );
   return (
     <div className="relative flex flex-col gap-2 h-full">
-      <>
+      <div className="flex flex-col gap-3">
         <Textarea
           className="w-full"
           value={requestText}
           onChange={(e) => setRequestText(e.target.value)}
           placeholder="Make me 15 sentences using this word."
         />
-        <LoadingButton
-          className="w-fit"
-          onClick={() => handleRequest()}
-          onKeyDown={(e) => handleKeyPress(e)}
-          text={setCommand(firstWord) ?? 'Request'}
-          loadingText="Requesting"
-          buttonState={requestLoading ? 'loading' : 'default'}
-        />
-      </>
+        {!genResponse ? (
+          <LoadingButton
+            className={cn(
+              'w-fit',
+              isExplanation && 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white '
+            )}
+            onClick={() => handleRequest()}
+            onKeyDown={(e) => handleKeyPress(e)}
+            text={buttonText}
+            loadingText="Requesting"
+            buttonState={requestLoading ? 'loading' : 'default'}
+          />
+        ) : (
+          <Button className="w-fit" onClick={endSession}>
+            Clear
+          </Button>
+        )}
+      </div>
 
       {suggestions.length > 0 && requestText === '' && (
         <div className="mt-1">
@@ -225,13 +245,15 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
             />
           </div>
         ) : (
-          <div className="mt-5">
-            <NestedObject
-              data={genResponse}
-              saveContent={saveContent}
-              command={setCommand(firstWord)}
-            />
-          </div>
+          !isExplanation && (
+            <div className="mt-5">
+              <NestedObject
+                data={genResponse}
+                saveContent={saveContent}
+                command={setCommand(firstWord)}
+              />
+            </div>
+          )
         ))}
     </div>
   );

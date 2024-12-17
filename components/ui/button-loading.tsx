@@ -10,7 +10,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   buttonState: ButtonLoadingState;
-  text: string;
+  text: string | React.ReactNode;
   loadingText: string;
   successText?: string;
   errorText?: string;

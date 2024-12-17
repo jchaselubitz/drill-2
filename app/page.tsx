@@ -12,7 +12,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
-      <main className="flex flex-col gap-4 md:items-center w-full">
+      <main className="flex flex-col gap-4 md:items-center w-full ">
         <CaptureAudio />
         <CaptureText />
         {recentPhrases.length > 0 && (
@@ -22,7 +22,6 @@ export default async function Home() {
         )}
         <div className="flex flex-col items-center gap-4 w-full">
           <PhraseRecordingCardList phrases={recentPhrases} />
-
           {recentPhrases.length > 0 && (
             <Link href={'/library'}>
               <Button size={'lg'} variant={'link'} className="text-base">
@@ -32,7 +31,6 @@ export default async function Home() {
           )}
         </div>
       </main>
-      {/* <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer> */}
     </div>
   );
 }

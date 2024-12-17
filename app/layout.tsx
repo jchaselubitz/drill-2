@@ -2,7 +2,8 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import PhraseChat from '@/components/ai_elements/phrase_chat';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { DesktopChatButton } from '@/components/specialButtons/chat_button';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import { ChatWindowProvider } from '@/contexts/chat_window_context';
 import { CreateModalProvider } from '@/contexts/create_modal_context';
@@ -71,7 +72,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={cn('bg-background bg-white font-sans antialiased', fontSans.variable)}>
+      <body className={cn('bg-background bg-white font-sans antialiased ', fontSans.variable)}>
         {/* <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -85,8 +86,10 @@ export default async function RootLayout({
                 <LibraryContextProvider>
                   <ChatWindowProvider userHistory={history}>
                     <NavService user={user}>{children}</NavService>
-                    <div className=" max-h-screen">
+
+                    <div className="relative max-h-screen">
                       <PhraseChat />
+                      <DesktopChatButton />
                     </div>
                   </ChatWindowProvider>
                 </LibraryContextProvider>
