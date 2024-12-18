@@ -9,10 +9,10 @@ const ChatButton: React.FC = ({ isMobile }: { isMobile?: boolean }) => {
 
   return (
     <button
-      className="flex gap-2 bg-gradient-to-r p-3 md:h-fit h-14 w-14 rounded-full md:rounded-md from-blue-600 to-cyan-600 text-white font-semibold items-center justify-center"
+      className="flex gap-2 bg-gradient-to-r p-3 md:h-fit h-14 w-14 md:w-fit rounded-full md:rounded-md from-blue-600 to-cyan-600 text-white font-semibold items-center justify-center"
       onClick={() => setChatOpen(true)}
     >
-      <Stars /> <div className="hidden md:flex">Chat</div>
+      <Stars /> <span className="hidden md:flex">Chat</span>
     </button>
   );
 };

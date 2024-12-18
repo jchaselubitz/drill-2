@@ -16,7 +16,7 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
   const router = useRouter();
 
   const setSelectedPhrase = (id: string) => {
-    router.push(`/library/?phrase=${id}`);
+    router.push(`/library?phrase=${id}`);
   };
 
   return (

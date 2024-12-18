@@ -146,7 +146,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
   });
 
   return (
-    <div className={cn('w-full ', className)}>
+    <div className={cn('w-full px-1 ', className)}>
       <LibraryTableHeaderTools
         table={table}
         uniqueLanguages={uniqueLanguages}

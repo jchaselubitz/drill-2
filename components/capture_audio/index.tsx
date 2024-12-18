@@ -132,7 +132,13 @@ const CaptureAudio: FC = () => {
     const lang = JSON.parse(data).lng;
 
     try {
-      await addPhrase({ text: transcript, filename: fileName, lang, type: 'recording' });
+      await addPhrase({
+        text: transcript,
+        filename: fileName,
+        lang,
+        type: 'recording',
+        source: 'home',
+      });
       setSaveButtonState('success');
       return;
     } catch (error) {

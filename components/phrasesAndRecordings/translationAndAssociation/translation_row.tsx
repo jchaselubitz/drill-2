@@ -24,8 +24,9 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   const handlePhraseClick = () => {
     if (navigateToPhrase) {
       navigateToPhrase(translationsPhrase.id);
+    } else {
+      setSelectedPhraseId(translationsPhrase.id);
     }
-    setSelectedPhraseId(translationsPhrase.id);
   };
 
   return (
