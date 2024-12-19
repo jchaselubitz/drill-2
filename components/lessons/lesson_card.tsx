@@ -12,7 +12,6 @@ interface LessonCardProps {
 
 const LessonCard: React.FC<LessonCardProps> = ({ lesson }) => {
   const { setSelectedSubjectId } = useLessonsContext();
-
   const [loadingState, setLoadingState] = React.useState(false);
 
   const handleClick = () => {

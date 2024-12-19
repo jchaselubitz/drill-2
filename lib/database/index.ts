@@ -19,6 +19,7 @@ import {
   Translation,
   UserMedia,
   History,
+  TutorTopic,
 } from 'kysely-codegen';
 import { Pool } from 'pg';
 import { LanguagesISO639 } from '../lists';
@@ -124,6 +125,9 @@ declare module 'kysely-codegen' {
   export type NewAssociation = Insertable<Association>;
 
   export type BaseHistory = Selectable<History>;
+
+  export type BaseTutorTopic = Omit<Selectable<TutorTopic>, 'lang'> & { lang: LanguagesISO639 };
+  export type NewTutorTopic = Insertable<TutorTopic>;
 }
 
 export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };

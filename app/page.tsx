@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { getPhrases } from '@/lib/actions/phraseActions';
 
 export default async function Home() {
-  const phrases = await getPhrases('home');
+  const phrases = await getPhrases({ source: 'home' });
   const recentPhrases = phrases.slice(0, 6);
 
   return (

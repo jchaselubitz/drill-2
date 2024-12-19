@@ -4,6 +4,7 @@ import { LanguagesISO639 } from '../lists';
 import { createClient } from '@/utils/supabase/client';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import { userAgent } from 'next/server';
 
 export type AiMessage = {
   role: string;
@@ -42,36 +43,6 @@ export type AiGenerateProps = {
   messages: AiMessage[];
   dbParams?: any;
   dbCallback?: any;
-};
-
-export const selectSystemMessage = (command: string | undefined, isExplanation: boolean) => {
-  const message =
-    'The user will send you a text and a request for how to handle that content. Return as a JSON.';
-  if (isExplanation) {
-    return (
-      message + `Return a JSON with key: "explanation" and value: <a string of the explanation>.`
-    );
-  }
-
-  if (command === 'Translate') {
-    return (
-      message +
-      `If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation> }.`
-    );
-  }
-
-  if (command === 'List' || command === 'Extract') {
-    return (
-      message +
-      `The user will request a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user in the same language as the content the user is asking you to list. The goal is to organize the data. `
-    );
-  }
-
-  if (command === 'Generate') {
-    return message + `The user wants you to generate new content based on the text`;
-  }
-
-  return `The user will send you a text and a request for how to handle that content. Return as a JSON. The user will often be requesting a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. If the user asks for an explanation, return a JSON with key: "explanation" and value: <a string of the explanation>. If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.`;
 };
 
 export const generateHistory = async (
@@ -117,6 +88,53 @@ export const generateHistory = async (
   }
   const response = JSON.parse(data);
   return response;
+};
+
+type TutorPromptProps = {
+  relatedPhraseArray: string;
+  userLanguage: LanguagesISO639;
+  topicLanguage: LanguagesISO639;
+  level: string;
+  instructions: string;
+};
+
+export const generateTutorPrompt = async ({
+  relatedPhraseArray,
+  userLanguage,
+  topicLanguage,
+  level,
+  instructions,
+}: TutorPromptProps) => {
+  const messages = [
+    {
+      role: 'system',
+      content: `You are helping the user improve their ${topicLanguage}, which is currently at ${level} (according to the Common European Framework of Reference for Languages) by providing a concise and simple prompt (in ${userLanguage}), just as a tutor might when testing a student. If appropriate to the task, consider the fact that the user is also trying to grasp the usage and meaning following phrases: ${relatedPhraseArray}`,
+    },
+    {
+      role: 'user',
+      content: `Prompt me to write a short paragraph about ${instructions} `,
+    },
+  ];
+
+  const supabase = createClient();
+  const modelParams = {
+    format: 'text',
+    max_tokens: 400,
+    temperature: 0.6,
+  };
+  const { data, error } = await supabase.functions.invoke('gen-text', {
+    body: {
+      userApiKey: getOpenAiKey(),
+      modelSelection: getModelSelection(),
+      modelParams: modelParams,
+      messages: messages,
+    },
+  });
+
+  if (error) {
+    throw new Error('Error:', error);
+  }
+  return data;
 };
 
 // const AITESTSTRING = `{"concepts":[

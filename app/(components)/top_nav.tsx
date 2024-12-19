@@ -15,7 +15,7 @@ interface TopNavProps {
 
 const TopNav: React.FC<TopNavProps> = ({ isMobile, user, setUserLanguages }) => {
   return (
-    <div className="fixed z-10 md:relative w-full flex items-center justify-between p-1 pr-4 bg-zinc-100 md:bg-transparent bg-opacity-80">
+    <div className="fixed z-10 md:relative w-full flex items-center justify-between p-1 pr-4 bg-zinc-100 md:bg-transparent bg-opacity-80 md:pb-3">
       <div className="flex items-center">
         {!isMobile && <SidebarTrigger />}
         <BackButton showLabel={!isMobile} />

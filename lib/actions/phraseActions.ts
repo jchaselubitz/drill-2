@@ -4,7 +4,6 @@ import db, { RevalidationPath } from '../database';
 import { createClient } from '@/utils/supabase/server';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import {
-  BaseTag,
   NewAssociation,
   NewPhrase,
   NewPhraseTag,
@@ -16,7 +15,15 @@ import {
 } from 'kysely-codegen';
 import { LanguagesISO639, SourceOptionType } from '../lists';
 
-export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithAssociations[]> => {
+export const getPhrases = async ({
+  source,
+  pastDays,
+  lang,
+}: {
+  source?: SourceOptionType;
+  pastDays?: number;
+  lang?: LanguagesISO639;
+}): Promise<PhraseWithAssociations[]> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -26,6 +33,10 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithA
   if (!userId) {
     return [];
   }
+
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - (pastDays || 30));
 
   let phrases = db
     .selectFrom('phrase')
@@ -113,6 +124,14 @@ export const getPhrases = async (source?: SourceOptionType): Promise<PhraseWithA
 
   if (source) {
     phrases = phrases.where('phrase.source', '=', source);
+  }
+
+  if (pastDays) {
+    phrases = phrases.where('phrase.createdAt', '>=', startDate);
+  }
+
+  if (lang) {
+    phrases = phrases.where('phrase.lang', '=', lang);
   }
 
   const phrasesWithAssociations = await phrases.execute();

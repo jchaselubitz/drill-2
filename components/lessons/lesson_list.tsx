@@ -10,14 +10,14 @@ import { LanguagesISO639 } from '@/lib/lists';
 import { Button } from '../ui/button';
 import LessonCard from './lesson_card';
 
-interface LessonItemListProps {
+interface LessonListProps {
   lessons: BaseLesson[];
   subjectLang: string | undefined;
   subjectLevel: string | undefined | null;
   subjectId: string | undefined;
 }
 
-const LessonItemList: React.FC<LessonItemListProps> = ({
+const LessonList: React.FC<LessonListProps> = ({
   lessons,
   subjectLang,
   subjectLevel,
@@ -50,4 +50,4 @@ const LessonItemList: React.FC<LessonItemListProps> = ({
   );
 };
 
-export default LessonItemList;
+export default LessonList;

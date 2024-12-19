@@ -2,7 +2,7 @@
 
 import { SubjectWithLessons } from 'kysely-codegen';
 import { useMemo } from 'react';
-import LessonItemList from '@/components/lessons/lesson_item_list';
+import LessonList from '@/components/lessons/lesson_list';
 import SubjectItemList from '@/components/lessons/subject_item_list';
 import { useLessonsContext } from '@/contexts/lessons_context';
 
@@ -28,7 +28,7 @@ export default function LessonsLayout({ subjects }: LessonsLayoutProps) {
       panel1={<SubjectItemList subjects={subjects} className={'mt-2'} />}
       panel2={
         <div className="px-4 w-full">
-          <LessonItemList
+          <LessonList
             lessons={lessons}
             subjectId={memoizedSubject?.id}
             subjectLang={memoizedSubject?.lang}

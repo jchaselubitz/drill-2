@@ -4,13 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { set } from 'zod';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
-import {
-  getModelSelection,
-  getOpenAiKey,
-  gptFormatType,
-  selectSystemMessage,
-} from '@/lib/helpers/helpersAI';
+import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
+import { contentRequestSystemMessage } from '@/lib/helpers/promptGenerators';
 import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
@@ -43,7 +39,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 }) => {
   const supabase = createClient();
   const pathname = usePathname();
-  const { setChatOpen, setChatContext, setOnEndSession } = useChatContext();
+  const { setChatOpen, setChatContext } = useChatContext();
 
   const [genResponse, setGenResponse] = useState<GenResponseType | undefined>();
   const [requestLoading, setRequestLoading] = useState(false);
@@ -100,7 +96,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     let messages = [
       {
         role: 'system',
-        content: selectSystemMessage(command, isExplanation),
+        content: contentRequestSystemMessage(command, isExplanation),
       },
       { role: 'user', content: `text: ${text}` },
       { role: 'user', content: `request: ${request}` },

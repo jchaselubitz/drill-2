@@ -1,7 +1,7 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Home, Library, LucidePartyPopper } from 'lucide-react';
+import { Edit, Home, Library, LucidePartyPopper, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
@@ -80,12 +80,12 @@ export function NavService({ user, children }: { user: User; children: React.Rea
     //   badge: '10',
     //   mobile: false,
     // },
-    // {
-    //   title: 'Ask AI',
-    //   url: '#',
-    //   icon: Sparkles,
-    //   mobile: false,
-    // },
+    {
+      title: 'Tutor',
+      url: '/tutor',
+      icon: Edit,
+      mobile: true,
+    },
     // {
     //   title: 'Search',
     //   url: '#',
