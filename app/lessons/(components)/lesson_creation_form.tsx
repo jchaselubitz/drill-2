@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserContext } from '@/contexts/user_context';
-import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
+import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
 import {
   lessonGenerationSystemInstructions,
   phraseGenerationSystemInstructions,
@@ -75,7 +75,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
       numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
     });
 
-    const modelParams = { format: format };
+    const modelParams = { type: 'json_object' } as gptFormatType;
     const messages = [
       {
         role: 'system',
@@ -94,7 +94,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
     });
 
     const phrasesArray = phraseResponseChecks({
-      response: data as string,
+      response: data.content as string,
       lang1: userLanguage,
       lang2: language,
     });
@@ -114,7 +114,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
     setIsLoading(true);
     const { prompt, format } = requestLessonSuggestions({ level, language: studyLanguage });
 
-    const modelParams = { format: format };
+    const modelParams = { format };
     const messages = [
       {
         role: 'system',
@@ -132,7 +132,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
       },
     });
 
-    setOptionListObject(JSON.parse(data).concepts);
+    setOptionListObject(JSON.parse(data.content).concepts);
 
     setIsLoading(false);
   };

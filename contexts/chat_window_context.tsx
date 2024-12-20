@@ -52,6 +52,9 @@ export const ChatWindowProvider = ({
     if (chatContext?.matterText) {
       batch.push({ role: 'user', content: chatContext.matterText });
     }
+    if (chatContext?.requestText) {
+      batch.push({ role: 'assistant', content: chatContext.requestText });
+    }
     if (chatContext?.assistantAnswer) {
       batch.push({ role: 'assistant', content: chatContext.assistantAnswer });
     }
@@ -103,78 +106,74 @@ export const useChatContext = (): ChatWindowType => {
   return context;
 };
 
-// Should be able to take in
-// -- chat title
-// --
-// -- user history
-const messages = [
-  {
-    role: 'assistant',
-    content:
-      "In the provided text, 'Darbietung' refers to a performance or presentation, particularly in the context of dance. It signifies the act of showcasing the dancers' skills and artistry. The term conveys a sense of admiration and respect for the quality of the performance, suggesting that it captivated and impressed the audience deeply.",
-  },
-  {
-    role: 'user',
-    content: 'Whaatttt?',
-  },
-  {
-    role: 'assistant',
-    content:
-      "Another word you could use that means something similar to 'Darbietung' is 'Vorführung.' This also refers to a performance or demonstration, particularly in an artistic context.",
-  },
-  {
-    role: 'user',
-    content: 'What is another word I could use that means something similar?',
-  },
-  {
-    role: 'assistant',
-    content: `Sure! Here’s a silly piece of Markdown for you:
+// const messages = [
+//   {
+//     role: 'assistant',
+//     content:
+//       "In the provided text, 'Darbietung' refers to a performance or presentation, particularly in the context of dance. It signifies the act of showcasing the dancers' skills and artistry. The term conveys a sense of admiration and respect for the quality of the performance, suggesting that it captivated and impressed the audience deeply.",
+//   },
+//   {
+//     role: 'user',
+//     content: 'Whaatttt?',
+//   },
+//   {
+//     role: 'assistant',
+//     content:
+//       "Another word you could use that means something similar to 'Darbietung' is 'Vorführung.' This also refers to a performance or demonstration, particularly in an artistic context.",
+//   },
+//   {
+//     role: 'user',
+//     content: 'What is another word I could use that means something similar?',
+//   },
+//   {
+//     role: 'assistant',
+//     content: `Sure! Here’s a silly piece of Markdown for you:
 
-# 🦄 Welcome to the Silly Kingdom! 🏰
+// # 🦄 Welcome to the Silly Kingdom! 🏰
 
-## 🌈 The Rules of Goofiness:
+// ## 🌈 The Rules of Goofiness:
 
-1. **Always wear mismatched socks!** 🧦
-   - They must include at least **one polka dot** and **one stripe**.
-2. **Speak in rhymes** whenever possible! 🎤
-   - If you don't, you might just turn into a **giant banana**! 🍌
+// 1. **Always wear mismatched socks!** 🧦
+//    - They must include at least **one polka dot** and **one stripe**.
+// 2. **Speak in rhymes** whenever possible! 🎤
+//    - If you don't, you might just turn into a **giant banana**! 🍌
 
-## 🐉 Legendary Creatures of the Kingdom:
+// ## 🐉 Legendary Creatures of the Kingdom:
 
-### 1. The Giggle Dragon 🐉
-   - Breathes **sparkles** instead of fire.
-   - Loves to play **hide and seek** with rainbows. 🌈
+// ### 1. The Giggle Dragon 🐉
+//    - Breathes **sparkles** instead of fire.
+//    - Loves to play **hide and seek** with rainbows. 🌈
 
-### 2. The Dancing Unicorn 🦄
-   - Only dances when it hears **silly songs**. 🎶
-   - Favorite dance move: the **Twirl of Joy**! 💃
+// ### 2. The Dancing Unicorn 🦄
+//    - Only dances when it hears **silly songs**. 🎶
+//    - Favorite dance move: the **Twirl of Joy**! 💃
 
-## 🎉 Silly Celebrations:
+// ## 🎉 Silly Celebrations:
 
-- **The Annual Pie-in-the-Face Festival**! 🥧
-  - Join us as we throw pies at our **friendly neighborhood clowns**! 🤡
-  
-- **Wacky Hat Day** 🎩
-  - Wear your most ridiculous hat! The **winner gets a lifetime supply of jellybeans**! 🍬
+// - **The Annual Pie-in-the-Face Festival**! 🥧
+//   - Join us as we throw pies at our **friendly neighborhood clowns**! 🤡
 
-## 💫 Join Us!
+// - **Wacky Hat Day** 🎩
+//   - Wear your most ridiculous hat! The **winner gets a lifetime supply of jellybeans**! 🍬
 
-If you’re ready for some silliness, grab your **silliest pair of sunglasses** 😎, and let’s get this party started! 🎊
+// ## 💫 Join Us!
 
-**P.S.** Don’t forget to bring your **pet rock**! 🪨 
-Feel free to use or modify it as you wish!`,
-  },
-  {
-    role: 'user',
-    content: 'What is another word I could use that means something similar?',
-  },
-  {
-    role: 'assistant',
-    content:
-      "Another word you could use that means something similar to 'Darbietung' is 'Vorführung.' This also refers to a performance or demonstration, particularly in an artistic context.",
-  },
-  {
-    role: 'user',
-    content: 'What is another word I could use that means something similar?',
-  },
-];
+// If you’re ready for some silliness, grab your **silliest pair of sunglasses** 😎, and let’s get this party started! 🎊
+
+// **P.S.** Don’t forget to bring your **pet rock**! 🪨
+// Feel free to use or modify it as you wish!`,
+//   },
+//   {
+//     role: 'user',
+//     content: 'What is another word I could use that means something similar?',
+//   },
+//   {
+//     role: 'assistant',
+//     content:
+//       "Another word you could use that means something similar to 'Darbietung' is 'Vorführung.' This also refers to a performance or demonstration, particularly in an artistic context.",
+//   },
+//   {
+//     role: 'user',
+//     content: 'What is another word I could use that means something similar?',
+//   },
+// ];

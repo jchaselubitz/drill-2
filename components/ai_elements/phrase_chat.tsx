@@ -66,8 +66,8 @@ const PhraseChat: React.FC = () => {
   }, [messages]);
 
   const modelParams = {
-    format: 'text' as gptFormatType,
-    max_tokens: 1000,
+    format: { type: 'text' } as gptFormatType,
+    max_tokens: 400,
     temperature: 0.9,
   };
 
@@ -103,7 +103,7 @@ const PhraseChat: React.FC = () => {
     ] as ChatMessage[];
     setMessages(messagePackage);
     setNewMessage('');
-    const { data, error } = await supabase.functions.invoke('gen-chat', {
+    const { data, error } = await supabase.functions.invoke('gen-text', {
       body: {
         userApiKey: getOpenAiKey(),
         modelSelection: getModelSelection(),

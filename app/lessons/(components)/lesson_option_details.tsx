@@ -85,7 +85,7 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
 
     setPhraseArray(
       phraseResponseChecks({
-        response: data,
+        response: data.content,
         lang1: userLanguage,
         lang2: studyLanguage,
       })

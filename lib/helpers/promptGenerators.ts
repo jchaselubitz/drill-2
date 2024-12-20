@@ -15,7 +15,7 @@ export const requestLessonSuggestions = ({
   level: string;
 }): { prompt: string; format: gptFormatType } => {
   const prompt = `I am studying ${language}, and my current skill level is: ${level} (according to the Common European Framework of Reference for Languages). What are the top seven grammatical concepts you think I should drill? `;
-  const format = 'json_object';
+  const format = { type: 'json_object' } as gptFormatType;
   return { prompt, format };
 };
 
@@ -88,7 +88,8 @@ export const requestPhraseSuggestions = ({
   )} on the other. Generate ${numberOfPhrases} long sentences that demonstrate the concept of ${concept} in ${getLangName(
     studyLanguage
   )}. The format of the JSON should be as follows: {${userLanguage}: "sentence", ${studyLanguage}: "sentence"}.`;
-  const format = 'json_object';
+  const format = { type: 'json_object' } as gptFormatType;
+
   return { prompt, format };
 };
 

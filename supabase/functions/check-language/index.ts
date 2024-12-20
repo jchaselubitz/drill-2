@@ -1,7 +1,7 @@
-// @ts-ignore
 import { OpenAI } from 'https://deno.land/x/openai@v4.69.0/mod.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { OpenAiModel } from '../_shared/enums.ts';
+import { ChatCompletionMessageParam } from 'https://deno.land/x/openai@v4.69.0/resources/mod.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,10 +13,10 @@ Deno.serve(async (req) => {
   const messages = [
     {
       role: 'system',
-      content: 'ISO 639 code as JSON object: { "lng": "en" }',
+      content: 'ISO 639 code as JSON object such as: { "lng": "en" }',
     },
     { role: 'user', content: `what is the language of this text: ${snippet}?` },
-  ];
+  ] as ChatCompletionMessageParam[];
 
   try {
     const openai = new OpenAI({
@@ -40,8 +40,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: unknown) {
+    return new Response(JSON.stringify({ error: error }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
     });

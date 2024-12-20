@@ -4,7 +4,6 @@ import { LanguagesISO639 } from '../lists';
 import { createClient } from '@/utils/supabase/client';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
-import { userAgent } from 'next/server';
 
 export type AiMessage = {
   role: string;
@@ -29,7 +28,8 @@ export const getOpenAiKey = () => {
   }
 };
 
-export type gptFormatType = 'json_object' | 'text';
+export type gptFormatType = { type: 'json_object' | 'text' | 'json_schema'; json_schema?: any };
+
 export type ModelParamsType = {
   format: gptFormatType;
   presence_penalty?: number;
@@ -70,11 +70,11 @@ export const generateHistory = async (
   ];
 
   const modelParams = {
-    format: zodResponseFormat(HistoryStructure, 'history'),
-    max_tokens: 1000,
+    format: zodResponseFormat(HistoryStructure, 'history') as gptFormatType,
+    max_tokens: 400,
     temperature: 0.9,
   };
-  const { data, error } = await supabase.functions.invoke('gen-history', {
+  const { data, error } = await supabase.functions.invoke('gen-text', {
     body: {
       userApiKey: getOpenAiKey(),
       modelSelection: getModelSelection(),
@@ -86,7 +86,7 @@ export const generateHistory = async (
   if (error) {
     throw new Error('Error:', error);
   }
-  const response = JSON.parse(data);
+  const response = JSON.parse(data.content);
   return response;
 };
 
@@ -118,7 +118,7 @@ export const generateTutorPrompt = async ({
 
   const supabase = createClient();
   const modelParams = {
-    format: 'text',
+    format: { type: 'text' } as gptFormatType,
     max_tokens: 400,
     temperature: 0.6,
   };
@@ -134,7 +134,55 @@ export const generateTutorPrompt = async ({
   if (error) {
     throw new Error('Error:', error);
   }
-  return data;
+  return data.content;
+};
+
+export type ReviewUserParagraphSubmissionResponse = {
+  correction: string;
+  feedback: any;
+};
+export const reviewUserParagraphSubmission = async ({
+  paragraph,
+}: {
+  paragraph: string;
+}): Promise<ReviewUserParagraphSubmissionResponse> => {
+  const messages = [
+    {
+      role: 'system',
+      content:
+        'The software will submit a paragraph of text written by the user. Return as a JSON object in the following format {"correction": <a version of the user\'s submission with correct vocab and grammar>, "feedback": <feedback on the user\'s paragraph>}. Use markdown where possible to indicate changes in your correction and to provide feedback.',
+    },
+
+    {
+      role: 'user',
+      content:
+        'Review the paragraph I wrote and repeat it back to me, but with correct grammar. Try to keep it as close the original in language and structure as possible. Explain your changes as feedback as bullet points where possible.',
+    },
+    {
+      role: 'user',
+      content: paragraph,
+    },
+  ];
+
+  const supabase = createClient();
+  const modelParams = {
+    format: { type: 'json_object' } as gptFormatType,
+    max_tokens: 1000,
+    temperature: 0.6,
+  };
+  const { data, error } = await supabase.functions.invoke('gen-text', {
+    body: {
+      userApiKey: getOpenAiKey(),
+      modelSelection: getModelSelection(),
+      modelParams,
+      messages,
+    },
+  });
+
+  if (error) {
+    throw new Error('Error:', error);
+  }
+  return JSON.parse(data.content);
 };
 
 // const AITESTSTRING = `{"concepts":[

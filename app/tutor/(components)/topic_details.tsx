@@ -2,10 +2,15 @@
 
 import { BaseTutorTopic } from 'kysely-codegen';
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+
 import { useUserContext } from '@/contexts/user_context';
 import { generateTutorPrompt } from '@/lib/helpers/helpersAI';
 import { LanguagesISO639 } from '@/lib/lists';
+
+import { RefreshCcw } from 'lucide-react';
+
+import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
+import GrammarCorrection from '@/components/ai_elements/grammar_correction';
 
 interface TopicDetailsProps {
   topic: BaseTutorTopic;
@@ -13,14 +18,15 @@ interface TopicDetailsProps {
 }
 
 const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) => {
+  const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
   const { lang: topicLanguage, level, instructions } = topic;
   const { userLanguage, prefLanguage } = useUserContext();
-  const [prompt, setPrompt] = useState<string>('');
-  const [response, setResponse] = useState<string>('');
+  const [prompt, setPrompt] = useState<string>(TestPrompt);
 
   const preparedPhrases = relevantPhrases.map((phrase: any) => phrase.text);
 
   const handleInitiateLesson = async () => {
+    setButtonState('loading');
     if (!userLanguage || !topicLanguage || !level || !instructions) {
       alert('Missing information. Please try again.');
       return;
@@ -34,38 +40,31 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
         instructions,
       });
       setPrompt(prompt);
+      setButtonState('success');
     } catch (error: any) {
+      setButtonState('error');
       throw new Error('Error:', error);
     }
   };
 
-  const handleResponseChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setResponse(event.target.value);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-
   return (
-    <div>
-      <h2>Writing Prompt</h2>
-      <Button onClick={handleInitiateLesson}>Initiate Lesson</Button>
+    <div className="flex flex-col mt-4 gap-3">
       <p>{prompt}</p>
-
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={response}
-          onChange={handleResponseChange}
-          rows={10}
-          cols={50}
-          placeholder="Write your response here..."
-        />
-        <br />
-        <button type="submit">Submit</button>
-      </form>
+      <LoadingButton
+        onClick={handleInitiateLesson}
+        className="w-fit"
+        buttonState={buttonState}
+        text={prompt === '' ? 'Initiate lesson' : <RefreshCcw />}
+        loadingText={'Generating ...'}
+        successText="Re-submit"
+        errorText="Something went wrong"
+      />
+      <GrammarCorrection />
     </div>
   );
 };
 
 export default TopicDetails;
+
+const TestPrompt =
+  'Write a short paragraph about the importance of personal conversations in building relationships. Include your thoughts on how they can help us understand each other better.';

@@ -87,8 +87,9 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   const handleRequest = async () => {
     setRequestLoading(true);
     const { request, command } = captureCommand();
+
     const modelParams = {
-      format: 'json_object' as gptFormatType,
+      format: { type: 'json_object' } as gptFormatType,
       max_tokens: 1000,
       temperature: 0.9,
     };
@@ -115,7 +116,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       throw Error('Error:', error);
     }
     try {
-      const response = JSON.parse(data);
+      const response = JSON.parse(data.content);
       setGenResponse(response);
       if (isExplanation) {
         setChatContext({ matterText: text, requestText, assistantAnswer: response?.explanation });
