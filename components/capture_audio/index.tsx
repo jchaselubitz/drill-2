@@ -105,7 +105,6 @@ const CaptureAudio: FC = () => {
   };
 
   const saveRecording = async () => {
-    // setIsSaving(true);
     setSaveButtonState('loading');
     const fileName = `${Date.now()}-recording`;
     const bucketName = 'user_recordings';
@@ -118,13 +117,11 @@ const CaptureAudio: FC = () => {
         audioFile: audioResponse.blob,
       });
     }
-    //save transcript	to database
     const { data, error: langError } = await supabase.functions.invoke('check-language', {
       body: {
         text: transcript,
       },
     });
-
     if (langError) {
       setSaveButtonState('error');
       throw Error(`Error checking language: ${langError}`);
@@ -140,6 +137,7 @@ const CaptureAudio: FC = () => {
         source: 'home',
       });
       setSaveButtonState('success');
+      resetRecordingButtonState();
       return;
     } catch (error) {
       setSaveButtonState('error');

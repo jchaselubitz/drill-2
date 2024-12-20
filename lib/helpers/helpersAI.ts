@@ -4,6 +4,11 @@ import { LanguagesISO639 } from '../lists';
 import { createClient } from '@/utils/supabase/client';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import {
+  phraseGenerationSystemInstructions,
+  phraseResponseChecks,
+  requestPhraseSuggestions,
+} from './promptGenerators';
 
 export type AiMessage = {
   role: string;
@@ -43,6 +48,62 @@ export type AiGenerateProps = {
   messages: AiMessage[];
   dbParams?: any;
   dbCallback?: any;
+};
+
+export const handleGeneratePhrases = async ({
+  concept,
+  studyLanguage,
+  userLanguage,
+  level,
+}: {
+  concept: string;
+  studyLanguage: LanguagesISO639;
+  userLanguage: LanguagesISO639;
+  level: string | null;
+}) => {
+  const supabase = createClient();
+
+  const { prompt, format } = requestPhraseSuggestions({
+    concept,
+    studyLanguage,
+    userLanguage,
+    level: level ?? '',
+    numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
+  });
+
+  const messages = [
+    {
+      role: 'system',
+      content: phraseGenerationSystemInstructions({
+        lang1: userLanguage,
+        lang2: studyLanguage,
+      }),
+    },
+    {
+      role: 'user',
+      content: prompt,
+    },
+  ];
+
+  const modelParams = {
+    format,
+  };
+  try {
+    const { data } = await supabase.functions.invoke('gen-text', {
+      body: {
+        userApiKey: getOpenAiKey(),
+        modelSelection: getModelSelection(),
+        modelParams: modelParams,
+        messages: messages,
+      },
+    });
+
+    return phraseResponseChecks({
+      response: data.content,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+  }
 };
 
 export const generateHistory = async (

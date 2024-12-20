@@ -3,9 +3,8 @@
 import { PhraseType } from '@/app/lessons/(components)/lesson_option';
 import type { gptFormatType } from './helpersAI';
 import { LanguagesISO639, getLangName } from './lists';
-
-export const lessonGenerationSystemInstructions =
-  'Return a JSON that is a list of objects, each including the "title" of the concept and a very short "description". Your response will be parsed as follows: JSON.parse(<your-response>)';
+import { z } from 'zod';
+import { zodResponseFormat } from 'openai/helpers/zod';
 
 export const requestLessonSuggestions = ({
   language,
@@ -14,9 +13,21 @@ export const requestLessonSuggestions = ({
   language: string;
   level: string;
 }): { prompt: string; format: gptFormatType } => {
+  const aiResponseFormat = zodResponseFormat(
+    z.object({
+      concepts: z.array(
+        z.object({
+          title: z.string(),
+          description: z.string(),
+        })
+      ),
+    }),
+    'suggestions'
+  );
+
   const prompt = `I am studying ${language}, and my current skill level is: ${level} (according to the Common European Framework of Reference for Languages). What are the top seven grammatical concepts you think I should drill? `;
-  const format = { type: 'json_object' } as gptFormatType;
-  return { prompt, format };
+
+  return { prompt, format: aiResponseFormat };
 };
 
 // ==== Card Content Generation ====
@@ -30,15 +41,7 @@ export const phraseGenerationSystemInstructions = ({
 }) =>
   `The student will ask you for a list of examples, which will be added to flashcards. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "phrases" JSON that is a list of objects, each with the following keys: phrase_primary, phrase_secondary. The phrase_primary is the ${lang1} phrase, and the phrase_secondary is the ${lang2} phrase. The format should therefore be: [{phrase_primary: {text: "phrase1", lang:${lang1}}, phrase_secondary: {text: "phrase2", lang:${lang2}}}, ...]`;
 
-export const phraseResponseChecks = ({
-  response,
-  lang1,
-  lang2,
-}: {
-  response: string;
-  lang1: string;
-  lang2: string;
-}): PhraseType[] => {
+export const phraseResponseChecks = ({ response }: { response: string }): PhraseType[] => {
   if (response === '') {
     throw Error('No phrases generated. Try again.');
   }
@@ -79,6 +82,18 @@ export const requestPhraseSuggestions = ({
     throw new Error('studyLanguage, concept, or level is empty');
   }
 
+  const aiResponseFormat = zodResponseFormat(
+    z.object({
+      phrases: z.array(
+        z.object({
+          phrase_primary: z.object({ text: z.string(), lang: z.nativeEnum(LanguagesISO639) }),
+          phrase_secondary: z.object({ text: z.string(), lang: z.nativeEnum(LanguagesISO639) }),
+        })
+      ),
+    }),
+    'phrases'
+  );
+
   const prompt = `You are helping a student study ${getLangName(
     studyLanguage
   )} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). You are creating flashcards, with ${getLangName(
@@ -88,9 +103,8 @@ export const requestPhraseSuggestions = ({
   )} on the other. Generate ${numberOfPhrases} long sentences that demonstrate the concept of ${concept} in ${getLangName(
     studyLanguage
   )}. The format of the JSON should be as follows: {${userLanguage}: "sentence", ${studyLanguage}: "sentence"}.`;
-  const format = { type: 'json_object' } as gptFormatType;
 
-  return { prompt, format };
+  return { prompt, format: aiResponseFormat };
 };
 
 // ==== Content Request ====

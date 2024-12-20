@@ -1,16 +1,13 @@
 'use client';
 
 import { BaseTutorTopic } from 'kysely-codegen';
+import { RefreshCcw } from 'lucide-react';
 import React, { useState } from 'react';
-
+import GrammarCorrection from '@/components/ai_elements/grammar_correction';
+import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { useUserContext } from '@/contexts/user_context';
 import { generateTutorPrompt } from '@/lib/helpers/helpersAI';
 import { LanguagesISO639 } from '@/lib/lists';
-
-import { RefreshCcw } from 'lucide-react';
-
-import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
-import GrammarCorrection from '@/components/ai_elements/grammar_correction';
 
 interface TopicDetailsProps {
   topic: BaseTutorTopic;

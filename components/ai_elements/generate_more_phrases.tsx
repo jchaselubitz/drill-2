@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { addTranslationsToLesson } from '@/lib/actions/lessonActions';
-import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
-import {
-  phraseGenerationSystemInstructions,
-  phraseResponseChecks,
-  requestPhraseSuggestions,
-} from '@/lib/helpers/promptGenerators';
+import { handleGeneratePhrases } from '@/lib/helpers/helpersAI';
 import { LanguagesISO639 } from '@/lib/lists';
-import { createClient } from '@/utils/supabase/client';
 
 interface GenerateMorePhrasesProps {
   lessonId: string;
@@ -24,61 +18,25 @@ const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
   userLanguage,
   currentLevel,
 }) => {
-  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGenerate = async () => {
     setIsLoading(true);
-    const { prompt, format } = requestPhraseSuggestions({
+    const phraseArray = await handleGeneratePhrases({
       concept: lessonTitle,
-      studyLanguage: studyLanguage,
-      userLanguage: userLanguage,
-      level: currentLevel ?? '',
-      numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
+      studyLanguage,
+      userLanguage,
+      level: currentLevel,
     });
-
-    const messages = [
-      {
-        role: 'system',
-        content: phraseGenerationSystemInstructions({
-          lang1: userLanguage,
-          lang2: studyLanguage,
-        }),
-      },
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ];
-
-    const modelParams = {
-      format,
-    };
-    try {
-      const { data } = await supabase.functions.invoke('gen-text', {
-        body: {
-          userApiKey: getOpenAiKey(),
-          modelSelection: getModelSelection(),
-          modelParams: modelParams,
-          messages: messages,
-        },
-      });
-
-      const phaseArray = phraseResponseChecks({
-        response: data.content,
-        lang1: userLanguage,
-        lang2: studyLanguage,
-      });
-
-      await addTranslationsToLesson({
-        phrases: phaseArray,
-        lessonId: lessonId,
-      });
-
+    if (!phraseArray) {
       setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
+      return;
     }
+    await addTranslationsToLesson({
+      phrases: phraseArray,
+      lessonId: lessonId,
+    });
+    setIsLoading(false);
   };
 
   return (

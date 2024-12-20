@@ -29,7 +29,7 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
     );
 
   return (
-    <div className="flex flex-col w-full h-full z-40 bg-white">
+    <div className="flex flex-col w-full h-full z-30 bg-white">
       <div className="flex flex-col p-4 border-b border-slate-200 gap-3">
         <div className="flex justify-between ">
           <div className="flex gap-3 font-bold items-start">

@@ -5,14 +5,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { addSubjectLessonWithTranslations } from '@/lib/actions/lessonActions';
-import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
-import {
-  phraseGenerationSystemInstructions,
-  phraseResponseChecks,
-  requestPhraseSuggestions,
-} from '@/lib/helpers/promptGenerators';
+import { handleGeneratePhrases } from '@/lib/helpers/helpersAI';
 import { getLangName, LanguagesISO639 } from '@/lib/lists';
-import { createClient } from '@/utils/supabase/client';
 
 import { OptionType } from './lesson_option';
 
@@ -31,7 +25,6 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
   userLanguage,
   level,
 }) => {
-  const supabase = createClient();
   const [saveButtonState, setSaveButtonState] = useState<ButtonLoadingState>('default');
   const [regenButtonState, setRegenButtonState] = useState<ButtonLoadingState>('default');
 
@@ -43,54 +36,20 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
     if (!studyLanguage || !userLanguage) {
       throw new Error('Language not selected');
     }
-
-    const { prompt, format } = requestPhraseSuggestions({
+    const phraseArray = await handleGeneratePhrases({
       concept: option.title,
       studyLanguage,
       userLanguage,
       level: level,
-      numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
     });
 
-    const messages = [
-      {
-        role: 'system',
-        content: phraseGenerationSystemInstructions({
-          lang1: userLanguage,
-          lang2: studyLanguage,
-        }),
-      },
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ];
-
-    const modelParams = {
-      format,
-    };
-
-    const { data, error } = await supabase.functions.invoke('gen-text', {
-      body: {
-        userApiKey: getOpenAiKey(),
-        modelSelection: getModelSelection(),
-        modelParams: modelParams,
-        messages: messages,
-      },
-    });
-    if (error) {
+    if (!phraseArray) {
       setRegenButtonState('error');
-      throw Error('Translation Save Error', error);
+      return;
+    } else {
+      setPhraseArray(phraseArray);
+      setRegenButtonState('success');
     }
-
-    setPhraseArray(
-      phraseResponseChecks({
-        response: data.content,
-        lang1: userLanguage,
-        lang2: studyLanguage,
-      })
-    );
-    setRegenButtonState('success');
   };
 
   const handleSave = async (option: OptionType) => {

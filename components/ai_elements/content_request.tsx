@@ -1,7 +1,8 @@
 import { Stars } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { zodResponseFormat } from 'openai/helpers/zod';
 import React, { useEffect, useState } from 'react';
-import { set } from 'zod';
+import { z } from 'zod';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
@@ -77,6 +78,8 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setCommand(firstWord) === 'How' ||
     setCommand(firstWord) === 'Can';
 
+  const isList = setCommand(firstWord) === 'List' || setCommand(firstWord) === 'Extract';
+
   const captureCommand = () => {
     if (setCommand(firstWord)) {
       return { request: requestText, command: setCommand(firstWord) };
@@ -88,8 +91,33 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setRequestLoading(true);
     const { request, command } = captureCommand();
 
+    const TranslationResponseFormat = zodResponseFormat(
+      z.object({
+        input_text: z.string(),
+        input_lang: z.nativeEnum(LanguagesISO639),
+        output_text: z.string(),
+        output_lang: z.nativeEnum(LanguagesISO639),
+      }),
+      'translation'
+    );
+
+    const ExplanationResponseFormat = zodResponseFormat(
+      z.object({
+        explanation: z.string(),
+      }),
+      'explanation'
+    );
+
+    const GeneralResponseFormat = { type: 'json_object' } as gptFormatType;
+
+    const responseFormat = isTranslation
+      ? TranslationResponseFormat
+      : isExplanation
+        ? ExplanationResponseFormat
+        : GeneralResponseFormat;
+
     const modelParams = {
-      format: { type: 'json_object' } as gptFormatType,
+      format: responseFormat,
       max_tokens: 1000,
       temperature: 0.9,
     };

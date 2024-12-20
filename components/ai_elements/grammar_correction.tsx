@@ -1,19 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import Markdown from 'react-markdown';
+import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
+import { Form, FormField, FormItem } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { useChatContext } from '@/contexts/chat_window_context';
 import {
   reviewUserParagraphSubmission,
   ReviewUserParagraphSubmissionResponse,
 } from '@/lib/helpers/helpersAI';
-import { useForm } from 'react-hook-form';
-
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormField, FormItem } from '@/components/ui/form';
-
-import Markdown from 'react-markdown';
-import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { cn } from '@/lib/utils';
-import { useChatContext } from '@/contexts/chat_window_context';
+
 import { Button } from '../ui/button';
 
 interface GrammarCorrectionProps {

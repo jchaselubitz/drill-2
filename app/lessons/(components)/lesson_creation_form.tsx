@@ -17,14 +17,8 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserContext } from '@/contexts/user_context';
-import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
-import {
-  lessonGenerationSystemInstructions,
-  phraseGenerationSystemInstructions,
-  phraseResponseChecks,
-  requestLessonSuggestions,
-  requestPhraseSuggestions,
-} from '@/lib/helpers/promptGenerators';
+import { getModelSelection, getOpenAiKey, handleGeneratePhrases } from '@/lib/helpers/helpersAI';
+import { requestLessonSuggestions } from '@/lib/helpers/promptGenerators';
 import { ContentSuggestions, Languages, LanguagesISO639, Levels } from '@/lib/lists';
 import { createClient } from '@/utils/supabase/client';
 
@@ -67,37 +61,19 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
       return;
     }
     setIsLoading(true);
-    const { prompt, format } = requestPhraseSuggestions({
-      userLanguage: userLanguage,
-      studyLanguage: language,
-      level: level,
+
+    ///===============
+
+    const phrasesArray = await handleGeneratePhrases({
       concept: request,
-      numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
+      studyLanguage: language,
+      userLanguage: userLanguage,
+      level: level,
     });
-
-    const modelParams = { type: 'json_object' } as gptFormatType;
-    const messages = [
-      {
-        role: 'system',
-        content: phraseGenerationSystemInstructions({ lang1: userLanguage, lang2: language }),
-      },
-      { role: 'user', content: prompt },
-    ];
-
-    const { data } = await supabase.functions.invoke('gen-text', {
-      body: {
-        userApiKey: getOpenAiKey(),
-        modelSelection: getModelSelection(),
-        modelParams: modelParams,
-        messages: messages,
-      },
-    });
-
-    const phrasesArray = phraseResponseChecks({
-      response: data.content as string,
-      lang1: userLanguage,
-      lang2: language,
-    });
+    if (!phrasesArray) {
+      setIsLoading(false);
+      return;
+    }
     setOptionListObject([{ title: request, description: level, phrases: phrasesArray }]);
     setLevel(level);
     setStudyLanguage(language);
@@ -118,7 +94,8 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
     const messages = [
       {
         role: 'system',
-        content: lessonGenerationSystemInstructions,
+        content:
+          'Return a JSON that is a list of objects, each including the "title" of the concept and a very short "description".',
       },
       { role: 'user', content: prompt },
     ];
