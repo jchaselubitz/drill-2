@@ -51,6 +51,7 @@ export const getPhrases = async ({
       'phrase.favorite',
       'phrase.type',
       'phrase.filename',
+      'phrase.note',
       jsonArrayFrom(
         eb
           .selectFrom('tag')
@@ -80,6 +81,7 @@ export const getPhrases = async ({
             'p1.partSpeech as p1_partSpeech',
             'p1.source as p1_source',
             'p1.userId as p1_userId',
+            'p1.note as p1_note',
             'p2.id as p2_Id',
             'p2.text as p2_text',
             'p2.lang as p2_lang',
@@ -87,6 +89,7 @@ export const getPhrases = async ({
             'p2.partSpeech as p2_partSpeech',
             'p2.source as p2_source',
             'p2.userId as p2_userId',
+            'p2.note as p2_note',
           ])
       ).as('rawTranslations'),
       jsonArrayFrom(
@@ -109,6 +112,7 @@ export const getPhrases = async ({
             'p1.partSpeech as p1_partSpeech',
             'p1.source as p1_source',
             'p1.userId as p1_userId',
+            'p1.note as p1_note',
             'p2.id as p2_Id',
             'p2.text as p2_text',
             'p2.lang as p2_lang',
@@ -116,6 +120,7 @@ export const getPhrases = async ({
             'p2.partSpeech as p2_partSpeech',
             'p2.source as p2_source',
             'p2.userId as p2_userId',
+            'p2.note as p2_note',
           ])
       ).as('rawAssociations'),
     ])
@@ -149,6 +154,7 @@ export const getPhrases = async ({
             partSpeech: relationship.p1PartSpeech,
             source: relationship.p1Source,
             userId: relationship.p1UserId,
+            note: relationship.p1Note,
           });
         }
         if (relationship.p2Id.toString() !== phraseId) {
@@ -160,6 +166,7 @@ export const getPhrases = async ({
             partSpeech: relationship.p2PartSpeech,
             source: relationship.p2Source,
             userId: relationship.p2UserId,
+            note: relationship.p2Note,
           });
         }
         return {
@@ -315,6 +322,28 @@ export const updatePhrase = async ({ phraseId, text }: { phraseId: string; text:
   } catch (error) {
     throw Error(`Failed to update phrase: ${error}`);
   }
+};
+
+export const updatePhraseNote = async ({ phraseId, note }: { phraseId: string; note: string }) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
+  try {
+    await db
+      .updateTable('phrase')
+      .set({ note })
+      .where('id', '=', phraseId)
+      .where('userId', '=', userId)
+      .execute();
+  } catch (error) {
+    throw Error(`Failed to update note: ${error}`);
+  }
+  revalidatePath('/library', 'page');
 };
 
 export const togglePhraseFavorite = async ({

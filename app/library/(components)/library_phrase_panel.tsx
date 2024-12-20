@@ -8,6 +8,8 @@ import { useLibraryContext } from '@/contexts/library_context';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
 
+import LibraryPhraseTopBar from './library_phrase_top_bar';
+
 interface LibraryPhrasePanelProps {
   phrase: PhraseWithAssociations | null;
   userTags: string[];
@@ -19,8 +21,6 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
   userTags,
   setOptPhraseData,
 }) => {
-  const { setSelectedPhraseId } = useLibraryContext();
-
   if (!phrase)
     return (
       <div className="flex h-svh items-center justify-center p-6 w-full">
@@ -30,15 +30,13 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
 
   return (
     <div className="flex flex-col w-full h-full z-30 bg-white">
-      <div className="flex flex-col p-4 border-b border-slate-200 gap-3">
+      <LibraryPhraseTopBar phraseId={phrase.id} />
+      <div className="flex flex-col p-4 border-b border-slate-200 gap-3 overflow-y-scroll">
         <div className="flex justify-between ">
           <div className="flex gap-3 font-bold items-start">
             <TtsButton text={phrase.text} bucket="text_to_speech" lacksAudio={false} />{' '}
             <div className="mt-2">{phrase.text}</div>
           </div>
-          <Button variant={'ghost'} size={'icon'} onClick={() => setSelectedPhraseId(null)}>
-            <XIcon />{' '}
-          </Button>
         </div>
 
         <div className="flex items-center justify-between">

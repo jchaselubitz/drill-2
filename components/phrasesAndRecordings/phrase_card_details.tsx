@@ -10,6 +10,8 @@ import { useUserContext } from '@/contexts/user_context';
 import { getContentSuggestions, LanguagesISO639 } from '@/lib/lists';
 
 import ContentRequest from '../ai_elements/content_request';
+import { Input } from '../ui/input';
+import PhraseNote from './phrase_note';
 import AssociationRow from './translationAndAssociation/association_row';
 import TranslationRow from './translationAndAssociation/translation_row';
 
@@ -20,6 +22,7 @@ interface PhraseCardDetailsProps {
 
 const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateToPhrase }) => {
   const { userId, userLanguage, prefLanguage } = useUserContext();
+
   const text = phrase.text;
   const lang = phrase.lang as LanguagesISO639;
   const translationsPhrases =
@@ -40,6 +43,13 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateT
       {(translationsPhrases.length > 0 || associatedPhrases.length > 0) && (
         <div className="flex flex-col  w-full border-b border-slate-200 p-4  ">
           <Accordion type="single" collapsible className="pb-1">
+            <AccordionItem value="notes" className="border-0 ">
+              <AccordionTrigger className={accordionClass}>Notes</AccordionTrigger>
+              <AccordionContent className="p-2">
+                <PhraseNote note={phrase.note} phraseId={phrase.id} />
+              </AccordionContent>
+            </AccordionItem>
+
             {translationsPhrases && translationsPhrases.length > 0 && (
               <AccordionItem value="translations" className="border-0 ">
                 <AccordionTrigger className={accordionClass}>Translations</AccordionTrigger>
