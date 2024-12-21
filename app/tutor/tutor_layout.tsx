@@ -1,5 +1,7 @@
 'use client';
 
+import { useParams } from 'next/navigation';
+
 import ResponsiveLayout from '../responsive_layout';
 
 interface TutorLayoutProps {
@@ -8,9 +10,10 @@ interface TutorLayoutProps {
 }
 
 export default function ResponsiveTutorLayout({ topic, children }: TutorLayoutProps) {
+  const topicSelected = useParams().topicId;
   return (
     <ResponsiveLayout
-      detailPanelActive={!!topic}
+      detailPanelActive={!!topicSelected}
       panel1={children}
       panel2={<div className="px-4 w-full">{topic}</div>}
     />

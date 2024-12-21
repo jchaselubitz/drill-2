@@ -11,8 +11,8 @@ export interface ButtonProps
   asChild?: boolean;
   buttonState: ButtonLoadingState;
   text: string | React.ReactNode;
-  loadingText: string;
-  successText?: string;
+  loadingText: string | React.ReactNode;
+  successText?: string | React.ReactNode;
   errorText?: string;
 }
 
@@ -32,6 +32,10 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    const isString = (value: any): value is string => {
+      return typeof value === 'string';
+    };
+
     return (
       <Button
         disabled={buttonState === 'loading' || buttonState === 'disabled'}
@@ -44,12 +48,13 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {buttonState === 'loading' ? (
           <span className="flex gap-2 items-center">
-            <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> {loadingText}{' '}
+            {isString(loadingText) && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}{' '}
+            {loadingText}
           </span>
         ) : buttonState === 'success' ? (
           <span className="flex gap-2 justify-between items-center">
             {successText}
-            <Check className="ml-2 h-4 w-4" />
+            {isString(successText) && <Check className="ml-2 h-4 w-4" />}
           </span>
         ) : buttonState === 'error' ? (
           <span className="flex gap-2 items-center">{errorText}</span>

@@ -1,17 +1,17 @@
+import { StarFilledIcon } from '@radix-ui/react-icons';
+import { PhraseWithAssociations } from 'kysely-codegen';
 import { StarIcon, Tag, Trash, XIcon } from 'lucide-react';
 import React, { startTransition, useOptimistic } from 'react';
+import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
-import { useLibraryContext } from '@/contexts/library_context';
-import { deletePhrase } from '@/lib/actions/phraseActions';
-import { StarFilledIcon } from '@radix-ui/react-icons';
-import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
-import { PhraseWithAssociations } from 'kysely-codegen';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import TagList from '@/components/tags/tag_list';
+import { useLibraryContext } from '@/contexts/library_context';
+import { deletePhrase } from '@/lib/actions/phraseActions';
+import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 
 type LibraryPhraseTopBarProps = {
   phrase: PhraseWithAssociations;
@@ -50,7 +50,7 @@ const LibraryPhraseTopBar: React.FC<LibraryPhraseTopBarProps> = ({ phrase, userT
     <div className="sticky top-0 z-30 flex w-full justify-between items-center min-h-14 px-4 border-b border-slate-200 bg-white">
       <div>
         <Button variant={'ghost'} size="icon" onClick={handleDelete}>
-          <Trash color="red" />
+          <Trash color="#b91c1c" />
         </Button>
 
         <DropdownMenu>

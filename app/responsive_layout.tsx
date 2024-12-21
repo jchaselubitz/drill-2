@@ -2,6 +2,7 @@
 
 import { useWindowSize } from 'react-use';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+
 import TopNav from './(components)/top_nav';
 
 interface ResponsiveLayoutProps {
@@ -19,11 +20,11 @@ export default function ResponsiveLayout({
 
   return isMobile ? (
     <div className="min-h-screen  w-full">
-      <main className="flex flex-col gap-8  w-full h-full">
+      <main className="flex flex-col gap-8 w-full h-full">
         {detailPanelActive ? (
           <div className="flex h-full overflow-y-scroll">{panel2}</div>
         ) : (
-          <div className="p-2 pb-24 overflow-y-scroll">{panel1}</div>
+          <div className="p-2 pb-24 mt-2 overflow-y-scroll">{panel1}</div>
         )}
       </main>
     </div>

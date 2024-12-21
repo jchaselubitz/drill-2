@@ -5,5 +5,9 @@ import TopicList from './(components)/topic_list';
 export default async function TutorPage() {
   const topics = await getTutorTopics();
 
-  return <TopicList topics={topics} />;
+  return (
+    <div className="pt-2 md:pt-4">
+      <TopicList topics={topics} />
+    </div>
+  );
 }

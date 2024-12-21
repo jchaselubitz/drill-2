@@ -1,6 +1,7 @@
 import React from 'react';
 import { getPhrases } from '@/lib/actions/phraseActions';
 import { getTutorTopics } from '@/lib/actions/tutorActions';
+import { getLangIcon, getLangName } from '@/lib/lists';
 
 import TopicDetails from '../../(components)/topic_details';
 
@@ -16,16 +17,13 @@ export default async function TopicPanel({ params }: TopicPanelProps) {
 
   return (
     <div className="mt-4">
-      <h2>Topic Details</h2>
-      <p>
-        <strong>Language:</strong> {topic.lang}
-      </p>
-      <p>
-        <strong>Level:</strong> {topic.level}
-      </p>
-      <p>
-        <strong>Instructions:</strong> {topic.instructions}
-      </p>
+      <div className="flex flex-col gap-1">
+        <strong> {topic.instructions}</strong>
+        <div className="text-xs uppercase font-medium text-zinc-500">
+          {getLangName(topic.lang)} {topic.level}
+        </div>
+      </div>
+
       <TopicDetails topic={topic} relevantPhrases={relevantPhrases} />
     </div>
   );

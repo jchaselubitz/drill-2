@@ -25,7 +25,7 @@ export type AppSidebarProps = {
 
 export function AppSidebar({ user, pages, setUserLanguages }: AppSidebarProps) {
   return (
-    <Sidebar variant="floating">
+    <Sidebar>
       <SidebarHeader />
       <div className="mx-3 mb-3">
         <Logo logoUrl={'/icons/drill-logo.png'} />

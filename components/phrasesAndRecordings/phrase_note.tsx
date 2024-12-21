@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Markdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
+import remarkGfm from 'remark-gfm';
 import { updatePhraseNote } from '@/lib/actions/phraseActions';
 
 import { Textarea } from '../ui/textarea';
@@ -60,7 +62,7 @@ const PhraseNote: React.FC<PhraseNoteProps> = ({ note, phraseId }) => {
         notesForm
       ) : (
         <div className="prose-sm p-2 text-sm rounded-md bg-neutral-50 border border-neutral-200">
-          <Markdown>{currentNote}</Markdown>
+          <Markdown remarkPlugins={[remarkGfm, remarkBreaks]}>{currentNote}</Markdown>
         </div>
       )}
     </div>

@@ -58,17 +58,18 @@ export function NavService({ user, children }: { user: User; children: React.Rea
       isActive: true,
       mobile: true,
     },
-    {
-      title: 'Lessons',
-      url: '/lessons',
-      icon: LucidePartyPopper,
-      badge: '10',
-      mobile: true,
-    },
+
     {
       title: 'Library',
       url: '/library',
       icon: Library,
+      badge: '10',
+      mobile: true,
+    },
+    {
+      title: 'Lessons',
+      url: '/lessons',
+      icon: LucidePartyPopper,
       badge: '10',
       mobile: true,
     },

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Markdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
+import remarkGfm from 'remark-gfm';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { Form, FormField, FormItem } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
@@ -69,30 +71,39 @@ const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({ className }) => {
             name="text"
             render={({ field }) => (
               <FormItem>
-                <Textarea
-                  {...field}
-                  rows={10}
-                  cols={50}
-                  placeholder="Write your response here..."
-                />
+                <Textarea {...field} rows={7} placeholder="Write your response here..." />
               </FormItem>
             )}
           />
 
-          <LoadingButton
-            className="w-fit"
-            type="submit"
-            onClick={form.handleSubmit(handleResponseChange)}
-            buttonState={submitState}
-            text={'Submit'}
-            loadingText={'Correcting ...'}
-            successText={'Corrected'}
-          />
+          {form.getValues('text') !== '' && (
+            <LoadingButton
+              className="w-fit"
+              type="submit"
+              onClick={form.handleSubmit(handleResponseChange)}
+              buttonState={submitState}
+              text={'Submit'}
+              loadingText={'Correcting ...'}
+              successText={'Corrected'}
+            />
+          )}
         </form>
         {response && (
-          <div className="flex flex-col prose">
-            <Markdown>{response.correction}</Markdown>
-            <Markdown>{response.feedback.toString()}</Markdown>
+          <div className="flex flex-col gap-4 mt-4">
+            <div className="space-x-2">
+              <div className="text-xs uppercase font-semibold">Correction:</div>
+              <div className="prose ">
+                <Markdown remarkPlugins={[remarkGfm, remarkBreaks]}>{response.correction}</Markdown>
+              </div>
+            </div>
+            <div className="space-x-2">
+              <div className="text-xs uppercase font-semibold">Feedback:</div>
+              <div className="prose ">
+                <Markdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                  {response.feedback.toString()}
+                </Markdown>
+              </div>
+            </div>
             <Button
               className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white w-fit "
               onClick={openInChat}

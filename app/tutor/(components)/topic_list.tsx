@@ -10,7 +10,7 @@ interface TopicListProps {
 
 const TopicList: React.FC<TopicListProps> = ({ topics }) => {
   return (
-    <div className="flex flex-col space-y-4 gap-3 ">
+    <div className="flex flex-col gap-3 ">
       {topics.map((topic) => (
         <TopicListItem key={topic.id} topic={topic} />
       ))}

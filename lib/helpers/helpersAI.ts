@@ -180,8 +180,8 @@ export const generateTutorPrompt = async ({
   const supabase = createClient();
   const modelParams = {
     format: { type: 'text' } as gptFormatType,
-    max_tokens: 400,
-    temperature: 0.6,
+    max_tokens: 500,
+    temperature: 0.4,
   };
   const { data, error } = await supabase.functions.invoke('gen-text', {
     body: {

@@ -10,7 +10,6 @@ import { useUserContext } from '@/contexts/user_context';
 import { getContentSuggestions, LanguagesISO639 } from '@/lib/lists';
 
 import ContentRequest from '../ai_elements/content_request';
-import { Input } from '../ui/input';
 import PhraseNote from './phrase_note';
 import AssociationRow from './translationAndAssociation/association_row';
 import TranslationRow from './translationAndAssociation/translation_row';
