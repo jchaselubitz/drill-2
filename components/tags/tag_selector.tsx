@@ -64,7 +64,7 @@ export default function TagSelector({ phrase, userTags, setOptPhraseData }: TagL
   return (
     <div
       className={cn(
-        'relative z-0 flex gap-2 items-center justify-end focus:stroke-none',
+        'relative z-0 flex gap-2 items-center  focus:stroke-none',
         hasInputValue && 'shadow-md'
       )}
     >

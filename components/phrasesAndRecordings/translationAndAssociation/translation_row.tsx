@@ -32,7 +32,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   return (
     <div
       key={translationsPhrase.id}
-      className="justify-between border border-gray-400 p-2 mb-2 w-full rounded-md"
+      className="justify-between border-b border-gray-200 p-2 w-full "
     >
       <div className="flex items-center justify-between md:gap-2">
         <div className="flex items-center gap-2">
@@ -46,19 +46,6 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
           <TtsButton text={translationsPhrase.text} bucket={bucket} lacksAudio={false} />
         </div>
       </div>
-
-      {/* <div className="text-xs flex justify-between gap-3 items-center">
-        {translationsPhrase.lessonLink && (
-          <a
-            className={cn(
-              'flex p-1 border border-slate-700 hover:bg-slate-700 hover:text-white rounded-lg gap-1'
-            )}
-            href={translationsPhrase.lessonLink}
-          >
-            <Languages /> <span>{translationsPhrase.lessonTitle}</span>
-          </a>
-        )}
-      </div> */}
     </div>
   );
 };

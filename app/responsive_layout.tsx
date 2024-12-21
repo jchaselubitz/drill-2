@@ -2,7 +2,6 @@
 
 import { useWindowSize } from 'react-use';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-
 import TopNav from './(components)/top_nav';
 
 interface ResponsiveLayoutProps {

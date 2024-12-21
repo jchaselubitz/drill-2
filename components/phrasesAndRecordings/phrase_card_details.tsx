@@ -37,23 +37,25 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateT
       .map((p) => p)
       .flat() || [];
 
-  const accordionClass = 'p-2 gap-2 w-full rounded-md text-xs font-medium uppercase border-b-0';
+  const accordianItemClass = 'border-0 data-[state=open]:mb-3';
+  const accordionTriggerClass =
+    'p-2 gap-2 w-full rounded-md text-xs font-medium uppercase border-b-0 ';
   return (
     <div className="flex flex-col gap-4">
       {(translationsPhrases.length > 0 || associatedPhrases.length > 0) && (
         <div className="flex flex-col  w-full border-b border-slate-200 p-4  ">
-          <Accordion type="single" collapsible className="pb-1">
-            <AccordionItem value="notes" className="border-0 ">
-              <AccordionTrigger className={accordionClass}>Notes</AccordionTrigger>
+          <Accordion type="multiple" className="pb-1">
+            <AccordionItem value="notes" className={accordianItemClass}>
+              <AccordionTrigger className={accordionTriggerClass}>Notes</AccordionTrigger>
               <AccordionContent className="p-2">
                 <PhraseNote note={phrase.note} phraseId={phrase.id} />
               </AccordionContent>
             </AccordionItem>
 
             {translationsPhrases && translationsPhrases.length > 0 && (
-              <AccordionItem value="translations" className="border-0 ">
-                <AccordionTrigger className={accordionClass}>Translations</AccordionTrigger>
-                <AccordionContent>
+              <AccordionItem value="translations" className={accordianItemClass}>
+                <AccordionTrigger className={accordionTriggerClass}>Translations</AccordionTrigger>
+                <AccordionContent className="py-1 ">
                   {translationsPhrases.map((translationsPhrase: any) => (
                     <TranslationRow
                       key={translationsPhrase.id}
@@ -65,8 +67,8 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateT
               </AccordionItem>
             )}
             {associatedPhrases && associatedPhrases.length > 0 && (
-              <AccordionItem value="associations" className="border-0">
-                <AccordionTrigger className={accordionClass}>Associations</AccordionTrigger>
+              <AccordionItem value="associations" className={accordianItemClass}>
+                <AccordionTrigger className={accordionTriggerClass}>Associations</AccordionTrigger>
                 <AccordionContent>
                   {associatedPhrases.map((associatedPhrase: any) => (
                     <AssociationRow

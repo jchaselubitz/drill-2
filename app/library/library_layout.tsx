@@ -25,13 +25,7 @@ export default function LibraryLayout({ phrases }: LibraryLayoutProps) {
     <ResponsiveLayout
       detailPanelActive={!!selectedPhraseId}
       panel1={<LibraryTable phrases={phrases} />}
-      panel2={
-        <LibraryPhrasePanel
-          phrase={memoizedPhrase}
-          setOptPhraseData={() => {}}
-          userTags={userTags}
-        />
-      }
+      panel2={<LibraryPhrasePanel phrase={memoizedPhrase} userTags={userTags} />}
     />
   );
 }

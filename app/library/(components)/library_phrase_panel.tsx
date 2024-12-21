@@ -1,10 +1,7 @@
 import { PhraseWithAssociations } from 'kysely-codegen';
-import { XIcon } from 'lucide-react';
 import TtsButton from '@/components/ai_elements/tts_button';
 import PhraseCardDetails from '@/components/phrasesAndRecordings/phrase_card_details';
 import TagList from '@/components/tags/tag_list';
-import { Button } from '@/components/ui/button';
-import { useLibraryContext } from '@/contexts/library_context';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
 
@@ -13,14 +10,9 @@ import LibraryPhraseTopBar from './library_phrase_top_bar';
 interface LibraryPhrasePanelProps {
   phrase: PhraseWithAssociations | null;
   userTags: string[];
-  setOptPhraseData: (data: any) => void;
 }
 
-const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
-  phrase,
-  userTags,
-  setOptPhraseData,
-}) => {
+const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({ phrase, userTags }) => {
   if (!phrase)
     return (
       <div className="flex h-svh items-center justify-center p-6 w-full">
@@ -29,9 +21,9 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
     );
 
   return (
-    <div className="flex flex-col w-full h-full z-30 bg-white">
-      <LibraryPhraseTopBar phraseId={phrase.id} />
-      <div className="flex flex-col p-4 border-b border-slate-200 gap-3 overflow-y-scroll">
+    <div className="relative flex flex-col w-full h-full z-30 bg-white overflow-y-scroll">
+      <LibraryPhraseTopBar phrase={phrase} userTags={userTags} />
+      <div className=" flex flex-col p-4 border-b border-slate-200 gap-3  ">
         <div className="flex justify-between ">
           <div className="flex gap-3 font-bold items-start">
             <TtsButton text={phrase.text} bucket="text_to_speech" lacksAudio={false} />{' '}
@@ -45,7 +37,7 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({
             <div>Language: {getLangIcon(phrase.lang)}</div>
             {phrase.source && <div>Source: {phrase.source}</div>}
           </div>
-          <TagList phrase={phrase} setOptPhraseData={setOptPhraseData} userTags={userTags} />
+          <TagList phrase={phrase} userTags={userTags} />
         </div>
       </div>
 
