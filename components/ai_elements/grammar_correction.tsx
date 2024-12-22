@@ -76,17 +76,15 @@ const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({ className }) => {
             )}
           />
 
-          {form.getValues('text') !== '' && (
-            <LoadingButton
-              className="w-fit"
-              type="submit"
-              onClick={form.handleSubmit(handleResponseChange)}
-              buttonState={submitState}
-              text={'Submit'}
-              loadingText={'Correcting ...'}
-              successText={'Corrected'}
-            />
-          )}
+          <LoadingButton
+            className="w-fit"
+            type="submit"
+            onClick={form.handleSubmit(handleResponseChange)}
+            buttonState={submitState}
+            text={'Submit'}
+            loadingText={'Correcting ...'}
+            successText={'Corrected'}
+          />
         </form>
         {response && (
           <div className="flex flex-col gap-4 mt-4">
