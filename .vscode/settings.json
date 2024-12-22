@@ -40,5 +40,8 @@
     "titleBar.inactiveBackground": "#cc966b99",
     "titleBar.inactiveForeground": "#15202b99"
   },
-  "peacock.color": "#cc966b"
+  "peacock.color": "#cc966b",
+  "cSpell.words": [
+    "nessesary"
+  ]
 }

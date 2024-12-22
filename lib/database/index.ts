@@ -23,6 +23,7 @@ import {
 } from 'kysely-codegen';
 import { Pool } from 'pg';
 import { LanguagesISO639 } from '../lists';
+import { HistoryVocabType } from '../actions/actionsHistory';
 
 const db = new Kysely<DB>({
   plugins: [new CamelCasePlugin()],
@@ -124,7 +125,10 @@ declare module 'kysely-codegen' {
   export type EditedAssociation = Updateable<Association>;
   export type NewAssociation = Insertable<Association>;
 
-  export type BaseHistory = Selectable<History>;
+  export type BaseHistory = Omit<Selectable<History>, 'vocabulary'> & {
+    // lang: LanguagesISO639;
+    vocabulary: HistoryVocabType[];
+  };
 
   export type BaseTutorTopic = Omit<Selectable<TutorTopic>, 'lang'> & { lang: LanguagesISO639 };
   export type NewTutorTopic = Insertable<TutorTopic>;

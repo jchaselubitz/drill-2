@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import db from '../database';
 import { BaseTutorTopic, NewTutorTopic } from 'kysely-codegen';
 import { revalidatePath } from 'next/cache';
+import { ReviewUserParagraphSubmissionResponse } from '../helpers/helpersAI';
 
 export const getTutorTopics = async (topicId?: string): Promise<BaseTutorTopic[]> => {
   const supabase = createClient();
@@ -26,7 +27,6 @@ export const getTutorTopics = async (topicId?: string): Promise<BaseTutorTopic[]
 };
 
 export const addTutorTopic = async (topic: NewTutorTopic) => {
-  console.log('Adding topic', topic);
   const supabase = createClient();
   const {
     data: { user },
@@ -74,7 +74,32 @@ export const saveTopicPrompt = async ({ topicId, prompt }: { topicId: string; pr
 
   await db
     .updateTable('tutorTopic')
-    .set('prompt', prompt)
+    .set({ prompt, response: null })
+    .where('userId', '=', userId)
+    .where('id', '=', topicId)
+    .execute();
+  revalidatePath('/tutor', 'page');
+};
+
+export const saveTopicResponse = async ({
+  response,
+  topicId,
+}: {
+  response: ReviewUserParagraphSubmissionResponse | undefined | null;
+  topicId: string;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return;
+  }
+
+  const userId = user.id;
+  await db
+    .updateTable('tutorTopic')
+    .set('response', response ?? null)
     .where('userId', '=', userId)
     .where('id', '=', topicId)
     .execute();

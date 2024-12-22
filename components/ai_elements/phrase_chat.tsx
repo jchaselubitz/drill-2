@@ -15,6 +15,7 @@ import { createClient } from '@/utils/supabase/client';
 
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { useUserContext } from '@/contexts/user_context';
 
 export interface ChatMessage {
   role: string;
@@ -24,6 +25,10 @@ export interface ChatMessage {
 
 const PhraseChat: React.FC = () => {
   const supabase = createClient();
+  const { prefLanguage, history } = useUserContext();
+
+  const existingHistory = history?.find((h) => h.lang === prefLanguage);
+
   const {
     chatOpen,
     setChatOpen,
@@ -80,12 +85,19 @@ const PhraseChat: React.FC = () => {
   const handleEndChat = async () => {
     setChatOpen(false);
     if (!messages) return;
+    if (!prefLanguage) return;
     try {
-      const { topic, lang, insight } = await generateHistory(messages);
+      const { insights, vocabulary, concepts } = await generateHistory({
+        messages: messages.filter((m) => m.role === 'assistant'),
+        existingHistory,
+        lang: prefLanguage,
+      });
       await addHistory({
-        topic,
-        lang,
-        insight,
+        insights,
+        vocabulary,
+        concepts,
+        lang: prefLanguage,
+        historyId: existingHistory?.id,
       });
     } catch (error) {
       console.error('Error adding history:', error);

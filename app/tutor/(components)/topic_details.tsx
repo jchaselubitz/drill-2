@@ -6,8 +6,11 @@ import React, { useState } from 'react';
 import GrammarCorrection from '@/components/ai_elements/grammar_correction';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { useUserContext } from '@/contexts/user_context';
-import { saveTopicPrompt } from '@/lib/actions/tutorActions';
-import { generateTutorPrompt } from '@/lib/helpers/helpersAI';
+import { saveTopicPrompt, saveTopicResponse } from '@/lib/actions/tutorActions';
+import {
+  generateTutorPrompt,
+  ReviewUserParagraphSubmissionResponse,
+} from '@/lib/helpers/helpersAI';
 import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
@@ -18,9 +21,12 @@ interface TopicDetailsProps {
 
 const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) => {
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
-  const { lang: topicLanguage, level, instructions } = topic;
+  const { lang: topicLanguage, level, instructions, response } = topic;
+  const existingResponse = response as ReviewUserParagraphSubmissionResponse;
   const { userLanguage, prefLanguage } = useUserContext();
   const [prompt, setPrompt] = useState<string | undefined>(topic.prompt ?? undefined);
+
+  console.log(existingResponse);
 
   const preparedPhrases = relevantPhrases.map((phrase: any) => phrase.text);
 
@@ -45,6 +51,14 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
       setButtonState('error');
       throw new Error('Error:', error);
     }
+  };
+
+  const onResponseSubmit = async ({
+    response,
+  }: {
+    response: ReviewUserParagraphSubmissionResponse;
+  }) => {
+    await saveTopicResponse({ topicId: topic.id, response });
   };
 
   return (
@@ -82,7 +96,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
       </div>
 
       <div className="mt-4">
-        <GrammarCorrection />
+        <GrammarCorrection existingResponse={existingResponse} onResponse={onResponseSubmit} />
       </div>
     </div>
   );

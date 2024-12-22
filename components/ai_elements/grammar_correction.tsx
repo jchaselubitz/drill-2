@@ -19,18 +19,24 @@ import { Button } from '../ui/button';
 
 interface GrammarCorrectionProps {
   className?: string;
+  existingResponse?: ReviewUserParagraphSubmissionResponse;
+  onResponse?: ({ response }: { response: ReviewUserParagraphSubmissionResponse }) => Promise<void>;
 }
 
-const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({ className }) => {
+const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({
+  className,
+  existingResponse,
+  onResponse,
+}) => {
   const { setChatContext, setChatOpen } = useChatContext();
   const [submitState, setSubmitState] = useState<ButtonLoadingState>('default');
 
   const [response, setResponse] = useState<ReviewUserParagraphSubmissionResponse | undefined>(
-    undefined
+    existingResponse ?? undefined
   );
 
   const chatSystemMessage =
-    "You are a tutor who's job is to help the user learn the relevant language";
+    'You are a tutor whose job is to help the user learn the relevant language';
 
   const openInChat = () => {
     setChatContext({
@@ -47,7 +53,7 @@ const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({ className }) => {
     try {
       const review = await reviewUserParagraphSubmission({ paragraph: text });
       setResponse(review);
-
+      await onResponse?.({ response: review });
       setSubmitState('success');
     } catch (error: any) {
       setSubmitState('error');
@@ -71,7 +77,11 @@ const GrammarCorrection: React.FC<GrammarCorrectionProps> = ({ className }) => {
             name="text"
             render={({ field }) => (
               <FormItem>
-                <Textarea {...field} rows={7} placeholder="Write your response here..." />
+                <Textarea
+                  {...field}
+                  rows={7}
+                  placeholder={response ? 'Try again?' : 'Write your response here...'}
+                />
               </FormItem>
             )}
           />

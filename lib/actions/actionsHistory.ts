@@ -4,10 +4,10 @@ import { createClient } from '@/utils/supabase/server';
 import db from '../database';
 import { LanguagesISO639 } from '../helpers/lists';
 import { revalidatePath } from 'next/cache';
+import { BaseHistory } from 'kysely-codegen';
 
-export type HistoryTopicType = 'grammar' | 'vocab' | 'preposition';
-
-export async function getUserHistory() {
+export type HistoryVocabType = { word: string; rank: number };
+export async function getUserHistory(): Promise<BaseHistory[]> {
   const supabase = createClient();
   const {
     data: { user },
@@ -17,23 +17,27 @@ export async function getUserHistory() {
   }
   const userId = user.id;
 
-  const histories = await db
+  const histories = (await db
     .selectFrom('history')
     .selectAll()
     .where('userId', '=', userId)
     .orderBy('createdAt', 'desc')
-    .execute();
+    .execute()) as BaseHistory[];
   return histories;
 }
 
 export async function addHistory({
-  topic,
+  vocabulary,
   lang,
-  insight,
+  insights,
+  concepts,
+  historyId,
 }: {
-  topic: HistoryTopicType;
+  vocabulary: { word: string; rank: number }[];
   lang: LanguagesISO639;
-  insight: string;
+  insights: string;
+  concepts: string[];
+  historyId?: string;
 }) {
   const supabase = createClient();
   const {
@@ -43,13 +47,30 @@ export async function addHistory({
     return [];
   }
   const userId = user.id;
+  if (!userId) {
+    throw new Error('No user ID');
+  }
+  if (historyId) {
+    await db
+      .updateTable('history')
+      .set({
+        vocabulary,
+        insights,
+        concepts,
+      })
+      .where('id', '=', historyId)
+      .execute();
+    revalidatePath('/settings/history', 'page');
+    return;
+  }
   await db
     .insertInto('history')
     .values({
       userId,
-      topic,
+      vocabulary,
+      concepts,
       lang,
-      insight,
+      insights,
     })
     .execute();
 

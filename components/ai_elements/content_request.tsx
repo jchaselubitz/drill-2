@@ -234,23 +234,18 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
           onChange={(e) => setRequestText(e.target.value)}
           placeholder="Make me 15 sentences using this word."
         />
-        {!genResponse ? (
-          <LoadingButton
-            className={cn(
-              'w-fit',
-              isExplanation && 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white '
-            )}
-            onClick={() => handleRequest()}
-            onKeyDown={(e) => handleKeyPress(e)}
-            text={buttonText}
-            loadingText="Requesting"
-            buttonState={requestLoading ? 'loading' : 'default'}
-          />
-        ) : (
-          <Button className="w-fit" onClick={endSession}>
-            Clear
-          </Button>
-        )}
+        {/* {!genResponse ? ( */}
+        <LoadingButton
+          className={cn(
+            'w-fit',
+            isExplanation && 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white '
+          )}
+          onClick={() => handleRequest()}
+          onKeyDown={(e) => handleKeyPress(e)}
+          text={buttonText}
+          loadingText="Requesting"
+          buttonState={requestLoading ? 'loading' : 'default'}
+        />
       </div>
 
       {suggestions.length > 0 && requestText === '' && (

@@ -1,5 +1,5 @@
 'use client';
-import { BaseMedia, ProfileWithMedia } from 'kysely-codegen';
+import { BaseHistory, BaseMedia, ProfileWithMedia } from 'kysely-codegen';
 import React, { createContext, ReactNode, useContext } from 'react';
 import { LanguagesISO639 } from '@/lib/lists';
 
@@ -10,6 +10,7 @@ type UserContextType = {
   imageUrl: string | undefined | null;
   username: string | undefined | null;
   media: BaseMedia[] | undefined | null;
+  history: BaseHistory[] | undefined | null;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -17,9 +18,11 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserContextProvider = ({
   profile,
   children,
+  userHistory,
 }: {
   profile: ProfileWithMedia | undefined | null;
   children: ReactNode;
+  userHistory: BaseHistory[] | undefined | null;
 }) => {
   if (!profile) {
     return <> {children}</>;
@@ -34,6 +37,7 @@ export const UserContextProvider = ({
         imageUrl: profile.imageUrl,
         username: profile.username,
         media: profile.media,
+        history: userHistory,
       }}
     >
       {children}

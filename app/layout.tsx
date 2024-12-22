@@ -80,11 +80,11 @@ export default async function RootLayout({
             disableTransitionOnChange
           > */}
         {user ? (
-          <UserContextProvider profile={profile}>
+          <UserContextProvider profile={profile} userHistory={history}>
             <CreateModalProvider>
               <SidebarProvider>
                 <LibraryContextProvider>
-                  <ChatWindowProvider userHistory={history}>
+                  <ChatWindowProvider>
                     <NavService user={user}>{children}</NavService>
 
                     <div className="relative max-h-screen">

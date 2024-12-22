@@ -1,6 +1,5 @@
 import { ChatMessage } from '@/components/ai_elements/phrase_chat';
-import { HistoryTopicType } from '../actions/actionsHistory';
-import { LanguagesISO639 } from '../lists';
+import { getLangName, LanguagesISO639 } from '../lists';
 import { createClient } from '@/utils/supabase/client';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
@@ -106,33 +105,51 @@ export const handleGeneratePhrases = async ({
   }
 };
 
-export const generateHistory = async (
-  messages: ChatMessage[]
-): Promise<{ topic: HistoryTopicType; lang: LanguagesISO639; insight: string }> => {
+export const generateHistory = async ({
+  messages,
+  existingHistory,
+  lang,
+}: {
+  messages: ChatMessage[];
+  existingHistory?: {
+    concepts: string[] | null;
+    insights?: string;
+    vocabulary?: { word: string; rank: number }[];
+  };
+  lang: LanguagesISO639;
+}): Promise<{
+  vocabulary: { word: string; rank: number }[];
+  insights: string;
+  concepts: string[];
+}> => {
   const supabase = createClient();
 
   const HistoryStructure = z.object({
-    topic: z.string(),
-    lang: z.string(),
-    insight: z.string(),
+    vocabulary: z.array(z.object({ word: z.string(), rank: z.number() })),
+    insights: z.string(),
+    concepts: z.array(z.string()),
   });
+
+  const insightState = existingHistory
+    ? `Your existing insights: ${existingHistory.insights}. Existing concepts: ${existingHistory.concepts}. Existing vocabulary ${JSON.stringify(existingHistory.vocabulary)}.`
+    : null;
 
   const messagesWithSystem = [
     {
       role: 'system',
-      content:
-        'The software will submit a message or list of messages including conversation about a subject the user is trying to learn. Return as a JSON object in the following format {"insight": <the insight requested by the user in the last message>, "lang" <the ISO 639-1 code of the language the user is studying>, "topic": <return one of the following that best matches the insight: "grammar" | "vocab" | "preposition" }.',
+      content: `The software will submit insights you previously generated and a message or list of messages including conversation about a subject (${getLangName(lang)}) the user is trying to learn. Return as a JSON object in the following format {"insights": <the insight requested by the user>, "vocabulary": <an array of objects where "word": <word in ${lang} >, rank: <the number of times you have noticed the user struggling with that word>, concepts: <Terms germane to ${getLangName(lang)} included in assistant messages>. Don't refer to yourself or the user.`,
     },
+
     ...messages,
     {
       role: 'user',
-      content: `review the previous messages and identify the grammatical concepts and vocabulary the I am trying to learn and make a concise note describing what I struggle with. The insight you return should include only the substance. Don't refer to yourself or the user.`,
+      content: `${insightState ?? ''} Identify any grammatical terms and other linguistic concepts germane to ${getLangName(lang)} and update the Concepts list accordingly. For updated vocabulary, add any new words you think I want to learn, but also note any vocabulary I am struggling with in my preceding messages and compare them to the existing vocab record.  Update the rank if nessesary. Vocabulary should exclude items you put in the Concepts list. For updated insights, look at your existing insights and review the previous messages your updated Concepts list and make a note describing what I struggle with. Assume I will use this note to understand my weaknesses. Take care to highlight any cases where issues from the exiting insights and new insights overlap.`,
     },
   ];
 
   const modelParams = {
     format: zodResponseFormat(HistoryStructure, 'history') as gptFormatType,
-    max_tokens: 400,
+    max_tokens: 1000,
     temperature: 0.9,
   };
   const { data, error } = await supabase.functions.invoke('gen-text', {
@@ -148,6 +165,8 @@ export const generateHistory = async (
     throw new Error('Error:', error);
   }
   const response = JSON.parse(data.content);
+
+  console.log('response:', response);
   return response;
 };
 
@@ -200,7 +219,7 @@ export const generateTutorPrompt = async ({
 
 export type ReviewUserParagraphSubmissionResponse = {
   correction: string;
-  feedback: any;
+  feedback: string;
 };
 export const reviewUserParagraphSubmission = async ({
   paragraph,
