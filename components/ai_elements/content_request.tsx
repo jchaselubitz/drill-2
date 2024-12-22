@@ -48,11 +48,22 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 
   const firstWord = requestText.split(' ')[0];
 
+  const endSession = () => {
+    setRequestText('');
+    setGenResponse(undefined);
+  };
+
   useEffect(() => {
     if (requestText.length < 4) {
       setGenResponse(undefined);
     }
   }, [requestText, setGenResponse]);
+
+  useEffect(() => {
+    if (phraseId) {
+      endSession();
+    }
+  }, [phraseId]);
 
   const setCommand = (firstWord: string) => {
     const word = firstWord ? firstWord[0].toUpperCase() + firstWord.slice(1) : '';
@@ -199,10 +210,6 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
 
   const setMaterialSuggestion = (suggestion: string) => {
     setRequestText(suggestion);
-  };
-
-  const endSession = () => {
-    setRequestText('');
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
