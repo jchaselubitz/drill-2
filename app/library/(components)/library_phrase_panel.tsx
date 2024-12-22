@@ -6,6 +6,7 @@ import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
 
 import LibraryPhraseTopBar from './library_phrase_top_bar';
+import { capitalizeFirstLetter } from '@/lib/helpers/helpersPhrase';
 
 interface LibraryPhrasePanelProps {
   phrase: PhraseWithAssociations | null;
@@ -20,15 +21,24 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({ phrase, userTag
       </div>
     );
 
+  if (!phrase.text) return null;
+
+  const phraseText = capitalizeFirstLetter(phrase.text);
+
   return (
     <div className="relative flex flex-col w-full h-full z-30 bg-white overflow-y-scroll">
       <LibraryPhraseTopBar phrase={phrase} userTags={userTags} />
       <div className=" flex flex-col p-4 border-b border-slate-200 gap-3  ">
         <div className="flex justify-between ">
-          <div className="flex gap-3 font-bold items-start">
-            <TtsButton text={phrase.text} bucket="text_to_speech" lacksAudio={false} />{' '}
-            <div className="mt-2">{phrase.text}</div>
-          </div>
+          <span className="flex gap-3 font-bold ">
+            <TtsButton
+              className=" flex-shrink-0 "
+              text={phrase.text}
+              bucket="text_to_speech"
+              lacksAudio={false}
+            />
+            <span className="">{phraseText}</span>
+          </span>
         </div>
 
         <div className="flex items-center justify-between">

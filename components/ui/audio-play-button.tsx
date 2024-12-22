@@ -18,7 +18,7 @@ const AudioPlayButton = React.forwardRef<HTMLButtonElement, AudioButtonProps>(
         disabled={isLoading}
         className={cn(
           [
-            'flex items-center justify-center gap-2 h-10 w-10 transition-colors duration-150  rounded-full hover:text-white focus:outline-none focus:shadow-outline-blue',
+            'flex items-center justify-center h-fit w-fit transition-colors duration-150  rounded-full hover:text-white focus:outline-none focus:shadow-outline-blue',
           ],
           [
             exists

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon, getPhraseTypeIcon } from '@/lib/lists';
+import { capitalizeFirstLetter } from '@/lib/helpers/helpersPhrase';
 
 export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
   {
@@ -83,7 +84,7 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
     },
     cell: ({ row }) => (
       <span className="flex font-medium max-w-full whitespace-normal w-full">
-        <div className="line-clamp-2">{row.getValue('text')}</div>
+        <div className="line-clamp-2">{capitalizeFirstLetter(row.getValue('text'))}</div>
       </span>
     ),
     size: 1000,
@@ -100,7 +101,7 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
     size: 10,
     maxSize: 10,
     enableHiding: true,
-    filterFn: (row, columnId, filterValue) => {
+    filterFn: (row, _, filterValue) => {
       if (!filterValue || filterValue.length === 0) return true;
       const tags = row.original.tags;
       const labels = tags.map((tag) => tag.label);
@@ -111,7 +112,7 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
     accessorKey: 'audio',
     header: '',
     cell: ({ row }) => (
-      <div className="w-12">
+      <div className="">
         {row.original.type === 'recording' ? (
           <RecordingPlayButton phrase={row.original} />
         ) : (

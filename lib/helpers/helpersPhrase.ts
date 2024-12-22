@@ -10,3 +10,7 @@ export const getPhraseType = (phrase: string | null): PhraseType => {
   }
   return isOneWord(phrase) ? 'word' : 'phrase';
 };
+
+export const capitalizeFirstLetter = (phrase: string): string => {
+  return phrase[0].toUpperCase() + phrase.slice(1);
+};

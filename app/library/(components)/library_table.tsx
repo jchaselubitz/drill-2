@@ -2,7 +2,6 @@
 
 import {
   ColumnFiltersState,
-  ExpandedState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -15,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import * as React from 'react';
-import { FC, startTransition, useCallback, useEffect, useOptimistic, useState } from 'react';
+import { FC, startTransition, useCallback, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
 import {

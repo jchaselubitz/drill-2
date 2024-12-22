@@ -191,7 +191,7 @@ export const addPhrase = async ({
   lang,
   source,
   filename,
-  type,
+  type: rawType,
   associationId,
 }: {
   text: string;
@@ -206,6 +206,10 @@ export const addPhrase = async ({
     data: { user },
   } = await supabase.auth.getUser();
   const userId = user?.id;
+
+  const phraseAsArray = text.split(' ');
+  const type = rawType === 'phrase' && phraseAsArray.length < 1 ? 'word' : rawType;
+
   try {
     await db.transaction().execute(async (trx) => {
       const newPhrase = await trx

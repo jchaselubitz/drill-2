@@ -11,9 +11,10 @@ interface TtsButtonProps {
   bucket: string;
   lacksAudio: boolean | undefined;
   text: string | null;
+  className?: string;
 }
 
-const TtsButton: React.FC<TtsButtonProps> = ({ bucket, lacksAudio, text }) => {
+const TtsButton: React.FC<TtsButtonProps> = ({ bucket, lacksAudio, text, className }) => {
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -66,6 +67,7 @@ const TtsButton: React.FC<TtsButtonProps> = ({ bucket, lacksAudio, text }) => {
       isLoading={isLoading}
       isPlaying={isPlaying}
       handleClick={handlePlaySpeech}
+      className={className}
     />
   );
 };
