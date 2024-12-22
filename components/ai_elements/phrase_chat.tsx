@@ -3,6 +3,7 @@ import { Loader2, Minus, Send, Stars, XIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import { useChatContext } from '@/contexts/chat_window_context';
+import { useUserContext } from '@/contexts/user_context';
 import { addHistory } from '@/lib/actions/actionsHistory';
 import {
   generateHistory,
@@ -15,7 +16,6 @@ import { createClient } from '@/utils/supabase/client';
 
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { useUserContext } from '@/contexts/user_context';
 
 export interface ChatMessage {
   role: string;

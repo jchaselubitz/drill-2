@@ -1,7 +1,7 @@
 'use client';
 
 import { BaseTutorTopic } from 'kysely-codegen';
-import { RefreshCcw, RefreshCw, Stars } from 'lucide-react';
+import { RefreshCw, Stars } from 'lucide-react';
 import React, { useState } from 'react';
 import GrammarCorrection from '@/components/ai_elements/grammar_correction';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
@@ -25,8 +25,6 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
   const existingResponse = response as ReviewUserParagraphSubmissionResponse;
   const { userLanguage, prefLanguage } = useUserContext();
   const [prompt, setPrompt] = useState<string | undefined>(topic.prompt ?? undefined);
-
-  console.log(existingResponse);
 
   const preparedPhrases = relevantPhrases.map((phrase: any) => phrase.text);
 

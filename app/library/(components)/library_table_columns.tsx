@@ -8,8 +8,8 @@ import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
-import { getLangIcon, getPhraseTypeIcon } from '@/lib/lists';
 import { capitalizeFirstLetter } from '@/lib/helpers/helpersPhrase';
+import { getLangIcon, getPhraseTypeIcon } from '@/lib/lists';
 
 export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
   {
