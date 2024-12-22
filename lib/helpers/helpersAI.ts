@@ -131,7 +131,7 @@ export const generateHistory = async ({
   });
 
   const insightState = existingHistory
-    ? `Your existing insights: ${existingHistory.insights}. Existing concepts: ${existingHistory.concepts}. Existing vocabulary ${JSON.stringify(existingHistory.vocabulary)}.`
+    ? `Previous Insight State: {Insights you have previously given the user: ${existingHistory.insights}}, {Existing concepts: ${existingHistory.concepts}}, {Existing vocabulary ${JSON.stringify(existingHistory.vocabulary)}}.`
     : null;
 
   const messagesWithSystem = [
@@ -143,7 +143,7 @@ export const generateHistory = async ({
     ...messages,
     {
       role: 'user',
-      content: `${insightState ?? ''} Identify any grammatical terms and other linguistic concepts germane to ${getLangName(lang)} and update the Concepts list accordingly. For updated vocabulary, add any new words you think I want to learn, but also note any vocabulary I am struggling with in my preceding messages and compare them to the existing vocab record.  Update the rank if nessesary. Vocabulary should exclude items you put in the Concepts list. For updated insights, look at your existing insights and review the previous messages your updated Concepts list and make a note describing what I struggle with. Assume I will use this note to understand my weaknesses. Take care to highlight any cases where issues from the exiting insights and new insights overlap.`,
+      content: `Identify any grammatical terms and other linguistic concepts germane to ${getLangName(lang)} and update the Concepts list accordingly. For updated vocabulary, add any new words from the preceding messages you think I want to learn, but also keep the existing vocabulary. The vocab list should show each word only once. If my recent messages include any of the same words, simply increase the rank of those words. Vocabulary should exclude items you put in the Concepts list. For updated insights, look at your existing insights and review the latest messages your updated Concepts list and make a note describing what I struggle with. Assume I will use this note to understand my weaknesses. Take care to highlight any cases where issues from the exiting insights and new insights overlap. ${insightState}`,
     },
   ];
 

@@ -31,13 +31,13 @@ export async function addHistory({
   lang,
   insights,
   concepts,
-  historyId,
+  existingHistory,
 }: {
   vocabulary: { word: string; rank: number }[];
   lang: LanguagesISO639;
   insights: string;
   concepts: string[];
-  historyId?: string;
+  existingHistory: BaseHistory | null | undefined;
 }) {
   const supabase = createClient();
   const {
@@ -50,29 +50,37 @@ export async function addHistory({
   if (!userId) {
     throw new Error('No user ID');
   }
-  if (historyId) {
-    await db
-      .updateTable('history')
-      .set({
-        vocabulary,
-        insights,
-        concepts,
-      })
-      .where('id', '=', historyId)
-      .execute();
-    revalidatePath('/settings/history', 'page');
-    return;
+
+  const historyId = existingHistory?.id;
+  const existingLang = existingHistory?.lang;
+  try {
+    if (historyId && existingLang === lang) {
+      await db
+        .updateTable('history')
+        .set({
+          vocabulary,
+          insights,
+          concepts,
+        })
+        .where('id', '=', historyId)
+        .where('lang', '=', lang)
+        .executeTakeFirstOrThrow();
+    } else {
+      await db
+        .insertInto('history')
+        .values({
+          userId,
+          vocabulary,
+          concepts,
+          lang,
+          insights,
+        })
+        .execute();
+    }
+  } catch (error) {
+    throw new Error(`Error saving history
+    : ${error}`);
   }
-  await db
-    .insertInto('history')
-    .values({
-      userId,
-      vocabulary,
-      concepts,
-      lang,
-      insights,
-    })
-    .execute();
 
   revalidatePath('/settings/history', 'page');
 }

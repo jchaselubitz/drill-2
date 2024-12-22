@@ -1,5 +1,5 @@
 'use client';
-import { Loader2, Minus, Send, Stars, XIcon } from 'lucide-react';
+import { ChevronDown, Languages, Loader2, Minus, Send, Stars, XIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import { useChatContext } from '@/contexts/chat_window_context';
@@ -11,11 +11,20 @@ import {
   getOpenAiKey,
   gptFormatType,
 } from '@/lib/helpers/helpersAI';
+import { Languages as LanguagesList } from '@/lib/lists';
+import { getLangIcon, getLangName } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
 
 import { Button } from '../ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 export interface ChatMessage {
   role: string;
@@ -27,8 +36,6 @@ const PhraseChat: React.FC = () => {
   const supabase = createClient();
   const { prefLanguage, history } = useUserContext();
 
-  const existingHistory = history?.find((h) => h.lang === prefLanguage);
-
   const {
     chatOpen,
     setChatOpen,
@@ -39,7 +46,12 @@ const PhraseChat: React.FC = () => {
     onEndSession,
     chatLoading,
     setChatLoading,
+    currentLang,
+    setCurrentLang,
   } = useChatContext();
+
+  const learningLang = currentLang ?? prefLanguage;
+  const existingHistory = history?.find((h) => h.lang === learningLang);
 
   const handleMouseEvent = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -47,7 +59,7 @@ const PhraseChat: React.FC = () => {
 
   const [newMessage, setNewMessage] = useState<string>('');
   const requestText = chatContext?.requestText;
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const presentableMessages = useMemo(
@@ -85,19 +97,19 @@ const PhraseChat: React.FC = () => {
   const handleEndChat = async () => {
     setChatOpen(false);
     if (!messages) return;
-    if (!prefLanguage) return;
+    if (!learningLang) return;
     try {
       const { insights, vocabulary, concepts } = await generateHistory({
         messages: messages.filter((m) => m.role === 'assistant'),
         existingHistory,
-        lang: prefLanguage,
+        lang: learningLang,
       });
       await addHistory({
         insights,
         vocabulary,
         concepts,
-        lang: prefLanguage,
-        historyId: existingHistory?.id,
+        lang: learningLang,
+        existingHistory: existingHistory,
       });
     } catch (error) {
       console.error('Error adding history:', error);
@@ -136,6 +148,31 @@ const PhraseChat: React.FC = () => {
   };
 
   if (!chatOpen) return null;
+
+  const langSetting = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="ml-auto">
+          {learningLang ? getLangIcon(learningLang) : <Languages size={18} />}
+          <ChevronDown />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        {LanguagesList.map((l) => {
+          return (
+            <DropdownMenuCheckboxItem
+              key={l.value}
+              className="capitalize flex items-center gap-2 justify-between"
+              checked={learningLang === l.value}
+              onCheckedChange={(v) => setCurrentLang(l.value)}
+            >
+              {getLangIcon(l.value)} {getLangName(l.value)}
+            </DropdownMenuCheckboxItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 
   const chatTopBar = (
     <div className="flex justify-between bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-1 px-4 rounded-t ">
@@ -196,24 +233,29 @@ const PhraseChat: React.FC = () => {
       </div>
       <div className="absolute bottom-0 right-0 w-full bg-zinc-100 py-3 shadow-smallAbove">
         <form className="flex gap-2 px-4 ">
-          <Input
+          {newMessage === '' && langSetting}
+          <Textarea
             ref={inputRef}
-            type="text"
+            rows={newMessage === '' ? 1 : 3}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="py-2"
+            placeholder={`Ask me about ${getLangName(learningLang)}`}
+            className="min-h-10"
           />
-          <Button
-            className="p-3 rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
-            disabled={newMessage === '' || chatLoading}
-            onClick={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            onKeyDown={(e) => handleKeyPress(e)}
-          >
-            <Send size={24} />
-          </Button>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Button
+              className="p-3  rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
+              disabled={newMessage === '' || chatLoading}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSend();
+              }}
+              onKeyDown={(e) => handleKeyPress(e)}
+            >
+              <Send size={24} />
+            </Button>
+            {newMessage !== '' && getLangIcon(learningLang)}
+          </div>
         </form>
       </div>
     </div>

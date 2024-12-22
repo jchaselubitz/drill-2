@@ -3,6 +3,9 @@
 import { BaseHistory } from 'kysely-codegen';
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { ChatMessage } from '@/components/ai_elements/phrase_chat';
+import { LanguagesISO639 } from '@/lib/lists';
+
+import { useUserContext } from './user_context';
 
 type ChatContextType =
   | {
@@ -23,21 +26,22 @@ type ChatWindowType = {
   setMessages: (messages: ChatMessage[]) => void;
   chatContext: ChatContextType;
   setChatContext: (context: ChatContextType) => void;
+  currentLang: LanguagesISO639;
+  setCurrentLang: (lang: LanguagesISO639) => void;
   onEndSession?: () => void;
   setOnEndSession: (endSession: () => void) => void;
 };
 
 const ChatWindow = createContext<ChatWindowType | undefined>(undefined);
 
-export const ChatWindowProvider = ({
-  children,
-  userHistory,
-}: {
-  children: ReactNode;
-  userHistory?: BaseHistory[];
-}) => {
+export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
+  const { prefLanguage } = useUserContext();
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<ChatContextType | undefined>(undefined);
+  const [currentLang, setCurrentLang] = useState<LanguagesISO639>(
+    prefLanguage ?? LanguagesISO639.German
+  );
+
   const [chatMessages, setChatMessages] = useState<ChatMessage[] | null>([]);
   const [onEndSession, setOnEndSession] = useState<() => void>(() => () => {});
   const [chatLoading, setChatLoading] = useState(false);
@@ -89,6 +93,8 @@ export const ChatWindowProvider = ({
         setMessages: setChatMessages,
         chatContext,
         setChatContext,
+        currentLang,
+        setCurrentLang,
         setOnEndSession: setOnEndSession,
         onEndSession: endSession,
       }}
