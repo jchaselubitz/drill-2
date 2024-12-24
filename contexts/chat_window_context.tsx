@@ -1,7 +1,14 @@
 'use client';
 
-import { BaseHistory } from 'kysely-codegen';
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  use,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ChatMessage } from '@/components/ai_elements/phrase_chat';
 import { LanguagesISO639 } from '@/lib/lists';
 
@@ -46,12 +53,20 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
   const [onEndSession, setOnEndSession] = useState<() => void>(() => () => {});
   const [chatLoading, setChatLoading] = useState(false);
 
-  //do I want to add a base system message here?
+  useEffect(() => {
+    if (currentLang) {
+      console.log('currentLang', currentLang);
+      setChatContext(undefined);
+    }
+  }, [currentLang, setChatContext]);
 
   const createNewMessageBatch = useMemo(() => {
     const batch = [];
     if (chatContext?.systemMessage) {
-      batch.push({ role: 'system', content: chatContext.systemMessage });
+      batch.push({
+        role: 'system',
+        content: chatContext.systemMessage + `my questions are about ${currentLang}`,
+      });
     }
     if (chatContext?.matterText) {
       batch.push({ role: 'user', content: chatContext.matterText });
@@ -63,10 +78,10 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
       batch.push({ role: 'assistant', content: chatContext.assistantAnswer });
     }
     return batch;
-  }, [chatContext]);
+  }, [chatContext, currentLang]);
 
   useEffect(() => {
-    if (!chatContext) {
+    if (!chatContext && !currentLang) {
       return;
     }
 
@@ -74,7 +89,7 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
       const existingMessages = prevState ?? [];
       return [...existingMessages, ...createNewMessageBatch];
     });
-  }, [chatContext, setChatMessages, createNewMessageBatch]);
+  }, [chatContext, setChatMessages, createNewMessageBatch, currentLang]);
 
   const endSession = () => {
     setChatOpen(false);
