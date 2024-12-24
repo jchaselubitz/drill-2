@@ -225,6 +225,7 @@ export const addSubjectLessonWithTranslations = async ({
           } as NewTranslation)
           .executeTakeFirstOrThrow();
       });
+      revalidatePath('/lessons', 'page');
       return { subjectId: newSubjectId, lessonId: lesson.id };
     });
   } catch (error) {
