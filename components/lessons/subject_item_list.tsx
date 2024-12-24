@@ -23,10 +23,11 @@ const SubjectItemList: React.FC<SubjectItemListProps> = ({ subjects, className }
     );
 
   return (
-    <div className={cn('flex flex-col w-full', className)}>
+    <div className={cn('flex flex-col w-full gap-3', className)}>
       {subjects.map((subject) => (
         <SubjectItem key={subject.id} subject={subject} />
       ))}
+      <LessonCreationForm />
     </div>
   );
 };
