@@ -1,9 +1,16 @@
 'use client';
 
-import { BaseTutorTopic } from 'kysely-codegen';
+import { TutorTopicWithCorrections } from 'kysely-codegen';
 import { RefreshCw, Stars } from 'lucide-react';
 import React, { useState } from 'react';
-import GrammarCorrection from '@/components/ai_elements/grammar_correction';
+import GrammarCorrectionForm from '@/components/ai_elements/grammar_correction_form';
+import GrammarCorrectionItem from '@/components/ai_elements/grammar_correction_item';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { useUserContext } from '@/contexts/user_context';
 import { saveTopicPrompt, saveTopicResponse } from '@/lib/actions/tutorActions';
@@ -15,16 +22,15 @@ import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 interface TopicDetailsProps {
-  topic: BaseTutorTopic;
+  topic: TutorTopicWithCorrections;
   relevantPhrases: any;
 }
 
 const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) => {
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
-  const { lang: topicLanguage, level, instructions, response } = topic;
-  const existingResponse = response as ReviewUserParagraphSubmissionResponse;
+  const { lang: topicLanguage, level, instructions, corrections } = topic;
   const { userLanguage, prefLanguage } = useUserContext();
-  const [prompt, setPrompt] = useState<string | undefined>(topic.prompt ?? undefined);
+  const [prompt, setPrompt] = useState<string | undefined>(TestPrompt);
 
   const preparedPhrases = relevantPhrases.map((phrase: any) => phrase.text);
 
@@ -43,7 +49,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
         instructions,
       });
       setPrompt(prompt);
-      await saveTopicPrompt({ topicId: topic.id, prompt });
+      await saveTopicPrompt({ topic, prompt });
       setButtonState('success');
     } catch (error: any) {
       setButtonState('error');
@@ -53,10 +59,17 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
 
   const onResponseSubmit = async ({
     response,
+    userText,
   }: {
     response: ReviewUserParagraphSubmissionResponse;
+    userText: string;
   }) => {
-    await saveTopicResponse({ topicId: topic.id, response });
+    console.log('onResponseSubmit', response);
+    try {
+      await saveTopicResponse({ topicId: topic.id, response, userText });
+    } catch (error: any) {
+      throw new Error('Error:', error);
+    }
   };
 
   return (
@@ -94,7 +107,23 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
       </div>
 
       <div className="mt-4">
-        <GrammarCorrection existingResponse={existingResponse} onResponse={onResponseSubmit} />
+        {corrections && (
+          <Accordion type="multiple" className="flex flex-col items-center gap-4 w-full">
+            {corrections.map((existingCorrection, index) => (
+              <AccordionItem
+                className="mt-4 w-full"
+                value={existingCorrection.id}
+                key={existingCorrection.id}
+              >
+                <AccordionTrigger className="w-full">Response: {index + 1} </AccordionTrigger>
+                <AccordionContent>
+                  <GrammarCorrectionItem correction={existingCorrection} />
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
+        <GrammarCorrectionForm onResponse={onResponseSubmit} />
       </div>
     </div>
   );
@@ -102,5 +131,5 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
 
 export default TopicDetails;
 
-// const TestPrompt =
-//   'Write a short paragraph about the importance of personal conversations in building relationships. Include your thoughts on how they can help us understand each other better.';
+const TestPrompt =
+  'Write a short paragraph about the importance of personal conversations in building relationships. Include your thoughts on how they can help us understand each other better.';

@@ -6,7 +6,6 @@ import { LanguagesISO639 } from '../helpers/lists';
 import { revalidatePath } from 'next/cache';
 import { BaseHistory } from 'kysely-codegen';
 
-export type HistoryVocabType = { word: string; rank: number };
 export async function getUserHistory(): Promise<BaseHistory[]> {
   const supabase = createClient();
   const {

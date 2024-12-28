@@ -2,11 +2,17 @@
 
 import { createClient } from '@/utils/supabase/server';
 import db from '../database';
-import { BaseTutorTopic, NewTutorTopic } from 'kysely-codegen';
+import {
+  BaseCorrection,
+  NewCorrection,
+  NewTutorTopic,
+  TutorTopicWithCorrections,
+} from 'kysely-codegen';
 import { revalidatePath } from 'next/cache';
 import { ReviewUserParagraphSubmissionResponse } from '../helpers/helpersAI';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
-export const getTutorTopics = async (topicId?: string): Promise<BaseTutorTopic[]> => {
+export const getTutorTopics = async (topicId?: string): Promise<TutorTopicWithCorrections[]> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -17,13 +23,40 @@ export const getTutorTopics = async (topicId?: string): Promise<BaseTutorTopic[]
 
   const userId = user.id;
 
-  const topics = db.selectFrom('tutorTopic').selectAll().where('userId', '=', userId);
+  let topicPackage = db
+    .selectFrom('tutorTopic as t')
+    .select(({ eb }) => [
+      'id',
+      'createdAt',
+      'instructions',
+      'lang',
+      'messages',
+      'prompt',
+      'level',
+      'userId',
+      jsonArrayFrom(
+        eb
+          .selectFrom('correction')
+          .select(['id', 'createdAt', 'response', 'userText', 'userId', 'topicId'])
+          .whereRef('topicId', '=', 't.id')
+      ).as('corrections'),
+    ])
+    .where('userId', '=', userId);
+
   if (topicId) {
-    topics.where('id', '=', topicId);
+    topicPackage = topicPackage.where('id', '=', topicId);
   }
 
-  const resp = (await topics.execute()) as BaseTutorTopic[];
-  return resp;
+  const topics = await topicPackage.execute();
+
+  const topicsObject = topics.map((topic: any) => {
+    return {
+      ...topic,
+      corrections: topic.corrections as BaseCorrection[],
+    };
+  });
+
+  return topicsObject as TutorTopicWithCorrections[];
 };
 
 export const addTutorTopic = async (topic: NewTutorTopic) => {
@@ -61,32 +94,12 @@ export const deleteTutorTopic = async (topicId: string) => {
   revalidatePath('/tutor', 'page');
 };
 
-export const saveTopicPrompt = async ({ topicId, prompt }: { topicId: string; prompt: string }) => {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return;
-  }
-
-  const userId = user.id;
-
-  await db
-    .updateTable('tutorTopic')
-    .set({ prompt, response: null })
-    .where('userId', '=', userId)
-    .where('id', '=', topicId)
-    .execute();
-  revalidatePath('/tutor', 'page');
-};
-
-export const saveTopicResponse = async ({
-  response,
-  topicId,
+export const saveTopicPrompt = async ({
+  topic,
+  prompt,
 }: {
-  response: ReviewUserParagraphSubmissionResponse | undefined | null;
-  topicId: string;
+  topic: TutorTopicWithCorrections;
+  prompt: string;
 }) => {
   const supabase = createClient();
   const {
@@ -97,11 +110,51 @@ export const saveTopicResponse = async ({
   }
 
   const userId = user.id;
-  await db
-    .updateTable('tutorTopic')
-    .set('response', response ?? null)
-    .where('userId', '=', userId)
-    .where('id', '=', topicId)
-    .execute();
+  const topicId = topic.id;
+
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .deleteFrom('correction')
+      .where(
+        'topicId',
+        '=',
+        topic.corrections.map((c: BaseCorrection) => c.id)
+      )
+      .execute();
+    await db
+      .updateTable('tutorTopic')
+      .set({ prompt })
+      .where('userId', '=', userId)
+      .where('id', '=', topicId)
+      .execute();
+  });
+  revalidatePath('/tutor', 'page');
+};
+
+export const saveTopicResponse = async ({
+  response,
+  userText,
+  topicId,
+}: {
+  response: ReviewUserParagraphSubmissionResponse;
+  userText: string;
+  topicId: string;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return;
+  }
+
+  const correction = {
+    response: JSON.stringify(response),
+    userText,
+    userId: user.id,
+    topicId,
+  } as NewCorrection;
+
+  await db.insertInto('correction').values(correction).returning('id').executeTakeFirstOrThrow();
   revalidatePath('/tutor', 'page');
 };

@@ -105,27 +105,30 @@ export const handleGeneratePhrases = async ({
   }
 };
 
+export type HistoryVocabType = { word: string; rank: number; partSpeech: string };
+export type ExistingHistoryType = {
+  concepts: string[] | null;
+  insights?: string;
+  vocabulary?: HistoryVocabType[];
+};
+
 export const generateHistory = async ({
   messages,
   existingHistory,
   lang,
 }: {
   messages: ChatMessage[];
-  existingHistory?: {
-    concepts: string[] | null;
-    insights?: string;
-    vocabulary?: { word: string; rank: number }[];
-  };
+  existingHistory?: ExistingHistoryType;
   lang: LanguagesISO639;
 }): Promise<{
-  vocabulary: { word: string; rank: number }[];
+  vocabulary: HistoryVocabType[];
   insights: string;
   concepts: string[];
 }> => {
   const supabase = createClient();
 
   const HistoryStructure = z.object({
-    vocabulary: z.array(z.object({ word: z.string(), rank: z.number() })),
+    vocabulary: z.array(z.object({ word: z.string(), rank: z.number(), partSpeech: z.string() })),
     insights: z.string(),
     concepts: z.array(z.string()),
   });
@@ -137,13 +140,17 @@ export const generateHistory = async ({
   const messagesWithSystem = [
     {
       role: 'system',
-      content: `The software will submit insights you previously generated and a message or list of messages including conversation about a subject (${getLangName(lang)}) the user is trying to learn. Return as a JSON object in the following format {"insights": <the insight requested by the user>, "vocabulary": <an array of objects where "word": <word in ${lang} >, rank: <the number of times you have noticed the user struggling with that word>, concepts: <Terms germane to ${getLangName(lang)} included in assistant messages>. Don't refer to yourself or the user.`,
+      content: `The software will submit insights you previously generated and a message or list of messages including conversation about a subject (${getLangName(lang)}) the user is trying to learn. Return as a JSON object in the following format {"insights": <the insight requested by the user>, "vocabulary": <an array of objects where "word": <word in ${lang} >, rank: <the number of times you have noticed the user struggling with that word> partSpeech: <the part of speech associated with that word>>, concepts: <Terms germane to ${getLangName(lang)} included in assistant messages>. Don't refer to yourself or the user.`,
     },
 
     ...messages,
     {
       role: 'user',
-      content: `Identify any grammatical terms and other linguistic concepts germane to ${getLangName(lang)} and update the Concepts list accordingly. For updated vocabulary, add any new words from the preceding messages you think I want to learn, but also keep the existing vocabulary. The vocab list should show each word only once. If my recent messages include any of the same words, simply increase the rank of those words. Vocabulary should exclude items you put in the Concepts list. For updated insights, look at your existing insights and review the latest messages your updated Concepts list and make a note describing what I struggle with. Assume I will use this note to understand my weaknesses. Take care to highlight any cases where issues from the exiting insights and new insights overlap. ${insightState}`,
+      content: `Identify any grammatical terms and other linguistic concepts germane to ${getLangName(lang)} and update the Concepts list accordingly. For updated vocabulary, add any new words from the preceding messages you think I want to learn, but also keep the existing vocabulary. The vocab list should show each word only once. If my recent messages include any of the same words, simply increase the rank of those words. Vocabulary should exclude items you put in the Concepts list. For updated insights, look at your existing insights and review the latest messages your updated Concepts list and make a note describing what I struggle with. Assume I will use this note to understand my weaknesses. Take care to highlight any cases where issues from the exiting insights and new insights overlap. ${insightState}. Misspellings are unimportant. Exclude them from the vocabulary and insights.`,
+    },
+    {
+      role: 'user',
+      content: 'If my question is NOT about language, please return Previous Insight State ',
     },
   ];
 

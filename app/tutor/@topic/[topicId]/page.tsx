@@ -1,7 +1,7 @@
 import React from 'react';
 import { getPhrases } from '@/lib/actions/phraseActions';
 import { getTutorTopics } from '@/lib/actions/tutorActions';
-import { getLangIcon, getLangName } from '@/lib/lists';
+import { getLangName } from '@/lib/lists';
 
 import TopicDetails from '../../(components)/topic_details';
 
@@ -11,8 +11,8 @@ interface TopicPanelProps {
 
 export default async function TopicPanel({ params }: TopicPanelProps) {
   const { topicId } = await params;
-  const topicArray = await getTutorTopics(topicId);
-  const topic = topicArray[0];
+  const topics = await getTutorTopics(topicId);
+  const topic = topics[0];
   const relevantPhrases = await getPhrases({ source: 'home', pastDays: 30, lang: topic.lang });
 
   return (
