@@ -4,13 +4,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
-import { addHistory } from '@/lib/actions/actionsHistory';
-import {
-  generateHistory,
-  getModelSelection,
-  getOpenAiKey,
-  gptFormatType,
-} from '@/lib/helpers/helpersAI';
+import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
+import { processHistory } from '@/lib/helpers/helpersHistory';
 import { Languages as LanguagesList } from '@/lib/lists';
 import { getLangIcon, getLangName } from '@/lib/lists';
 import { cn } from '@/lib/utils';
@@ -23,7 +18,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 
 export interface ChatMessage {
@@ -88,8 +82,8 @@ const PhraseChat: React.FC = () => {
     temperature: 0.9,
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'Enter') {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
       handleSend();
     }
   };
@@ -99,18 +93,7 @@ const PhraseChat: React.FC = () => {
     if (!messages) return;
     if (!learningLang) return;
     try {
-      const { insights, vocabulary, concepts } = await generateHistory({
-        messages: messages.filter((m) => m.role === 'assistant'),
-        existingHistory,
-        lang: learningLang,
-      });
-      await addHistory({
-        insights,
-        vocabulary,
-        concepts,
-        lang: learningLang,
-        existingHistory: existingHistory,
-      });
+      await processHistory({ messages, existingHistory, learningLang });
     } catch (error) {
       console.error('Error adding history:', error);
     }
@@ -239,6 +222,7 @@ const PhraseChat: React.FC = () => {
             rows={newMessage === '' ? 1 : 3}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => handleKeyPress(e)}
             placeholder={`Ask me about ${getLangName(learningLang)}`}
             className="min-h-10"
           />
@@ -250,7 +234,6 @@ const PhraseChat: React.FC = () => {
                 e.preventDefault();
                 handleSend();
               }}
-              onKeyDown={(e) => handleKeyPress(e)}
             >
               <Send size={24} />
             </Button>

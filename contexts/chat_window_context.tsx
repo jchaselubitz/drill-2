@@ -55,7 +55,6 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (currentLang) {
-      console.log('currentLang', currentLang);
       setChatContext(undefined);
     }
   }, [currentLang, setChatContext]);

@@ -20,10 +20,11 @@ import {
   UserMedia,
   History,
   TutorTopic,
+  Correction,
 } from 'kysely-codegen';
 import { Pool } from 'pg';
 import { LanguagesISO639 } from '../lists';
-import { HistoryVocabType } from '../actions/actionsHistory';
+import { HistoryVocabType, ReviewUserParagraphSubmissionResponse } from '../helpers/helpersAI';
 
 const db = new Kysely<DB>({
   plugins: [new CamelCasePlugin()],
@@ -130,7 +131,19 @@ declare module 'kysely-codegen' {
     vocabulary: HistoryVocabType[];
   };
 
-  export type BaseTutorTopic = Omit<Selectable<TutorTopic>, 'lang'> & { lang: LanguagesISO639 };
+  export type BaseCorrection = Omit<Selectable<Correction>, 'response'> & {
+    response: ReviewUserParagraphSubmissionResponse;
+  };
+  export type NewCorrection = Insertable<Correction>;
+
+  export type BaseTutorTopic = Omit<Selectable<TutorTopic>, 'lang'> & {
+    lang: LanguagesISO639;
+  };
+
+  export type TutorTopicWithCorrections = Omit<BaseTutorTopic, 'corrections'> & {
+    corrections: BaseCorrection[];
+  };
+
   export type NewTutorTopic = Insertable<TutorTopic>;
 }
 
