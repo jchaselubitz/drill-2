@@ -18,6 +18,7 @@ import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
 import LightSuggestionList from './suggestions/light_suggestion_list';
+import { useUserContext } from '@/contexts/user_context';
 
 interface ContentRequestProps {
   text: string | null;
@@ -41,6 +42,8 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   const supabase = createClient();
   const pathname = usePathname();
   const { setChatOpen, setChatContext } = useChatContext();
+  const { prefLanguage } = useUserContext();
+  const arePrimaryPhrases = primaryPhraseIds && primaryPhraseIds.length > 0 ? true : false;
 
   const [genResponse, setGenResponse] = useState<GenResponseType | undefined>();
   const [requestLoading, setRequestLoading] = useState(false);
@@ -82,7 +85,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       return word;
     }
   };
-  const isTranslation = setCommand(firstWord) === 'Translate' && primaryPhraseIds;
+  const isTranslation = setCommand(firstWord) === 'Translate' && arePrimaryPhrases;
   const isExplanation =
     setCommand(firstWord) === 'Explain' ||
     setCommand(firstWord) === 'Why' ||
@@ -139,7 +142,10 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
         content: contentRequestSystemMessage(command, isExplanation),
       },
       { role: 'user', content: `text: ${text}` },
-      { role: 'user', content: `request: ${request}` },
+      {
+        role: 'user',
+        content: `request: ${request} ${isTranslation ? ` (Translation instructions: if I have not yet specified which language to translate into, use ${prefLanguage}` : ''}`,
+      },
     ];
 
     const { data, error } = await supabase.functions.invoke('gen-text', {
@@ -193,7 +199,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       throw Error('No genResponse');
     }
 
-    if (primaryPhraseIds && primaryPhraseIds.length !== 0) {
+    if (arePrimaryPhrases) {
       await addTranslation({
         primaryPhraseIds,
         genResponse: {
