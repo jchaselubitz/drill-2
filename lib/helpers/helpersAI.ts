@@ -173,7 +173,6 @@ export const generateHistory = async ({
   }
   const response = JSON.parse(data.content);
 
-  console.log('response:', response);
   return response;
 };
 
@@ -195,11 +194,51 @@ export const generateTutorPrompt = async ({
   const messages = [
     {
       role: 'system',
-      content: `You are helping the user improve their ${topicLanguage}, which is currently at ${level} (according to the Common European Framework of Reference for Languages) by providing a concise and simple prompt (in ${userLanguage}), just as a tutor might when testing a student. If appropriate to the task, consider the fact that the user is also trying to grasp the usage and meaning following phrases: ${relatedPhraseArray}`,
+      content: `You are helping the user improve their ${topicLanguage} by providing a concise and simple prompt (in ${userLanguage}), just as a tutor might when testing a student. `,
     },
     {
       role: 'user',
-      content: `Prompt me to write a short paragraph about ${instructions} `,
+      content: `Prompt me to write a short paragraph about ${instructions}. Make it specific. This prompt should match my level, which is currently ${level} (according to the Common European Framework of Reference for Languages). Lower levels should result in shorter, simpler prompts. Higher levels should result in longer, more complicated prompts that include a person or people, a place, and a problem to solve. If appropriate to the task, consider the fact that I am also trying to grasp the usage and meaning following phrases: ${relatedPhraseArray}`,
+    },
+  ];
+
+  const supabase = createClient();
+  const modelParams = {
+    format: { type: 'text' } as gptFormatType,
+    max_tokens: 500,
+    temperature: 0.4,
+  };
+  const { data, error } = await supabase.functions.invoke('gen-text', {
+    body: {
+      userApiKey: getOpenAiKey(),
+      modelSelection: getModelSelection(),
+      modelParams: modelParams,
+      messages: messages,
+    },
+  });
+
+  if (error) {
+    throw new Error('Error:', error);
+  }
+  return data.content;
+};
+
+export const changePromptLength = async ({
+  prompt,
+  length,
+}: {
+  prompt: string;
+  length: 'shorter' | 'longer';
+}): Promise<string> => {
+  const messages = [
+    {
+      role: 'system',
+      content:
+        'The software will shorten or lengthen a prompt. Return a prompt that is either shorter or longer than the original.',
+    },
+    {
+      role: 'user',
+      content: `I have been given this prompt: ${prompt}. It should still be a prompt with the same structure and subject matter, but make it two sentences ${length}?`,
     },
   ];
 
@@ -237,7 +276,7 @@ export const reviewUserParagraphSubmission = async ({
     {
       role: 'system',
       content:
-        'The software will submit a paragraph of text written by the user. Return as a JSON object in the following format {"correction": <a version of the user\'s submission with correct vocab and grammar>, "feedback": <feedback on the user\'s paragraph>}. Use markdown where possible to indicate changes in your correction and to provide feedback.',
+        'The software will submit a paragraph of text written by the user. Return as a JSON object in the following format {"correction": <a version of the user\'s submission with correct vocab and grammar>, "feedback": < bullet point feedback on the user\'s paragraph>}. Use markdown where possible to indicate changes in your correction and to provide feedback.',
     },
 
     {
@@ -252,8 +291,13 @@ export const reviewUserParagraphSubmission = async ({
   ];
 
   const supabase = createClient();
+
+  const CorrectionStructure = z.object({
+    feedback: z.string(),
+    correction: z.string(),
+  });
   const modelParams = {
-    format: { type: 'json_object' } as gptFormatType,
+    format: zodResponseFormat(CorrectionStructure, 'correction') as gptFormatType,
     max_tokens: 1000,
     temperature: 0.6,
   };

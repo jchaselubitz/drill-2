@@ -74,12 +74,13 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
       setSubmitState('error');
       throw new Error('Error:', error);
     }
+    form.reset();
   };
 
   const form = useForm({
     defaultValues: {
-      // text: '',
-      text: testGermanText,
+      text: '',
+      // text: testGermanText,
     },
   });
 

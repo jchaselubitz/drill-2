@@ -94,13 +94,7 @@ export const deleteTutorTopic = async (topicId: string) => {
   revalidatePath('/tutor', 'page');
 };
 
-export const saveTopicPrompt = async ({
-  topic,
-  prompt,
-}: {
-  topic: TutorTopicWithCorrections;
-  prompt: string;
-}) => {
+export const saveTopicPrompt = async ({ topicId, prompt }: { topicId: string; prompt: string }) => {
   const supabase = createClient();
   const {
     data: { user },
@@ -110,17 +104,9 @@ export const saveTopicPrompt = async ({
   }
 
   const userId = user.id;
-  const topicId = topic.id;
 
   await db.transaction().execute(async (trx) => {
-    await trx
-      .deleteFrom('correction')
-      .where(
-        'topicId',
-        '=',
-        topic.corrections.map((c: BaseCorrection) => c.id)
-      )
-      .execute();
+    await trx.deleteFrom('correction').where('topicId', '=', topicId).execute();
     await db
       .updateTable('tutorTopic')
       .set({ prompt })

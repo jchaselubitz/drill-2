@@ -10,23 +10,27 @@ interface GrammarCorrectionItemProps {
 
 const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({ correction }) => {
   const correctionText = correction.response.correction;
-  const feedback = correction.response.feedback;
+  const feedback = correction.response.feedback.toString();
 
+  const sectionClass = 'space-x-2';
+  const headerClass = 'text-xs uppercase font-semibold mb-2';
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-xs uppercase font-semibold">User Text</h3>
-      <p>{correction.userText}</p>
+      <div className={sectionClass}>
+        <h3 className={headerClass}>Your response</h3>
+        <div>{correction.userText}</div>
+      </div>
       <div>
-        <div className="space-x-2">
-          <div className="text-xs uppercase font-semibold">Correction:</div>
+        <div className={sectionClass}>
+          <div className={headerClass}>Correction:</div>
           <div className="prose ">
             <Markdown remarkPlugins={[remarkGfm, remarkBreaks]}>{correctionText}</Markdown>
           </div>
         </div>
       </div>
       <div>
-        <div className="space-x-2">
-          <div className="text-xs uppercase font-semibold">Feedback:</div>
+        <div className={sectionClass}>
+          <div className={headerClass}>Feedback:</div>
           <div className="prose ">
             <Markdown remarkPlugins={[remarkGfm, remarkBreaks]}>{feedback}</Markdown>
           </div>

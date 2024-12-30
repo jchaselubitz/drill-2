@@ -12,9 +12,11 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
+import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/contexts/user_context';
 import { saveTopicPrompt, saveTopicResponse } from '@/lib/actions/tutorActions';
 import {
+  changePromptLength,
   generateTutorPrompt,
   ReviewUserParagraphSubmissionResponse,
 } from '@/lib/helpers/helpersAI';
@@ -28,9 +30,11 @@ interface TopicDetailsProps {
 
 const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) => {
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
+  const [shortenButtonState, setShortenButtonState] = useState<ButtonLoadingState>('default');
+  const [lengthenButtonState, setLengthenButtonState] = useState<ButtonLoadingState>('default');
   const { lang: topicLanguage, level, instructions, corrections } = topic;
   const { userLanguage, prefLanguage } = useUserContext();
-  const [prompt, setPrompt] = useState<string | undefined>(TestPrompt);
+  const [prompt, setPrompt] = useState<string | undefined>(topic.prompt ?? undefined);
 
   const preparedPhrases = relevantPhrases.map((phrase: any) => phrase.text);
 
@@ -49,10 +53,30 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
         instructions,
       });
       setPrompt(prompt);
-      await saveTopicPrompt({ topic, prompt });
+      await saveTopicPrompt({ topicId: topic.id, prompt });
       setButtonState('success');
     } catch (error: any) {
       setButtonState('error');
+      throw new Error('Error:', error);
+    }
+  };
+
+  const handleChangePromptLength = async (length: 'shorter' | 'longer') => {
+    length === 'shorter' ? setShortenButtonState('loading') : setLengthenButtonState('loading');
+    if (!prompt) {
+      alert('No prompt to shorten');
+      return;
+    }
+    try {
+      const newPrompt = await changePromptLength({
+        prompt,
+        length,
+      });
+      setPrompt(newPrompt);
+      await saveTopicPrompt({ topicId: topic.id, prompt });
+      length === 'shorter' ? setShortenButtonState('default') : setLengthenButtonState('default');
+    } catch (error: any) {
+      length === 'shorter' ? setShortenButtonState('error') : setLengthenButtonState('error');
       throw new Error('Error:', error);
     }
   };
@@ -64,7 +88,6 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
     response: ReviewUserParagraphSubmissionResponse;
     userText: string;
   }) => {
-    console.log('onResponseSubmit', response);
     try {
       await saveTopicResponse({ topicId: topic.id, response, userText });
     } catch (error: any) {
@@ -74,7 +97,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
 
   return (
     <div className="flex flex-col mt-4 w-full">
-      <div className="relative flex pb-6">
+      <div className="relative flex flex-col pb-6">
         {prompt && (
           <div className="bg-slate-100 p-2 pb-4 rounded-lg ">
             <span className="text-slate-800 block italic">
@@ -83,39 +106,70 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
             </span>
           </div>
         )}
-
-        <LoadingButton
-          onClick={handleInitiateLesson}
-          className={cn(
-            'w-fit bg-gradient-to-r from-blue-600 to-cyan-600',
-            prompt && 'rounded-full w-10 absolute right-0 bottom-0'
+        <div className="flex justify-end gap-2 mt-2">
+          {!!prompt && (
+            <>
+              <LoadingButton
+                onClick={() => handleChangePromptLength('shorter')}
+                className="w-fit bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg "
+                buttonState={shortenButtonState}
+                text={'Shorter'}
+                loadingText={'Shortening ...'}
+                successText={'Shorter'}
+                errorText="Something went wrong"
+              />
+              <LoadingButton
+                onClick={() => handleChangePromptLength('longer')}
+                className="w-fit bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg 0"
+                buttonState={lengthenButtonState}
+                text={'Longer'}
+                loadingText={'Lengthening ...'}
+                successText={'Longer'}
+                errorText="Something went wrong"
+              />
+            </>
           )}
-          buttonState={buttonState}
-          text={prompt ? <RefreshCw /> : 'Initiate lesson'}
-          loadingText={
-            !prompt ? (
-              'Generating ...'
-            ) : (
-              <div className="animate-spin">
-                <RefreshCw />
-              </div>
-            )
-          }
-          successText={<RefreshCw />}
-          errorText="Something went wrong"
-        />
+          <LoadingButton
+            onClick={handleInitiateLesson}
+            className={cn(
+              'w-fit bg-gradient-to-r from-blue-600 to-cyan-600',
+              prompt && 'rounded-full w-10 '
+            )}
+            buttonState={buttonState}
+            text={prompt ? <RefreshCw /> : 'Generate prompt'}
+            loadingText={
+              !prompt ? (
+                'Generating ...'
+              ) : (
+                <div className="animate-spin">
+                  <RefreshCw />
+                </div>
+              )
+            }
+            successText={<RefreshCw />}
+            errorText="Something went wrong"
+          />
+        </div>
       </div>
 
       <div className="mt-4">
+        <div>
+          <GrammarCorrectionForm onResponse={onResponseSubmit} />{' '}
+          {corrections && <Separator className="my-4" />}
+        </div>
         {corrections && (
-          <Accordion type="multiple" className="flex flex-col items-center gap-4 w-full">
+          <Accordion type="multiple" className="w-full">
             {corrections.map((existingCorrection, index) => (
               <AccordionItem
-                className="mt-4 w-full"
+                className="w-full border-b-0 rounded-lg shadow-md hover:shadow-xl px-4"
                 value={existingCorrection.id}
                 key={existingCorrection.id}
               >
-                <AccordionTrigger className="w-full">Response: {index + 1} </AccordionTrigger>
+                <AccordionTrigger className="flex w-full border-b-0 hover:no-underline ">
+                  <span className="text-left line-clamp-1 ">
+                    {index + 1}. {existingCorrection.response.correction}
+                  </span>
+                </AccordionTrigger>
                 <AccordionContent>
                   <GrammarCorrectionItem correction={existingCorrection} />
                 </AccordionContent>
@@ -123,7 +177,6 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
             ))}
           </Accordion>
         )}
-        <GrammarCorrectionForm onResponse={onResponseSubmit} />
       </div>
     </div>
   );
@@ -133,3 +186,5 @@ export default TopicDetails;
 
 const TestPrompt =
   'Write a short paragraph about the importance of personal conversations in building relationships. Include your thoughts on how they can help us understand each other better.';
+
+// Anna ist eine teenager im Gymnasium. Sie vergessen immer, ihre Hände zu wachen. Ihre Freunde denken, dass das ist sehr furchbar, und sie sie tease.
