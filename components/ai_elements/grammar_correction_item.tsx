@@ -21,8 +21,7 @@ const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({
   const correctionText = correction.response.correction;
   const feedback = correction.response.feedback.toString();
 
-  const chatSystemMessage =
-    'You are a tutor whose job is to help the user learn the relevant language';
+  const chatSystemMessage = `You are a tutor whose job is to help the user learn ${learningLang}`;
 
   const openInChat = () => {
     setCurrentLang(learningLang);

@@ -36,7 +36,7 @@ export default function ResponsiveLayout({
           <div className="h-full w-full px-4 overflow-y-scroll">{panel1}</div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={50} className="pb-14">
+        <ResizablePanel defaultSize={50} className="">
           <div className="flex h-full w-full overflow-y-scroll">{panel2}</div>
         </ResizablePanel>
       </ResizablePanelGroup>

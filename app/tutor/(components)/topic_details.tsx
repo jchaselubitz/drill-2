@@ -35,7 +35,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
   const { lang: topicLanguage, level, instructions, corrections } = topic;
   const { userLanguage, prefLanguage } = useUserContext();
   const [prompt, setPrompt] = useState<string | undefined>(topic.prompt ?? undefined);
-  const [openItem, setOpenItem] = useState<string>('');
+  const [openItem, setOpenItem] = useState<string>(topic.corrections[0].id ?? '');
 
   useEffect(() => {
     if (topic.corrections) {
@@ -171,25 +171,27 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
             value={[openItem]}
             onValueChange={(v) => setOpenItem(v[1])}
           >
-            {corrections.map((existingCorrection, index) => (
-              <AccordionItem
-                className="w-full border-b-0 rounded-lg shadow-md hover:shadow-xl px-4"
-                value={existingCorrection.id}
-                key={existingCorrection.id}
-              >
-                <AccordionTrigger className="flex w-full border-b-0 hover:no-underline ">
-                  <span className="text-left line-clamp-1 ">
-                    {corrections.length - index}. {existingCorrection.response.correction}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <GrammarCorrectionItem
-                    correction={existingCorrection}
-                    learningLang={topic.lang}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+            <div className="flex flex-col gap-2">
+              {corrections.map((existingCorrection, index) => (
+                <AccordionItem
+                  className="w-full border-b-0 rounded-lg  hover:border px-4  data-[state=open]:bg-zinc-100 data-[state=open]:shadow-lg data-[state=open]:border-0"
+                  value={existingCorrection.id}
+                  key={existingCorrection.id}
+                >
+                  <AccordionTrigger className="flex w-full border-b-0 hover:no-underline ">
+                    <span className="text-left line-clamp-1 ">
+                      {corrections.length - index}. {existingCorrection.response.correction}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <GrammarCorrectionItem
+                      correction={existingCorrection}
+                      learningLang={topic.lang}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </div>
           </Accordion>
         )}
       </div>

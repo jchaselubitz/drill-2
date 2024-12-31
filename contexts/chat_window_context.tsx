@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 import { ChatMessage } from '@/components/ai_elements/phrase_chat';
-import { LanguagesISO639 } from '@/lib/lists';
+import { getLangName, LanguagesISO639 } from '@/lib/lists';
 
 import { useUserContext } from './user_context';
 
@@ -53,18 +53,12 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
   const [onEndSession, setOnEndSession] = useState<() => void>(() => () => {});
   const [chatLoading, setChatLoading] = useState(false);
 
-  useEffect(() => {
-    if (currentLang) {
-      setChatContext(undefined);
-    }
-  }, [currentLang, setChatContext]);
-
   const createNewMessageBatch = useMemo(() => {
     const batch = [];
     if (chatContext?.systemMessage) {
       batch.push({
         role: 'system',
-        content: chatContext.systemMessage + `my questions are about ${currentLang}`,
+        content: chatContext.systemMessage,
       });
     }
     if (chatContext?.matterText) {
@@ -77,18 +71,38 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
       batch.push({ role: 'assistant', content: chatContext.assistantAnswer });
     }
     return batch;
-  }, [chatContext, currentLang]);
+  }, [chatContext]);
 
   useEffect(() => {
-    if (!chatContext && !currentLang) {
+    if (!chatContext) {
       return;
     }
 
     setChatMessages((prevState) => {
       const existingMessages = prevState ?? [];
-      return [...existingMessages, ...createNewMessageBatch];
+      const filteredSystemMessages = existingMessages.filter(
+        (message) => message.role !== 'system'
+      );
+      return [...filteredSystemMessages, ...createNewMessageBatch];
     });
-  }, [chatContext, setChatMessages, createNewMessageBatch, currentLang]);
+  }, [chatContext, setChatMessages, createNewMessageBatch]);
+
+  useEffect(() => {
+    if (!currentLang) {
+      return;
+    }
+    const langChatPrimer = {
+      role: 'system',
+      content: `Questions about ${getLangName(currentLang)}`,
+    };
+    setChatMessages((prevState) => {
+      const existingMessages = prevState ?? [];
+      const filteredSystemMessages = existingMessages.filter(
+        (message) => message.role !== 'system'
+      );
+      return [...filteredSystemMessages, langChatPrimer];
+    });
+  }, [setChatMessages, currentLang]);
 
   const endSession = () => {
     setChatOpen(false);

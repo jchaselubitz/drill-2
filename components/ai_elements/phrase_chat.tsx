@@ -158,7 +158,7 @@ const PhraseChat: React.FC = () => {
   );
 
   const chatTopBar = (
-    <div className="flex justify-between bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-1 px-4 rounded-t ">
+    <div className="flex justify-between bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-1 px-2 rounded-t">
       <div className="flex justify-start gap-2 items-center">
         <div className="animate-pulse mr-1">
           <Stars />
@@ -167,10 +167,18 @@ const PhraseChat: React.FC = () => {
       </div>
 
       <div className="flex justify-end gap-2 items-center w-fit">
-        <button onClick={() => setChatOpen(false)}>
+        <button
+          onClick={() => setChatOpen(false)}
+          className="flex gap-1 items-center border px-1 rounded-sm"
+        >
+          <div className="text-xs">Hide</div>
           <Minus size={20} />
         </button>
-        <button onClick={async () => handleEndChat()}>
+        <button
+          onClick={async () => handleEndChat()}
+          className="flex gap-1 items-center border px-1 rounded-sm"
+        >
+          <div className="text-xs">End</div>
           <XIcon size={20} />
         </button>
       </div>
@@ -185,13 +193,13 @@ const PhraseChat: React.FC = () => {
 
   return (
     <div
-      className="fixed z-50 bottom-0 right-0 md:right-4 flex flex-col rounded-lg border bg-white shadow-inner h-dvh md:min-h-96 md:h-[900px] md:max-h-svh w-full md:w-[500px]"
+      className="fixed z-50 bottom-0 right-0 md:right-4 flex flex-col rounded-lg border border-zinc-300 bg-white  bg-opacity-65 shadow-inner h-dvh md:min-h-96 md:h-[900px] md:max-h-svh w-full md:w-[500px]"
       onWheel={handleMouseEvent}
       onMouseMove={handleMouseEvent}
       onClick={handleMouseEvent}
     >
       {chatTopBar}
-      <div className="flex h-full flex-col relative">
+      <div className="flex h-full flex-col relative backdrop-blur-lg	">
         <div className="pb-24 w-full overflow-y-scroll px-4" ref={scrollRef}>
           {presentableMessages?.map((message, index) => (
             <div
