@@ -22,7 +22,7 @@ export default function ResponsiveLayout({
     <div className="min-h-screen  w-full">
       <main className="flex flex-col gap-8 w-full h-full">
         {detailPanelActive ? (
-          <div className="flex h-full overflow-y-scroll">{panel2}</div>
+          <div className="flex  pb-24 h-full overflow-y-scroll">{panel2}</div>
         ) : (
           <div className="p-2 pb-24 mt-2 overflow-y-scroll">{panel1}</div>
         )}
