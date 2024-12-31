@@ -52,6 +52,8 @@ export const getPhrases = async ({
       'phrase.type',
       'phrase.filename',
       'phrase.note',
+      'phrase.historyId',
+      'phrase.difficulty',
       jsonArrayFrom(
         eb
           .selectFrom('tag')
@@ -468,6 +470,28 @@ export const addTranslation = async ({
   revalidationPath
     ? revalidatePath(revalidationPath.path, revalidationPath.type)
     : revalidatePath('/library', 'page');
+};
+
+export const removeFromHistory = async (phraseId: string) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return;
+  }
+  try {
+    await db
+      .updateTable('phrase')
+      .set({ historyId: null })
+      .where('id', '=', phraseId)
+      .where('userId', '=', userId)
+      .execute();
+  } catch (error) {
+    throw Error(`Failed to remove phrase from history: ${error}`);
+  }
+  revalidatePath('/settings', 'page');
 };
 
 export const deletePhrase = async (phraseId: string) => {

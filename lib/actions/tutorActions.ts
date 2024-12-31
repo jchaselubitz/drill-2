@@ -39,6 +39,7 @@ export const getTutorTopics = async (topicId?: string): Promise<TutorTopicWithCo
           .selectFrom('correction')
           .select(['id', 'createdAt', 'response', 'userText', 'userId', 'topicId'])
           .whereRef('topicId', '=', 't.id')
+          .orderBy('createdAt', 'desc')
       ).as('corrections'),
     ])
     .where('userId', '=', userId);
@@ -125,13 +126,13 @@ export const saveTopicResponse = async ({
   response: ReviewUserParagraphSubmissionResponse;
   userText: string;
   topicId: string;
-}) => {
+}): Promise<string> => {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return;
+    return '';
   }
 
   const correction = {
@@ -141,6 +142,11 @@ export const saveTopicResponse = async ({
     topicId,
   } as NewCorrection;
 
-  await db.insertInto('correction').values(correction).returning('id').executeTakeFirstOrThrow();
+  const cor = await db
+    .insertInto('correction')
+    .values(correction)
+    .returning('id')
+    .executeTakeFirstOrThrow();
   revalidatePath('/tutor', 'page');
+  return cor.id;
 };

@@ -1,8 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
-import { useSearchParam } from 'react-use';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 interface LessonsContextProps {
   selectedSubjectId: string | null;
@@ -14,9 +13,15 @@ const LessonsContext = createContext<LessonsContextProps | undefined>(undefined)
 export const LessonsContextProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const searchParams = useSearchParam('subject');
-  const { openSubject } = searchParams ? { openSubject: searchParams } : { openSubject: null };
+  const searchParams = useSearchParams();
+  const openSubject = searchParams.get('subject');
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(openSubject ?? null);
+
+  useEffect(() => {
+    if (openSubject !== selectedSubjectId) {
+      setSelectedSubjectId(openSubject);
+    }
+  }, [openSubject, selectedSubjectId]);
 
   const router = useRouter();
 

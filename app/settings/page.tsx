@@ -1,3 +1,4 @@
+import HistoryPhraseItem from '@/components/history/history_phrase_item';
 import { getUserHistory } from '@/lib/actions/actionsHistory';
 
 export default async function Settings() {
@@ -15,17 +16,21 @@ export default async function Settings() {
               </div>
               <div className="flex flex-row gap-4">
                 <div className="font-semibold">Concepts:</div>
-                <div>{h.concepts}</div>
+                <div>
+                  {h.concepts?.map((c) => {
+                    return (
+                      <div key={c} className="font-semibold">
+                        {c}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div className="flex flex-row gap-4">
                 <div className="font-semibold">Vocab:</div>
-                <div>
-                  {h.vocabulary.map((word, i) => {
-                    return (
-                      <div key={i} className="font-semibold">
-                        {word.word}
-                      </div>
-                    );
+                <div className="flex flex-col gap-3">
+                  {h.vocabulary.map((word) => {
+                    return <HistoryPhraseItem key={word.id} word={word} />;
                   })}
                 </div>
               </div>

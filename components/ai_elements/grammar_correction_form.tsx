@@ -4,9 +4,6 @@ import { Label } from '@radix-ui/react-dropdown-menu';
 import { BaseCorrection } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Markdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
-import remarkGfm from 'remark-gfm';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { Form, FormField, FormItem } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,8 +15,6 @@ import {
 } from '@/lib/helpers/helpersAI';
 import { processHistory } from '@/lib/helpers/helpersHistory';
 import { cn } from '@/lib/utils';
-
-import { Button } from '../ui/button';
 
 interface GrammarCorrectionFormProps {
   className?: string;
@@ -35,7 +30,7 @@ interface GrammarCorrectionFormProps {
 
 const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className, onResponse }) => {
   const { prefLanguage, history } = useUserContext();
-  const { setChatContext, setChatOpen, currentLang, setCurrentLang } = useChatContext();
+  const { currentLang } = useChatContext();
   const [submitState, setSubmitState] = useState<ButtonLoadingState>('default');
   const [response, setResponse] = useState<ReviewUserParagraphSubmissionResponse | undefined>(
     undefined
@@ -43,19 +38,6 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
 
   const learningLang = currentLang ?? prefLanguage;
   const existingHistory = history?.find((h) => h.lang === learningLang);
-
-  const chatSystemMessage =
-    'You are a tutor whose job is to help the user learn the relevant language';
-
-  const openInChat = () => {
-    setCurrentLang(learningLang);
-    setChatContext({
-      systemMessage: chatSystemMessage,
-      matterText: form.getValues('text'),
-      assistantAnswer: `**Correction:** ${response?.correction}  **Feedback:** ${response?.feedback}`,
-    });
-    setChatOpen(true);
-  };
 
   const handleResponseChange = async () => {
     setSubmitState('loading');
@@ -113,30 +95,6 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
             errorText={'An error occurred'}
           />
         </form>
-        {response && (
-          <div className="flex flex-col gap-4 mt-4">
-            <div className="space-x-2">
-              <div className="text-xs uppercase font-semibold">Correction:</div>
-              <div className="prose ">
-                <Markdown remarkPlugins={[remarkGfm, remarkBreaks]}>{response.correction}</Markdown>
-              </div>
-            </div>
-            <div className="space-x-2">
-              <div className="text-xs uppercase font-semibold">Feedback:</div>
-              <div className="prose ">
-                <Markdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                  {response.feedback.toString()}
-                </Markdown>
-              </div>
-            </div>
-            <Button
-              className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white w-fit "
-              onClick={openInChat}
-            >
-              Discuss in chat
-            </Button>
-          </div>
-        )}
       </Form>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { TutorTopicWithCorrections } from 'kysely-codegen';
 import { RefreshCw, Stars } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GrammarCorrectionForm from '@/components/ai_elements/grammar_correction_form';
 import GrammarCorrectionItem from '@/components/ai_elements/grammar_correction_item';
 import {
@@ -35,6 +35,13 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
   const { lang: topicLanguage, level, instructions, corrections } = topic;
   const { userLanguage, prefLanguage } = useUserContext();
   const [prompt, setPrompt] = useState<string | undefined>(topic.prompt ?? undefined);
+  const [openItem, setOpenItem] = useState<string>('');
+
+  useEffect(() => {
+    if (topic.corrections) {
+      setOpenItem(topic.corrections[0].id);
+    }
+  }, [topic.corrections]);
 
   const preparedPhrases = relevantPhrases.map((phrase: any) => phrase.text);
 
@@ -155,10 +162,15 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
       <div className="mt-4">
         <div>
           <GrammarCorrectionForm onResponse={onResponseSubmit} />{' '}
-          {corrections && <Separator className="my-4" />}
+          {corrections.length > 0 && <Separator className="my-4" />}
         </div>
         {corrections && (
-          <Accordion type="multiple" className="w-full">
+          <Accordion
+            type="multiple"
+            className="w-full"
+            value={[openItem]}
+            onValueChange={(v) => setOpenItem(v[1])}
+          >
             {corrections.map((existingCorrection, index) => (
               <AccordionItem
                 className="w-full border-b-0 rounded-lg shadow-md hover:shadow-xl px-4"
@@ -167,11 +179,14 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
               >
                 <AccordionTrigger className="flex w-full border-b-0 hover:no-underline ">
                   <span className="text-left line-clamp-1 ">
-                    {index + 1}. {existingCorrection.response.correction}
+                    {corrections.length - index}. {existingCorrection.response.correction}
                   </span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <GrammarCorrectionItem correction={existingCorrection} />
+                  <GrammarCorrectionItem
+                    correction={existingCorrection}
+                    learningLang={topic.lang}
+                  />
                 </AccordionContent>
               </AccordionItem>
             ))}

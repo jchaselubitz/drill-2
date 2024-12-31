@@ -105,7 +105,12 @@ export const handleGeneratePhrases = async ({
   }
 };
 
-export type HistoryVocabType = { word: string; rank: number; partSpeech: string };
+export type HistoryVocabType = {
+  text: string;
+  difficulty: number;
+  partSpeech: string;
+  id?: string;
+};
 export type ExistingHistoryType = {
   concepts: string[] | null;
   insights?: string;
@@ -127,26 +132,32 @@ export const generateHistory = async ({
 }> => {
   const supabase = createClient();
 
+  const existingVocab =
+    existingHistory?.vocabulary?.map((v) => {
+      v.text, v.difficulty;
+    }) ?? [];
   const HistoryStructure = z.object({
-    vocabulary: z.array(z.object({ word: z.string(), rank: z.number(), partSpeech: z.string() })),
+    vocabulary: z.array(
+      z.object({ text: z.string(), difficulty: z.number(), partSpeech: z.string() })
+    ),
     insights: z.string(),
     concepts: z.array(z.string()),
   });
 
   const insightState = existingHistory
-    ? `Previous Insight State: {Insights you have previously given the user: ${existingHistory.insights}}, {Existing concepts: ${existingHistory.concepts}}, {Existing vocabulary ${JSON.stringify(existingHistory.vocabulary)}}.`
+    ? `Previous Insight State: {Insights you have previously given the user: ${existingHistory.insights}}, {Existing concepts: ${existingHistory.concepts}}, {Existing vocabulary ${JSON.stringify(existingVocab)}}.`
     : null;
 
   const messagesWithSystem = [
     {
       role: 'system',
-      content: `The software will submit insights you previously generated and a message or list of messages including conversation about a subject (${getLangName(lang)}) the user is trying to learn. Return as a JSON object in the following format {"insights": <the insight requested by the user>, "vocabulary": <an array of objects where "word": <word in ${lang} >, rank: <the number of times you have noticed the user struggling with that word> partSpeech: <the part of speech associated with that word>>, concepts: <Terms germane to ${getLangName(lang)} included in assistant messages>. Don't refer to yourself or the user.`,
+      content: `The software will submit insights you previously generated and a message or list of messages including conversation about a subject (${getLangName(lang)}) the user is trying to learn. Return as a JSON object in the following format {"insights": <the insight requested by the user>, "vocabulary": <an array of objects where "text": <word in ${lang} >, difficulty: <number less than 4> partSpeech: <the part of speech associated with that word>>, concepts: <Terms germane to ${getLangName(lang)} included in assistant messages>. Don't refer to yourself or the user.`,
     },
 
     ...messages,
     {
       role: 'user',
-      content: `Identify any grammatical terms and other linguistic concepts germane to ${getLangName(lang)} and update the Concepts list accordingly. For updated vocabulary, add any new words from the preceding messages you think I want to learn, but also keep the existing vocabulary. The vocab list should show each word only once. If my recent messages include any of the same words, simply increase the rank of those words. Vocabulary should exclude items you put in the Concepts list. For updated insights, look at your existing insights and review the latest messages your updated Concepts list and make a note describing what I struggle with. Assume I will use this note to understand my weaknesses. Take care to highlight any cases where issues from the exiting insights and new insights overlap. ${insightState}. Misspellings are unimportant. Exclude them from the vocabulary and insights.`,
+      content: `Identify any grammatical terms and other linguistic concepts germane to ${getLangName(lang)} and update the Concepts list accordingly. For updated vocabulary, add any new words from the preceding messages that I did not know or did not understand, but also keep the existing vocabulary. The vocab list should show each word only once. Determine Difficulty by tracking the number of times you have noticed the user struggling with that word. If my recent messages include any of the same words, simply increase the difficulty of those words. Vocabulary should exclude items you put in the Concepts list. For updated insights, look at your existing insights and review the latest messages your updated Concepts list and make a note describing what I struggle with. Assume I will use this note to understand my weaknesses. Take care to highlight any cases where issues from the exiting insights and new insights overlap. ${insightState}. Misspellings are unimportant. Exclude them from the vocabulary and insights.`,
     },
     {
       role: 'user',

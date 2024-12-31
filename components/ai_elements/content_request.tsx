@@ -4,6 +4,7 @@ import { zodResponseFormat } from 'openai/helpers/zod';
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useChatContext } from '@/contexts/chat_window_context';
+import { useUserContext } from '@/contexts/user_context';
 import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
@@ -18,7 +19,6 @@ import { Textarea } from '../ui/textarea';
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
 import LightSuggestionList from './suggestions/light_suggestion_list';
-import { useUserContext } from '@/contexts/user_context';
 
 interface ContentRequestProps {
   text: string | null;

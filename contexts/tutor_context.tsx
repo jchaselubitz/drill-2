@@ -1,8 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
-import { useSearchParam } from 'react-use';
 
 interface TutorContextProps {
   selectedTopicId: string | null;
@@ -14,11 +13,9 @@ const TutorContext = createContext<TutorContextProps | undefined>(undefined);
 export const TutorContextProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const searchParams = useSearchParam('tutor');
-  const { openTopic } = searchParams ? { openTopic: searchParams } : { openTopic: null };
+  const searchParams = useSearchParams();
+  const openTopic = searchParams.get('topic');
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(openTopic ?? null);
-
-  const router = useRouter();
 
   const setSelectedTopic = (id: string | null) => {};
 

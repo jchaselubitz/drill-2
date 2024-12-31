@@ -15,7 +15,6 @@ interface LibraryLayoutProps {
 export default function LibraryLayout({ phrases }: LibraryLayoutProps) {
   const { selectedPhraseId } = useLibraryContext();
   const userTags = [...new Set(phrases.flatMap((phrase) => phrase.tags.map((tag) => tag.label)))];
-
   const memoizedPhrase = useMemo(() => {
     if (!selectedPhraseId) return null;
     return phrases.find((p) => p.id === selectedPhraseId.toString()) ?? null;

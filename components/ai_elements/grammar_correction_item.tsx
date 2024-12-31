@@ -3,14 +3,36 @@ import React from 'react';
 import Markdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
+import { useChatContext } from '@/contexts/chat_window_context';
+import { LanguagesISO639 } from '@/lib/lists';
+
+import { Button } from '../ui/button';
 
 interface GrammarCorrectionItemProps {
   correction: BaseCorrection;
+  learningLang: LanguagesISO639;
 }
 
-const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({ correction }) => {
+const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({
+  correction,
+  learningLang,
+}) => {
+  const { setChatContext, setChatOpen, setCurrentLang } = useChatContext();
   const correctionText = correction.response.correction;
   const feedback = correction.response.feedback.toString();
+
+  const chatSystemMessage =
+    'You are a tutor whose job is to help the user learn the relevant language';
+
+  const openInChat = () => {
+    setCurrentLang(learningLang);
+    setChatContext({
+      systemMessage: chatSystemMessage,
+      matterText: correction.userText,
+      assistantAnswer: `**Correction:** ${correctionText}  **Feedback:** ${feedback}`,
+    });
+    setChatOpen(true);
+  };
 
   const sectionClass = 'space-x-2';
   const headerClass = 'text-xs uppercase font-semibold mb-2';
@@ -36,6 +58,12 @@ const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({ correctio
           </div>
         </div>
       </div>
+      <Button
+        className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white w-fit "
+        onClick={openInChat}
+      >
+        Discuss in chat
+      </Button>
     </div>
   );
 };

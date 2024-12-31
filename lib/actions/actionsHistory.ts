@@ -5,6 +5,8 @@ import db from '../database';
 import { LanguagesISO639 } from '../helpers/lists';
 import { revalidatePath } from 'next/cache';
 import { BaseHistory } from 'kysely-codegen';
+import { HistoryVocabType } from '../helpers/helpersAI';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 
 export async function getUserHistory(): Promise<BaseHistory[]> {
   const supabase = createClient();
@@ -18,7 +20,19 @@ export async function getUserHistory(): Promise<BaseHistory[]> {
 
   const histories = (await db
     .selectFrom('history')
-    .selectAll()
+    .select(({ eb }) => [
+      'id',
+      'lang',
+      'concepts',
+      'insights',
+      'createdAt',
+      jsonArrayFrom(
+        eb
+          .selectFrom('phrase')
+          .select(['text', 'difficulty', 'partSpeech', 'id'])
+          .whereRef('historyId', '=', 'history.id')
+      ).as('vocabulary'),
+    ])
     .where('userId', '=', userId)
     .orderBy('createdAt', 'desc')
     .execute()) as BaseHistory[];
@@ -32,18 +46,18 @@ export async function addHistory({
   concepts,
   existingHistory,
 }: {
-  vocabulary: { word: string; rank: number }[];
+  vocabulary: HistoryVocabType[];
   lang: LanguagesISO639;
   insights: string;
   concepts: string[];
   existingHistory: BaseHistory | null | undefined;
-}) {
+}): Promise<{ historyId: string } | undefined> {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return [];
+    return;
   }
   const userId = user.id;
   if (!userId) {
@@ -57,24 +71,62 @@ export async function addHistory({
       await db
         .updateTable('history')
         .set({
-          vocabulary,
           insights,
           concepts,
         })
         .where('id', '=', historyId)
         .where('lang', '=', lang)
+        .returning('id')
         .executeTakeFirstOrThrow();
+
+      vocabulary.map(async (v) => {
+        db.insertInto('phrase')
+          .values({
+            source: 'history',
+            text: v.text,
+            lang,
+            difficulty: v.difficulty,
+            userId,
+            partSpeech: v.partSpeech,
+            historyId,
+          })
+          .onConflict((p) =>
+            p
+              .constraint('unique_phrase_user_lang_part')
+              .doUpdateSet({ difficulty: v.difficulty, partSpeech: v.partSpeech })
+          )
+          .execute();
+      });
     } else {
-      await db
+      const history = await db
         .insertInto('history')
         .values({
           userId,
-          vocabulary,
           concepts,
           lang,
           insights,
         })
-        .execute();
+        .returning('id')
+        .executeTakeFirstOrThrow();
+
+      vocabulary.map(async (v) => {
+        db.insertInto('phrase')
+          .values({
+            source: 'history',
+            text: v.text,
+            lang,
+            difficulty: v.difficulty,
+            userId,
+            partSpeech: v.partSpeech,
+            historyId: history.id,
+          })
+          .onConflict((p) =>
+            p
+              .constraint('unique_phrase_user_lang_part')
+              .doUpdateSet({ difficulty: v.difficulty, partSpeech: v.partSpeech })
+          )
+          .execute();
+      });
     }
   } catch (error) {
     throw new Error(`Error saving history

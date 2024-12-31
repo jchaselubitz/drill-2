@@ -13,17 +13,21 @@ export async function processHistory({
   existingHistory: BaseHistory | undefined;
   learningLang: LanguagesISO639;
 }) {
-  const { insights, vocabulary, concepts } = await generateHistory({
-    messages: messages.filter((m) => m.role === 'assistant'),
-    existingHistory,
-    lang: learningLang,
-  });
+  try {
+    const { insights, vocabulary, concepts } = await generateHistory({
+      messages: messages.filter((m) => m.role === 'assistant'),
+      existingHistory,
+      lang: learningLang,
+    });
 
-  await addHistory({
-    insights,
-    vocabulary,
-    concepts,
-    lang: learningLang,
-    existingHistory: existingHistory,
-  });
+    await addHistory({
+      insights,
+      vocabulary,
+      concepts,
+      lang: learningLang,
+      existingHistory: existingHistory,
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
