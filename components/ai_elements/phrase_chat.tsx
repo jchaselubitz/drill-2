@@ -25,6 +25,7 @@ import {
 } from '../ui/dropdown-menu';
 import { Textarea } from '../ui/textarea';
 import DynamicResponsePanel from './dynamic_response_panel';
+import Message from './message';
 
 const PhraseChat: React.FC = () => {
   const supabase = createClient();
@@ -56,33 +57,14 @@ const PhraseChat: React.FC = () => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
-  const genResponse = {
-    input_text: requestText,
-    input_lang: 'en',
-    output_text: 'Hello',
-    output_lang: 'de',
-  } as TranslationResponseType;
-
   // the request has to cause the model to return a translation or list structure
   // the frontend has to know that it is that type of response
 
   const presentableMessages = useMemo(() => {
     const simpleMessages =
       messages?.filter((message) => message.role !== 'system' && message.content !== '') ?? [];
-    // const jsxMessage = {
-    //   role: 'assistant',
-    //   content: (
-    //     <DynamicResponsePanel
-    //       genResponse={genResponse}
-    //       lang={lang}
-    //       primaryPhraseIds={[]}
-    //       source={undefined}
-    //     />
-    //   ),
-    //   type: 'jsx',
-    // };
     return [...simpleMessages];
-  }, [messages]) as DynamicChatMessage[];
+  }, [messages]);
 
   useEffect(() => {
     if (chatOpen && inputRef.current) {
@@ -127,10 +109,12 @@ const PhraseChat: React.FC = () => {
 
   const handleSend = async () => {
     setChatLoading(true);
+
     const messagePackage = [
       ...(messages ?? []),
-      newMessage && { role: 'user', content: newMessage },
+      newMessage && { role: 'user', content: newMessage.trim() },
     ] as ChatMessage[];
+
     setMessages(messagePackage);
     setNewMessage('');
     const { data, error } = await supabase.functions.invoke('gen-text', {
@@ -225,26 +209,7 @@ const PhraseChat: React.FC = () => {
       <div className="flex h-full flex-col relative backdrop-blur-lg	">
         <div className="pb-24 w-full overflow-y-scroll px-4" ref={scrollRef}>
           {presentableMessages?.map((message, index) => (
-            <div
-              key={index}
-              className={cn('flex my-4 w-full', {
-                'justify-start': message.role === 'assistant',
-                'justify-end': message.role !== 'assistant',
-              })}
-            >
-              <div
-                className={cn('max-w-full p-3 rounded-lg text-gray-800', {
-                  'bg-blue-200 mr-8': message.role === 'assistant',
-                  'bg-slate-200 ml-8': message.role !== 'assistant',
-                })}
-              >
-                {message.type === 'jsx' ? (
-                  message.content
-                ) : (
-                  <Markdown className="max-w-full prose">{message.content as string}</Markdown>
-                )}
-              </div>
-            </div>
+            <Message key={index} message={message} lang={learningLang} />
           ))}
           {chatLoading && chatLoadingIndicator}
         </div>

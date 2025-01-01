@@ -44,7 +44,7 @@ const NestedListItem: React.FC<NestedListItemProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between border border-gray-300 rounded p-2 hover:bg-gray-100">
+    <div className="flex w-full gap-3 items-center justify-between border border-gray-300 rounded p-2 hover:bg-gray-100">
       <span>{value}</span>
 
       <Button disabled={saved} onClick={() => handleSave(value)}>

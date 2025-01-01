@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserContext } from '@/contexts/user_context';
+import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
 import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
 import { requestLessonSuggestions } from '@/lib/helpers/promptGenerators';
 import { ContentSuggestions, Languages, LanguagesISO639, Levels } from '@/lib/lists';
@@ -24,7 +25,6 @@ import { createClient } from '@/utils/supabase/client';
 
 import { OptionType } from './lesson_option';
 import LessonOptionList from './lesson_option_list';
-import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
 
 interface LessonCreationFormProps {
   subjectId?: string | undefined;

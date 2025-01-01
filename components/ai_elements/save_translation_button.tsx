@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { TranslationResponseType } from '@/lib/aiGenerators/types_generation';
 import { getLangIcon } from '@/lib/lists';
 
 import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
-import { TranslationResponseType } from '@/lib/aiGenerators/types_generation';
 
 interface SaveTranslationButtonProps {
   data: TranslationResponseType;

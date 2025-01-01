@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { addTranslationsToLesson } from '@/lib/actions/lessonActions';
-import { LanguagesISO639 } from '@/lib/lists';
 import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
+import { LanguagesISO639 } from '@/lib/lists';
 
 interface GenerateMorePhrasesProps {
   lessonId: string;

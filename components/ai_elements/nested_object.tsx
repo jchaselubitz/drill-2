@@ -32,7 +32,7 @@ const NestedObject: React.FC<NestedObjectProps> = ({
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-2 w-full">
       {Object.entries(data).map(([key, value]) => (
         <React.Fragment key={key}>
           {isObject(value) ? (

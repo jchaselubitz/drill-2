@@ -71,5 +71,5 @@ export interface DynamicChatMessage {
 
 export interface ChatMessage {
   role: string;
-  content: string;
+  content: any;
 }

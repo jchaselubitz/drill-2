@@ -41,12 +41,12 @@ const DynamicResponsePanel: React.FC<DynamicResponsePanelProps> = ({
   };
 
   return genResponse.type === 'translation' ? (
-    <div className="mt-5">
+    <div className="">
       <SaveTranslationButton data={genResponse.data} saveTranslation={saveTranslation} />
     </div>
   ) : (
     genResponse.type !== 'explanation' && (
-      <div className="mt-5">
+      <div className="">
         <NestedObject
           data={genResponse.data}
           lang={lang}

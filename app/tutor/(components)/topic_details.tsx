@@ -15,14 +15,13 @@ import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loadin
 import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/contexts/user_context';
 import { saveTopicPrompt, saveTopicResponse } from '@/lib/actions/tutorActions';
-
-import { LanguagesISO639 } from '@/lib/lists';
-import { cn } from '@/lib/utils';
 import {
   changePromptLength,
   generateTutorPrompt,
   ReviewUserParagraphSubmissionResponse,
 } from '@/lib/aiGenerators/generators_tutor';
+import { LanguagesISO639 } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 
 interface TopicDetailsProps {
   topic: TutorTopicWithCorrections;
@@ -36,11 +35,11 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
   const { lang: topicLanguage, level, instructions, corrections } = topic;
   const { userLanguage, prefLanguage } = useUserContext();
   const [prompt, setPrompt] = useState<string | undefined>(topic.prompt ?? undefined);
-  const [openItem, setOpenItem] = useState<string>(topic.corrections[0].id ?? '');
+  const [openItem, setOpenItem] = useState<string>(topic.corrections[0]?.id ?? '');
 
   useEffect(() => {
     if (topic.corrections) {
-      setOpenItem(topic.corrections[0].id);
+      setOpenItem(topic.corrections[0]?.id);
     }
   }, [topic.corrections]);
 

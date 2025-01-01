@@ -159,7 +159,9 @@ export const generateExplanation = async ({
   let messages = [
     {
       role: 'system',
-      content: `Return a JSON with key: "explanation" and value: <a string of the explanation in ${userLanguage}>.`,
+      content: `Return a JSON. The content of every response should include include two key/value pairs: {type: "message" | "translation" | "list" , data: <contentData>}. The software consuming your response will use the type to determine how to present the data
+      
+      Return a JSON with key: "explanation" and value: <a string of the explanation in ${userLanguage}>.`,
     },
     {
       role: 'user',
@@ -179,5 +181,5 @@ export const generateExplanation = async ({
   if (error) {
     throw new Error('generateExplanation Error:', error);
   }
-  return { type: 'explanation', data: JSON.parse(data.content.explanation) };
+  return { type: 'explanation', data: JSON.parse(data.content).explanation };
 };
