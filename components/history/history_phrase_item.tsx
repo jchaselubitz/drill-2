@@ -4,10 +4,10 @@ import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import { removeFromHistory } from '@/lib/actions/phraseActions';
-import { HistoryVocabType } from '@/lib/helpers/helpersAI';
 import { capitalizeFirstLetter } from '@/lib/helpers/helpersPhrase';
 
 import { Button } from '../ui/button';
+import { HistoryVocabType } from '@/lib/aiGenerators/types_generation';
 
 interface HistoryPhraseItemProps {
   word: HistoryVocabType;

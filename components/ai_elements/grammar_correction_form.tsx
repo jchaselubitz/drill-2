@@ -9,12 +9,13 @@ import { Form, FormField, FormItem } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
+
+import { processHistory } from '@/lib/helpers/helpersHistory';
+import { cn } from '@/lib/utils';
 import {
   reviewUserParagraphSubmission,
   ReviewUserParagraphSubmissionResponse,
-} from '@/lib/helpers/helpersAI';
-import { processHistory } from '@/lib/helpers/helpersHistory';
-import { cn } from '@/lib/utils';
+} from '@/lib/aiGenerators/generators_tutor';
 
 interface GrammarCorrectionFormProps {
   className?: string;

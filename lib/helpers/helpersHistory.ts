@@ -1,7 +1,8 @@
-import { ChatMessage } from '@/components/ai_elements/phrase_chat';
 import { addHistory } from '../actions/actionsHistory';
+import { generateHistory } from '../aiGenerators/generators_history';
+import { ChatMessage } from '../aiGenerators/types_generation';
 import { LanguagesISO639 } from '../lists';
-import { generateHistory } from './helpersAI';
+
 import { BaseHistory } from 'kysely-codegen';
 
 export async function processHistory({

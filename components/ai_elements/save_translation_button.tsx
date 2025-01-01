@@ -2,20 +2,15 @@ import React, { useState } from 'react';
 import { getLangIcon } from '@/lib/lists';
 
 import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
+import { TranslationResponseType } from '@/lib/aiGenerators/types_generation';
 
 interface SaveTranslationButtonProps {
-  output_text: string | null;
-  output_lang: string;
-  input_text: string | null;
-  input_lang: string;
+  data: TranslationResponseType;
   saveTranslation: () => Promise<void>;
 }
 
 const SaveTranslationButton: React.FC<SaveTranslationButtonProps> = ({
-  output_text,
-  output_lang,
-  input_text,
-  input_lang,
+  data: { input_lang, input_text, output_lang, output_text },
   saveTranslation,
 }) => {
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');

@@ -21,9 +21,9 @@ interface PhraseCardDetailsProps {
 
 const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateToPhrase }) => {
   const { userId, userLanguage, prefLanguage } = useUserContext();
-
   const text = phrase.text;
   const lang = phrase.lang as LanguagesISO639;
+  const phraseId = phrase.id;
   const translationsPhrases =
     phrase.translations
       ?.map((t: any) => t?.phrases)

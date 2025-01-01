@@ -5,8 +5,8 @@ import db from '../database';
 import { LanguagesISO639 } from '../helpers/lists';
 import { revalidatePath } from 'next/cache';
 import { BaseHistory } from 'kysely-codegen';
-import { HistoryVocabType } from '../helpers/helpersAI';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { HistoryVocabType } from '../aiGenerators/types_generation';
 
 export async function getUserHistory(): Promise<BaseHistory[]> {
   const supabase = createClient();

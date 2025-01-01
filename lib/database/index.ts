@@ -24,7 +24,8 @@ import {
 } from 'kysely-codegen';
 import { Pool } from 'pg';
 import { LanguagesISO639 } from '../lists';
-import { HistoryVocabType, ReviewUserParagraphSubmissionResponse } from '../helpers/helpersAI';
+import { HistoryVocabType } from '../aiGenerators/types_generation';
+import { ReviewUserParagraphSubmissionResponse } from '../aiGenerators/generators_tutor';
 
 const db = new Kysely<DB>({
   plugins: [new CamelCasePlugin()],

@@ -4,6 +4,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
+import {
+  ChatMessage,
+  DynamicChatMessage,
+  TranslationResponseType,
+} from '@/lib/aiGenerators/types_generation';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
 import { processHistory } from '@/lib/helpers/helpersHistory';
 import { Languages as LanguagesList } from '@/lib/lists';
@@ -19,12 +24,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Textarea } from '../ui/textarea';
-
-export interface ChatMessage {
-  role: string;
-  content: string;
-  requestText?: string;
-}
+import DynamicResponsePanel from './dynamic_response_panel';
 
 const PhraseChat: React.FC = () => {
   const supabase = createClient();
@@ -56,10 +56,33 @@ const PhraseChat: React.FC = () => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
-  const presentableMessages = useMemo(
-    () => messages?.filter((message) => message.role !== 'system' && message.content !== ''),
-    [messages]
-  );
+  const genResponse = {
+    input_text: requestText,
+    input_lang: 'en',
+    output_text: 'Hello',
+    output_lang: 'de',
+  } as TranslationResponseType;
+
+  // the request has to cause the model to return a translation or list structure
+  // the frontend has to know that it is that type of response
+
+  const presentableMessages = useMemo(() => {
+    const simpleMessages =
+      messages?.filter((message) => message.role !== 'system' && message.content !== '') ?? [];
+    // const jsxMessage = {
+    //   role: 'assistant',
+    //   content: (
+    //     <DynamicResponsePanel
+    //       genResponse={genResponse}
+    //       lang={lang}
+    //       primaryPhraseIds={[]}
+    //       source={undefined}
+    //     />
+    //   ),
+    //   type: 'jsx',
+    // };
+    return [...simpleMessages];
+  }, [messages]) as DynamicChatMessage[];
 
   useEffect(() => {
     if (chatOpen && inputRef.current) {
@@ -215,7 +238,11 @@ const PhraseChat: React.FC = () => {
                   'bg-slate-200 ml-8': message.role !== 'assistant',
                 })}
               >
-                <Markdown className="max-w-full prose">{message.content}</Markdown>
+                {message.type === 'jsx' ? (
+                  message.content
+                ) : (
+                  <Markdown className="max-w-full prose">{message.content as string}</Markdown>
+                )}
               </div>
             </div>
           ))}

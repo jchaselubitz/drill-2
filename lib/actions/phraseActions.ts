@@ -14,6 +14,8 @@ import {
   PhraseWithAssociations,
 } from 'kysely-codegen';
 import { LanguagesISO639, SourceOptionType } from '../lists';
+import { string } from 'zod';
+import { TranslationResponseType } from '../aiGenerators/types_generation';
 
 export const getPhrases = async ({
   source,
@@ -380,17 +382,18 @@ export const togglePhraseFavorite = async ({
   }
 };
 
-export type GenResponseType = {
-  input_text: string;
-  input_lang: string;
-  output_text: string;
-  output_lang: string;
+export type GeneralResponseType = {
+  content: string;
+};
+
+export type ExplanationResponseType = {
+  explanation: string;
 };
 
 type AddTranslationProps = {
   primaryPhraseIds?: string[];
-  genResponse: GenResponseType;
-  source: string;
+  genResponse: TranslationResponseType;
+  source: string | undefined;
   revalidationPath?: RevalidationPath;
 };
 

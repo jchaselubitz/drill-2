@@ -44,6 +44,8 @@ const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({
         text={recording.text}
         lang={recording.lang as LanguagesISO639}
         userId={userId}
+        phraseId={recording.id}
+        primaryPhraseIds={[recording.id]}
         source="transcript"
         suggestions={getContentSuggestions({
           userLanguage,

@@ -109,37 +109,4 @@ export const requestPhraseSuggestions = ({
 
 // ==== Content Request ====
 
-export const contentRequestSystemMessage = (
-  command: string | undefined,
-  isExplanation: boolean
-) => {
-  const message =
-    'The user will send you a text and a request for how to handle that content. Return as a JSON.';
-  if (isExplanation) {
-    return (
-      message + `Return a JSON with key: "explanation" and value: <a string of the explanation>.`
-    );
-  }
-
-  if (command === 'Translate') {
-    return (
-      message +
-      `If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation> }.`
-    );
-  }
-
-  if (command === 'List' || command === 'Extract') {
-    return (
-      message +
-      `The user will request a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user in the same language as the content the user is asking you to list. The goal is to organize the data. `
-    );
-  }
-
-  if (command === 'Generate') {
-    return message + `The user wants you to generate new content based on the text`;
-  }
-
-  return `The user will send you a text and a request for how to handle that content. Return as a JSON. The user will often be requesting a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. If the user asks for an explanation, return a JSON with key: "explanation" and value: <a string of the explanation>. If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.`;
-};
-
 // ==== Tutor Prompts ====

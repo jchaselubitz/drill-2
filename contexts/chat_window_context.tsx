@@ -9,7 +9,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { ChatMessage } from '@/components/ai_elements/phrase_chat';
+import { ChatMessage } from '@/lib/aiGenerators/types_generation';
 import { getLangName, LanguagesISO639 } from '@/lib/lists';
 
 import { useUserContext } from './user_context';

@@ -9,8 +9,8 @@ import {
   TutorTopicWithCorrections,
 } from 'kysely-codegen';
 import { revalidatePath } from 'next/cache';
-import { ReviewUserParagraphSubmissionResponse } from '../helpers/helpersAI';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { ReviewUserParagraphSubmissionResponse } from '../aiGenerators/generators_tutor';
 
 export const getTutorTopics = async (topicId?: string): Promise<TutorTopicWithCorrections[]> => {
   const supabase = createClient();

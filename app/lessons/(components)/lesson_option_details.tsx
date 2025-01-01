@@ -5,10 +5,10 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { addSubjectLessonWithTranslations } from '@/lib/actions/lessonActions';
-import { handleGeneratePhrases } from '@/lib/helpers/helpersAI';
 import { getLangName, LanguagesISO639 } from '@/lib/lists';
 
 import { OptionType } from './lesson_option';
+import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
 
 interface LessonOptionDetailsProps {
   option: OptionType;

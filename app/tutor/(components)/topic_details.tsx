@@ -15,13 +15,14 @@ import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loadin
 import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/contexts/user_context';
 import { saveTopicPrompt, saveTopicResponse } from '@/lib/actions/tutorActions';
+
+import { LanguagesISO639 } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 import {
   changePromptLength,
   generateTutorPrompt,
   ReviewUserParagraphSubmissionResponse,
-} from '@/lib/helpers/helpersAI';
-import { LanguagesISO639 } from '@/lib/lists';
-import { cn } from '@/lib/utils';
+} from '@/lib/aiGenerators/generators_tutor';
 
 interface TopicDetailsProps {
   topic: TutorTopicWithCorrections;

@@ -1,16 +1,18 @@
 import React from 'react';
-import { GenResponseType } from '@/lib/actions/phraseActions';
+import { GeneralResponseType } from '@/lib/actions/phraseActions';
+import { LanguagesISO639 } from '@/lib/lists';
 
 import NestedListItem from './nested_list_item';
 
 type NestedObjectProps = {
-  data: GenResponseType;
-  command?: string;
+  data: GeneralResponseType;
   parentKeys?: string[];
-  saveContent: (content: string) => Promise<boolean>;
+  source?: string;
+  lang: LanguagesISO639;
+  associatedPhraseId?: string;
 };
 
-const isObject = (value: any): value is GenResponseType => {
+const isObject = (value: any): value is GeneralResponseType => {
   return value && typeof value === 'object';
 };
 
@@ -20,9 +22,10 @@ const chainParentKeys = (parentKeys: string[], key: string) => {
 
 const NestedObject: React.FC<NestedObjectProps> = ({
   data,
-  command = '',
   parentKeys = [],
-  saveContent,
+  lang,
+  source,
+  associatedPhraseId,
 }) => {
   if (!isObject(data)) {
     return null;
@@ -39,8 +42,9 @@ const NestedObject: React.FC<NestedObjectProps> = ({
                 <NestedObject
                   data={value}
                   parentKeys={chainParentKeys(parentKeys, key)}
-                  saveContent={saveContent}
-                  command={command}
+                  lang={lang}
+                  source={source}
+                  associatedPhraseId={associatedPhraseId}
                 />
               </div>
             </div>
@@ -49,8 +53,9 @@ const NestedObject: React.FC<NestedObjectProps> = ({
               <NestedListItem
                 value={value}
                 parentKeys={parentKeys}
-                saveContent={saveContent}
-                command={command}
+                source={source}
+                lang={lang}
+                associatedPhraseId={associatedPhraseId}
               />
             </li>
           )}

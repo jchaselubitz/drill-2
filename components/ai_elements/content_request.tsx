@@ -1,31 +1,29 @@
 import { Stars } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import { zodResponseFormat } from 'openai/helpers/zod';
 import React, { useEffect, useState } from 'react';
-import { z } from 'zod';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
-import { addPhrase, addTranslation, GenResponseType } from '@/lib/actions/phraseActions';
-import { getModelSelection, getOpenAiKey, gptFormatType } from '@/lib/helpers/helpersAI';
-import { getPhraseType } from '@/lib/helpers/helpersPhrase';
-import { contentRequestSystemMessage } from '@/lib/helpers/promptGenerators';
+import {
+  generateNestedList,
+  generateTranslation,
+  genericContentRequest,
+} from '@/lib/aiGenerators/generators_content';
+import { generateExplanation } from '@/lib/aiGenerators/generators_tutor';
+import { GenResponseType } from '@/lib/aiGenerators/types_generation';
+import { handleReturnKeyPress } from '@/lib/helpers/helpersGeneral';
 import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
-import { createClient } from '@/utils/supabase/client';
 
-import { Button } from '../ui/button';
 import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
-import NestedObject from './nested_object';
-import SaveTranslationButton from './save_translation_button';
+import DynamicResponsePanel from './dynamic_response_panel';
 import LightSuggestionList from './suggestions/light_suggestion_list';
 
 interface ContentRequestProps {
   text: string | null;
   lang: LanguagesISO639;
   userId: string | undefined;
-  phraseId?: string;
-  primaryPhraseIds?: string[];
+  phraseId: string;
+  primaryPhraseIds: string[];
   suggestions: string[];
   source: string;
 }
@@ -33,16 +31,13 @@ interface ContentRequestProps {
 const ContentRequest: React.FC<ContentRequestProps> = ({
   text,
   lang,
-  userId,
   phraseId,
   primaryPhraseIds,
   suggestions,
   source,
 }) => {
-  const supabase = createClient();
-  const pathname = usePathname();
   const { setChatOpen, setChatContext } = useChatContext();
-  const { prefLanguage } = useUserContext();
+  const { prefLanguage, userLanguage } = useUserContext();
   const arePrimaryPhrases = primaryPhraseIds && primaryPhraseIds.length > 0 ? true : false;
 
   const [genResponse, setGenResponse] = useState<GenResponseType | undefined>();
@@ -85,132 +80,98 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
       return word;
     }
   };
-  const isTranslation = setCommand(firstWord) === 'Translate' && arePrimaryPhrases;
-  const isExplanation =
+
+  const listRequested = setCommand(firstWord) === 'List' || setCommand(firstWord) === 'Extract';
+  const translationRequested = setCommand(firstWord) === 'Translate' && arePrimaryPhrases;
+  const explanationRequested =
     setCommand(firstWord) === 'Explain' ||
     setCommand(firstWord) === 'Why' ||
     setCommand(firstWord) === 'How' ||
     setCommand(firstWord) === 'Can';
+  // setCommand(firstWord) === 'Summarize';
 
-  const isList = setCommand(firstWord) === 'List' || setCommand(firstWord) === 'Extract';
-
-  const captureCommand = () => {
-    if (setCommand(firstWord)) {
-      return { request: requestText, command: setCommand(firstWord) };
-    }
-    return { request: requestText, command: '' };
+  const explanationActions = (explanation: string) => {
+    setChatContext({
+      matterText: text,
+      requestText,
+      assistantAnswer: explanation,
+    });
+    setChatOpen(true);
   };
 
   const handleRequest = async () => {
     setRequestLoading(true);
-    const { request, command } = captureCommand();
 
-    const TranslationResponseFormat = zodResponseFormat(
-      z.object({
-        input_text: z.string(),
-        input_lang: z.nativeEnum(LanguagesISO639),
-        output_text: z.string(),
-        output_lang: z.nativeEnum(LanguagesISO639),
-      }),
-      'translation'
-    );
-
-    const ExplanationResponseFormat = zodResponseFormat(
-      z.object({
-        explanation: z.string(),
-      }),
-      'explanation'
-    );
-
-    const GeneralResponseFormat = { type: 'json_object' } as gptFormatType;
-
-    const responseFormat = isTranslation
-      ? TranslationResponseFormat
-      : isExplanation
-        ? ExplanationResponseFormat
-        : GeneralResponseFormat;
-
-    const modelParams = {
-      format: responseFormat,
-      max_tokens: 1000,
-      temperature: 0.9,
-    };
-
-    let messages = [
-      {
-        role: 'system',
-        content: contentRequestSystemMessage(command, isExplanation),
-      },
-      { role: 'user', content: `text: ${text}` },
-      {
-        role: 'user',
-        content: `request: ${request} ${isTranslation ? ` (Translation instructions: if I have not yet specified which language to translate into, use ${prefLanguage}` : ''}`,
-      },
-    ];
-
-    const { data, error } = await supabase.functions.invoke('gen-text', {
-      body: {
-        userApiKey: getOpenAiKey(),
-        modelSelection: getModelSelection(),
-        modelParams: modelParams,
-        messages: messages,
-      },
-    });
-    if (error) {
+    if (!text) {
       setRequestLoading(false);
-      throw Error('Error:', error);
+      return;
     }
-    try {
-      const response = JSON.parse(data.content);
-      setGenResponse(response);
-      if (isExplanation) {
-        setChatContext({ matterText: text, requestText, assistantAnswer: response?.explanation });
-        setChatOpen(true);
+
+    if (translationRequested) {
+      try {
+        const translation = await generateTranslation({
+          subjectText: text,
+          request: requestText,
+          prefLanguage,
+        });
+        setGenResponse(translation);
+        setRequestLoading(false);
+        return;
+      } catch (error) {
+        console.error('Error generating translation:', error);
+        setRequestLoading(false);
+        return;
       }
-      setRequestLoading(false);
-    } catch (error) {
-      alert('Sorry, it looks like the model returned the wrong format. Please try again.');
-      setRequestLoading(false);
-      throw Error('Error parsing JSON:', data);
-    }
-    setRequestLoading(false);
-  };
-
-  const saveContent = async (content: string): Promise<boolean> => {
-    try {
-      await addPhrase({
-        source,
-        text: content.trim(),
-        lang,
-        type: getPhraseType(text),
-        associationId: phraseId,
-      });
-    } catch (error) {
-      throw Error(`Error saving content: ${error}`);
-    }
-    return true;
-  };
-
-  const saveTranslation = async () => {
-    if (!userId) {
-      throw Error('No user ID');
-    }
-    if (!genResponse) {
-      throw Error('No genResponse');
     }
 
-    if (arePrimaryPhrases) {
-      await addTranslation({
-        primaryPhraseIds,
-        genResponse: {
-          input_text: genResponse.input_text,
-          input_lang: genResponse.input_lang,
-          output_text: genResponse.output_text,
-          output_lang: genResponse.output_lang,
-        },
-        source,
-        revalidationPath: { path: pathname },
-      });
+    if (explanationRequested) {
+      try {
+        const explanation = await generateExplanation({
+          subjectText: text,
+          request: requestText,
+          userLanguage,
+        });
+        explanationActions(explanation.data);
+        setRequestLoading(false);
+        return;
+      } catch (error) {
+        console.error('Error generating explanation:', error);
+        setRequestLoading(false);
+        return;
+      }
+    }
+    if (listRequested) {
+      try {
+        const list = await generateNestedList({ subjectText: text, request: requestText });
+        setGenResponse(list);
+        setRequestLoading(false);
+        return;
+      } catch (error) {
+        console.error('Error generating list:', error);
+        setRequestLoading(false);
+        return;
+      }
+    } else {
+      try {
+        const resp = await genericContentRequest({
+          subjectText: text,
+          request: requestText,
+        });
+        if (resp.type === 'explanation') {
+          explanationActions(resp.data);
+          // }
+          // if (resp.type === 'translation') {
+          //   explanationActions(resp.data);
+        } else {
+          setGenResponse(resp);
+        }
+        setRequestLoading(false);
+        return;
+      } catch (error) {
+        console.error('Error generating response:', error);
+        setRequestLoading(false);
+        return;
+      }
     }
   };
 
@@ -218,13 +179,11 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
     setRequestText(suggestion);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === 'Enter') {
-      handleRequest();
-    }
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    handleReturnKeyPress({ e, callBack: handleRequest });
   };
 
-  const buttonText = isExplanation ? (
+  const buttonText = explanationRequested ? (
     <div className="flex items-center gap-2">
       <Stars /> Explain in chat
     </div>
@@ -238,16 +197,16 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
           className="w-full"
           value={requestText}
           onChange={(e) => setRequestText(e.target.value)}
+          onKeyDown={(e) => handleKeyPress(e)}
           placeholder="Make me 15 sentences using this word."
         />
         {/* {!genResponse ? ( */}
         <LoadingButton
           className={cn(
             'w-fit',
-            isExplanation && 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white '
+            explanationRequested && 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white '
           )}
           onClick={() => handleRequest()}
-          onKeyDown={(e) => handleKeyPress(e)}
           text={buttonText}
           loadingText="Requesting"
           buttonState={requestLoading ? 'loading' : 'default'}
@@ -266,28 +225,15 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
         </div>
       )}
 
-      {genResponse &&
-        (isTranslation ? (
-          <div className="mt-5 ">
-            <SaveTranslationButton
-              input_text={genResponse.input_text}
-              input_lang={genResponse.input_lang}
-              output_text={genResponse.output_text}
-              output_lang={genResponse.output_lang}
-              saveTranslation={saveTranslation}
-            />
-          </div>
-        ) : (
-          !isExplanation && (
-            <div className="mt-5">
-              <NestedObject
-                data={genResponse}
-                saveContent={saveContent}
-                command={setCommand(firstWord)}
-              />
-            </div>
-          )
-        ))}
+      {genResponse && (
+        <DynamicResponsePanel
+          primaryPhraseIds={primaryPhraseIds}
+          genResponse={genResponse}
+          lang={lang}
+          associatedPhraseId={phraseId}
+          source={source}
+        />
+      )}
     </div>
   );
 };
