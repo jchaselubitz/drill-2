@@ -1,3 +1,4 @@
+import { PhraseType } from 'kysely-codegen';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { addTranslation } from '@/lib/actions/phraseActions';
@@ -6,7 +7,6 @@ import { LanguagesISO639 } from '@/lib/lists';
 
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
-import { PhraseType } from 'kysely-codegen';
 
 interface DynamicResponsePanelProps {
   genResponse: GenResponseType;

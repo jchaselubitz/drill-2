@@ -1,3 +1,4 @@
+import { PhraseType } from 'kysely-codegen';
 import { Stars } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useChatContext } from '@/contexts/chat_window_context';
@@ -17,7 +18,6 @@ import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
 import DynamicResponsePanel from './dynamic_response_panel';
 import LightSuggestionList from './suggestions/light_suggestion_list';
-import { PhraseType } from 'kysely-codegen';
 
 interface ContentRequestProps {
   text: string | null;

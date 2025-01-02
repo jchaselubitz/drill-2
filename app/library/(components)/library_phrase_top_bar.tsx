@@ -24,7 +24,6 @@ import {
   getPosTypeName,
   PhraseListType,
   PhraseTypes,
-  PosListType,
   PosTypes,
 } from '@/lib/lists';
 

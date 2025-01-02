@@ -1,4 +1,5 @@
 import { PhraseWithAssociations } from 'kysely-codegen';
+import { useWindowSize } from 'react-use';
 import TtsButton from '@/components/ai_elements/tts_button';
 import PhraseCardDetails from '@/components/phrasesAndRecordings/phrase_card_details';
 import TagList from '@/components/tags/tag_list';
@@ -7,7 +8,6 @@ import { capitalizeFirstLetter } from '@/lib/helpers/helpersPhrase';
 import { getLangIcon } from '@/lib/lists';
 
 import LibraryPhraseTopBar from './library_phrase_top_bar';
-import { useWindowSize } from 'react-use';
 
 interface LibraryPhrasePanelProps {
   phrase: PhraseWithAssociations | null;
