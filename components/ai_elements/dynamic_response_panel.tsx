@@ -6,6 +6,7 @@ import { LanguagesISO639 } from '@/lib/lists';
 
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
+import { PhraseType } from 'kysely-codegen';
 
 interface DynamicResponsePanelProps {
   genResponse: GenResponseType;
@@ -13,6 +14,7 @@ interface DynamicResponsePanelProps {
   lang: LanguagesISO639;
   primaryPhraseIds: string[];
   source: string | undefined;
+  phraseType?: PhraseType;
 }
 
 const DynamicResponsePanel: React.FC<DynamicResponsePanelProps> = ({
@@ -21,23 +23,22 @@ const DynamicResponsePanel: React.FC<DynamicResponsePanelProps> = ({
   lang,
   associatedPhraseId,
   source,
+  phraseType,
 }) => {
   const pathname = usePathname();
-  const arePrimaryPhrases = primaryPhraseIds && primaryPhraseIds.length > 0 ? true : false;
 
   const saveTranslation = async () => {
     if (!genResponse) {
       throw Error('No genResponse');
     }
 
-    if (arePrimaryPhrases) {
-      await addTranslation({
-        primaryPhraseIds,
-        genResponse: genResponse.data as TranslationResponseType,
-        source,
-        revalidationPath: { path: pathname },
-      });
-    }
+    await addTranslation({
+      primaryPhraseIds,
+      genResponse: genResponse.data as TranslationResponseType,
+      source,
+      phraseType,
+      revalidationPath: { path: pathname },
+    });
   };
 
   return genResponse.type === 'translation' ? (

@@ -17,12 +17,14 @@ import { LoadingButton } from '../ui/button-loading';
 import { Textarea } from '../ui/textarea';
 import DynamicResponsePanel from './dynamic_response_panel';
 import LightSuggestionList from './suggestions/light_suggestion_list';
+import { PhraseType } from 'kysely-codegen';
 
 interface ContentRequestProps {
   text: string | null;
   lang: LanguagesISO639;
   userId: string | undefined;
   phraseId: string;
+  phraseType?: PhraseType;
   primaryPhraseIds: string[];
   suggestions: string[];
   source: string;
@@ -32,6 +34,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
   text,
   lang,
   phraseId,
+  phraseType,
   primaryPhraseIds,
   suggestions,
   source,
@@ -232,6 +235,7 @@ const ContentRequest: React.FC<ContentRequestProps> = ({
           lang={lang}
           associatedPhraseId={phraseId}
           source={source}
+          phraseType={phraseType}
         />
       )}
     </div>

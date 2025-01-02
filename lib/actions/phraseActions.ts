@@ -395,6 +395,7 @@ type AddTranslationProps = {
   genResponse: TranslationResponseType;
   source: string | undefined;
   revalidationPath?: RevalidationPath;
+  phraseType?: PhraseType;
 };
 
 export const addTranslation = async ({
@@ -402,6 +403,7 @@ export const addTranslation = async ({
   genResponse,
   source,
   revalidationPath,
+  phraseType,
 }: AddTranslationProps) => {
   const supabase = createClient();
   const {
@@ -413,62 +415,74 @@ export const addTranslation = async ({
     return [];
   }
 
-  if (primaryPhraseIds && primaryPhraseIds.length > 0) {
-    const primaryPhraseId = primaryPhraseIds[0];
-    await db.transaction().execute(async (trx) => {
-      const secondaryPhrase = await trx
-        .insertInto('phrase')
-        .values({
-          text: genResponse.output_text,
-          lang: genResponse.output_lang,
-          userId,
-          source,
-        } as NewPhrase)
-        .returning('id')
-        .executeTakeFirstOrThrow();
+  const inputText = genResponse.input_text.split(' ');
+  const inputType = inputText.length < 1 ? 'word' : 'phrase';
+  const outputText = genResponse.output_text.split(' ');
+  const outputType = phraseType === 'phrase' && outputText.length < 1 ? 'word' : phraseType;
 
-      return await trx
-        .insertInto('translation')
-        .values({
-          phrasePrimaryId: primaryPhraseId,
-          phraseSecondaryId: secondaryPhrase.id,
-          userId,
-        } as NewTranslation)
-        .returning('id')
-        .executeTakeFirstOrThrow();
-    });
-  } else {
-    await db.transaction().execute(async (trx) => {
-      const primaryPhrase = await trx
-        .insertInto('phrase')
-        .values({
-          text: genResponse.input_text,
-          lang: genResponse.input_lang,
-          userId,
-          source,
-        } as NewPhrase)
-        .returning('id')
-        .executeTakeFirstOrThrow();
-      const secondaryPhrase = await trx
-        .insertInto('phrase')
-        .values({
-          text: genResponse.output_text,
-          lang: genResponse.output_lang,
-          userId,
-          source,
-        } as NewPhrase)
-        .returning('id')
-        .executeTakeFirstOrThrow();
-      return await trx
-        .insertInto('translation')
-        .values({
-          phrasePrimaryId: primaryPhrase.id,
-          phraseSecondaryId: secondaryPhrase.id,
-          userId,
-        } as NewTranslation)
-        .returning('id')
-        .executeTakeFirstOrThrow();
-    });
+  try {
+    if (primaryPhraseIds && primaryPhraseIds.length > 0) {
+      const primaryPhraseId = primaryPhraseIds[0];
+      await db.transaction().execute(async (trx) => {
+        const secondaryPhrase = await trx
+          .insertInto('phrase')
+          .values({
+            text: genResponse.output_text,
+            lang: genResponse.output_lang,
+            userId,
+            source,
+            type: outputType,
+          } as NewPhrase)
+          .returning('id')
+          .executeTakeFirstOrThrow();
+
+        return await trx
+          .insertInto('translation')
+          .values({
+            phrasePrimaryId: primaryPhraseId,
+            phraseSecondaryId: secondaryPhrase.id,
+            userId,
+          } as NewTranslation)
+          .returning('id')
+          .executeTakeFirstOrThrow();
+      });
+    } else {
+      await db.transaction().execute(async (trx) => {
+        const primaryPhrase = await trx
+          .insertInto('phrase')
+          .values({
+            text: genResponse.input_text,
+            lang: genResponse.input_lang,
+            userId,
+            source,
+            type: inputType,
+          } as NewPhrase)
+          .returning('id')
+          .executeTakeFirstOrThrow();
+        const secondaryPhrase = await trx
+          .insertInto('phrase')
+          .values({
+            text: genResponse.output_text,
+            lang: genResponse.output_lang,
+            userId,
+            source,
+            type: outputType,
+          } as NewPhrase)
+          .returning('id')
+          .executeTakeFirstOrThrow();
+        return await trx
+          .insertInto('translation')
+          .values({
+            phrasePrimaryId: primaryPhrase.id,
+            phraseSecondaryId: secondaryPhrase.id,
+            userId,
+          } as NewTranslation)
+          .returning('id')
+          .executeTakeFirstOrThrow();
+      });
+    }
+  } catch (error) {
+    throw Error(`Failed to add translation : ${error}`);
   }
   revalidationPath
     ? revalidatePath(revalidationPath.path, revalidationPath.type)

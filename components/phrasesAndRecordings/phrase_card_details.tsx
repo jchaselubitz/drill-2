@@ -88,6 +88,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateT
           lang={lang}
           userId={userId}
           phraseId={phrase.id}
+          phraseType={phrase.type}
           primaryPhraseIds={[phrase.id]}
           source="phrase"
           suggestions={getContentSuggestions({

@@ -24,7 +24,6 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Textarea } from '../ui/textarea';
-import DynamicResponsePanel from './dynamic_response_panel';
 import Message from './message';
 
 const PhraseChat: React.FC = () => {
