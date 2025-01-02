@@ -1,6 +1,14 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ChatMessage } from '@/lib/aiGenerators/types_generation';
 import { getLangName, LanguagesISO639 } from '@/lib/lists';
 
@@ -59,34 +67,39 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
     return batch;
   }, [chatContext]);
 
+  const baseSystemMessage = useCallback((addendum?: string) => {
+    return {
+      role: 'system',
+      content: `Return a JSON. The content of every response should include include two key/value pairs: {type: "message" | "translation" | "list" , data: <contentData>}. The software consuming your response will use the type to determine how to present the data. 
+  
+  In most cases, the type should be "message". In this case, the contentData should be a string. 
+  
+  If the user asks for a translation, the type should be "translation" and the contentData should include {"input_text": <text the user is asking you to translate>,  "input_lang": <the ISO 639-1 code of the representing the language of the input_text>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.,
+
+  If the best answer to the user's request is list of values, the type should be "list", and the content contentData should be a list of either strings, or nested objects containing strings. If a value is an object, the front-end component calls itself again with that object in a nested fashion until it reaches a string. If the value is a string, the component will present it to the user as a string. the goal is to organize the data based on the user's request. examples: { "content": ['phrase1', 'phrase2', phrase3'] } OR 
+  , {"content": { 'verbs': ['phrase1', 'phrase2', phrase3'], 'adjectives': ['phrase4', 'phrase5', phrase6'], 'nouns': ['phrase7', 'phrase8', phrase9'] }}. 
+
+  ${addendum ?? ''}`,
+    };
+  }, []);
+
   useEffect(() => {
     if (!chatContext) {
       return;
     }
-
-    const baseSystemMessage = {
-      role: 'system',
-      content: `Return a JSON. The content of every response should include include two key/value pairs: {type: "message" | "translation" | "list" , data: <contentData>}. The software consuming your response will use the type to determine how to present the data. 
-    
-    In most cases, the type should be "message". In this case, the contentData should be a string. 
-    
-    If the user asks for a translation, the type should be "translation" and the contentData should include {"input_text": <text the user is asking you to translate>,  "input_lang": <the ISO 639-1 code of the representing the language of the input_text>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.,
-
-    If the best answer to the user's request is list of values, the type should be "list", and the content contentData should be a list of either strings, or nested objects containing strings. If a value is an object, the front-end component calls itself again with that object in a nested fashion until it reaches a string. If the value is a string, the component will present it to the user as a string. the goal is to organize the data based on the user's request. examples: { "content": ['phrase1', 'phrase2', phrase3'] } OR 
-    , {"content": { 'verbs': ['phrase1', 'phrase2', phrase3'], 'adjectives': ['phrase4', 'phrase5', phrase6'], 'nouns': ['phrase7', 'phrase8', phrase9'] }}. 
-  
-    ${chatContext?.systemMessage ?? ''}
-    `,
-    };
 
     setChatMessages((prevState) => {
       const existingMessages = prevState ?? [];
       const filteredSystemMessages = existingMessages.filter(
         (message) => message.role !== 'system'
       );
-      return [baseSystemMessage, ...filteredSystemMessages, ...createNewMessageBatch];
+      return [
+        baseSystemMessage(chatContext?.systemMessage),
+        ...filteredSystemMessages,
+        ...createNewMessageBatch,
+      ];
     });
-  }, [chatContext, setChatMessages, createNewMessageBatch]);
+  }, [chatContext, setChatMessages, createNewMessageBatch, baseSystemMessage]);
 
   useEffect(() => {
     if (!currentLang) {
@@ -97,27 +110,14 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
       content: `Questions about ${getLangName(currentLang)}`,
     };
 
-    const baseSystemMessage = {
-      role: 'system',
-      content: `Return a JSON. The content of every response should include include two key/value pairs: {type: "message" | "translation" | "list" , data: <contentData>}. The software consuming your response will use the type to determine how to present the data. 
-    
-    In most cases, the type should be "message". In this case, the contentData should be a string. 
-    
-    If the user asks for a translation, the type should be "translation" and the contentData should include {"input_text": <text the user is asking you to translate>,  "input_lang": <the ISO 639-1 code of the representing the language of the input_text>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.,
-
-    If the best answer to the user's request is list of values, the type should be "list", and the content contentData should be a list of either strings, or nested objects containing strings. If a value is an object, the front-end component calls itself again with that object in a nested fashion until it reaches a string. If the value is a string, the component will present it to the user as a string. the goal is to organize the data based on the user's request. examples: { "content": ['phrase1', 'phrase2', phrase3'] } OR 
-    , {"content": { 'verbs': ['phrase1', 'phrase2', phrase3'], 'adjectives': ['phrase4', 'phrase5', phrase6'], 'nouns': ['phrase7', 'phrase8', phrase9'] }}. 
-  
-    `,
-    };
     setChatMessages((prevState) => {
       const existingMessages = prevState ?? [];
       const filteredSystemMessages = existingMessages.filter(
         (message) => message.role !== 'system'
       );
-      return [baseSystemMessage, ...filteredSystemMessages, langChatPrimer];
+      return [baseSystemMessage(), ...filteredSystemMessages, langChatPrimer];
     });
-  }, [setChatMessages, currentLang]);
+  }, [setChatMessages, currentLang, baseSystemMessage]);
 
   const endSession = () => {
     setChatOpen(false);

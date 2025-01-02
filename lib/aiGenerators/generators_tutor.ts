@@ -103,13 +103,13 @@ export const reviewUserParagraphSubmission = async ({
     {
       role: 'system',
       content:
-        'The software will submit a paragraph of text written by the user. Return as a JSON object in the following format {"correction": <a version of the user\'s submission with correct vocab and grammar>, "feedback": < bullet point feedback on the user\'s paragraph>}. Use markdown where possible to indicate changes in your correction and to provide feedback.',
+        'The software will submit a paragraph of text written by the user. Return as a JSON object in the following format {"correction": <a version of the user\'s submission with correct vocab and grammar>, "feedback": < bullet point feedback on the user\'s paragraph>}. Use Markdown to indicate changes in your correction and to provide feedback.',
     },
 
     {
       role: 'user',
       content:
-        'Review the paragraph I wrote and repeat it back to me, but with correct grammar. Try to keep it as close the original in language and structure as possible. Explain your changes as feedback as bullet points where possible.',
+        'Review the paragraph I wrote and repeat it back to me, but with correct grammar. Try to keep it as close the original in language and structure as possible. Explain your changes as feedback as bullet points. When appropriate, state the grammatical rule that necessitates the change.',
     },
     {
       role: 'user',

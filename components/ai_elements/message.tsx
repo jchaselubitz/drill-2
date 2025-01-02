@@ -15,22 +15,24 @@ const checkJson = (str: string) => {
   return true;
 };
 
+type EnrichedContent = {
+  type: string;
+  data: any;
+};
+
 interface MessageProps {
   message: ChatMessage;
   lang: LanguagesISO639;
 }
 
 const Message: React.FC<MessageProps> = ({ message, lang }) => {
-  const { role } = message;
+  const role = message.role;
 
-  const content =
-    role === 'assistant'
-      ? checkJson(message.content)
-        ? JSON.parse(message.content)
-        : message.content
-      : message.content;
+  const normalizedContent = { type: 'message', data: message.content };
 
-  const assistantMessage = role === 'assistant' && content.data ? content.data : content;
+  const content = (
+    checkJson(message.content) ? JSON.parse(message.content) : normalizedContent
+  ) as EnrichedContent;
 
   return (
     <div
@@ -45,9 +47,9 @@ const Message: React.FC<MessageProps> = ({ message, lang }) => {
           'bg-slate-200 ml-8': role !== 'assistant',
         })}
       >
-        {role === 'user' ? (
-          <Markdown className="max-w-full prose">{content as string}</Markdown>
-        ) : content.type === 'translate' || content.type === 'list' ? (
+        {role === 'user' || content.type === 'message' ? (
+          <Markdown className="max-w-full prose">{content.data}</Markdown>
+        ) : (
           <div className="w-full">
             <DynamicResponsePanel
               genResponse={content}
@@ -56,8 +58,6 @@ const Message: React.FC<MessageProps> = ({ message, lang }) => {
               source={'chat'}
             />
           </div>
-        ) : (
-          <Markdown className="max-w-full prose">{assistantMessage}</Markdown>
         )}
       </div>
     </div>
