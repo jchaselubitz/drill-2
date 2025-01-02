@@ -354,6 +354,62 @@ export const updatePhraseNote = async ({ phraseId, note }: { phraseId: string; n
   revalidatePath('/library', 'page');
 };
 
+export const updatePhraseType = async ({
+  phraseId,
+  type,
+}: {
+  phraseId: string;
+  type: PhraseType;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
+  try {
+    await db
+      .updateTable('phrase')
+      .set({ type })
+      .where('id', '=', phraseId)
+      .where('userId', '=', userId)
+      .execute();
+  } catch (error) {
+    throw Error(`Failed to update type: ${error}`);
+  }
+  revalidatePath('/library', 'page');
+};
+
+export const updatePhrasePartSpeech = async ({
+  phraseId,
+  partSpeech,
+}: {
+  phraseId: string;
+  partSpeech: string;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
+  try {
+    await db
+      .updateTable('phrase')
+      .set({ partSpeech })
+      .where('id', '=', phraseId)
+      .where('userId', '=', userId)
+      .execute();
+  } catch (error) {
+    throw Error(`Failed to update part of speech: ${error}`);
+  }
+  revalidatePath('/library', 'page');
+};
+
 export const togglePhraseFavorite = async ({
   phraseId,
   isFavorite,

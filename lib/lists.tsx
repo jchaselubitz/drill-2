@@ -121,6 +121,32 @@ export const getPhraseTypeIcon = (phraseType: string, size?: number) => {
   return icon;
 };
 
+export type PosType = 'noun' | 'verb' | 'adjective';
+
+export type PosListType = {
+  name: string;
+  value: string;
+  icon: LucideIcon;
+  color: string;
+};
+export const PosTypes = [
+  { name: 'Noun', value: 'noun' as PosType, icon: 'N', color: 'blue' },
+  { name: 'Verb', value: 'verb' as PosType, icon: 'V', color: 'black' },
+  { name: 'Adjective', value: 'adjective' as PosType, icon: 'A', color: 'green' },
+];
+
+export const getPosTypeName = (posType: string) => {
+  return PosTypes.find((type) => type.value === posType)?.name ?? '';
+};
+
+export const getPosTypeValue = (posTypeName: string) => {
+  return PosTypes.find((type) => type.name === posTypeName)?.value ?? '';
+};
+
+export const getPosTypeIcon = (posType: string, size?: number) => {
+  return PosTypes.find((type) => type.value === posType)?.icon ?? '';
+};
+
 export const ContentSuggestions = [
   `Computer science and AI`,
   `Adjective verb agreement`,
