@@ -1,14 +1,30 @@
+'use client';
+
 import { BookA, Home } from 'lucide-react';
-import React from 'react';
-import { SidebarMenuItem } from '@/components/ui/sidebar';
+import React, { useEffect } from 'react';
+import LanguageMenu from '@/app/(components)/language_selector';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
 import { LanguagesISO639 } from '@/lib/lists';
 
-import LanguageMenu from './language_selector';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
 
-const LanguageChooser: React.FC = () => {
+const LanguageChoiceModal: React.FC = () => {
   const { userLanguage, prefLanguage } = useUserContext();
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  useEffect(() => {
+    if (!userLanguage || !prefLanguage) {
+      setIsOpen(true);
+    }
+  }, [userLanguage, prefLanguage]);
 
   const handleSetUserLanguages = ({ lang, name }: { lang: LanguagesISO639; name: string }) =>
     setUserLanguages({
@@ -19,8 +35,21 @@ const LanguageChooser: React.FC = () => {
     });
 
   return (
-    <>
-      <SidebarMenuItem>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        setIsOpen(false);
+      }}
+    >
+      <DialogTrigger>Open</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Set your languages</DialogTitle>
+          <DialogDescription>
+            Choose your native language and the language you are primarily interested in studying.
+          </DialogDescription>
+        </DialogHeader>
+
         <LanguageMenu
           props={{
             icon: Home,
@@ -30,8 +59,7 @@ const LanguageChooser: React.FC = () => {
           }}
           onClick={handleSetUserLanguages}
         />
-      </SidebarMenuItem>
-      <SidebarMenuItem>
+
         <LanguageMenu
           props={{
             icon: BookA,
@@ -41,9 +69,9 @@ const LanguageChooser: React.FC = () => {
           }}
           onClick={handleSetUserLanguages}
         />
-      </SidebarMenuItem>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default LanguageChooser;
+export default LanguageChoiceModal;

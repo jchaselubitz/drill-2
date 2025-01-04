@@ -20,10 +20,9 @@ import UserMenu from './user-menu';
 export type AppSidebarProps = {
   user: User;
   pages: any[];
-  setUserLanguages: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
 };
 
-export function AppSidebar({ user, pages, setUserLanguages }: AppSidebarProps) {
+export function AppSidebar({ user, pages }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader />
@@ -34,7 +33,7 @@ export function AppSidebar({ user, pages, setUserLanguages }: AppSidebarProps) {
       <SidebarContent></SidebarContent>
       <SidebarFooter>
         <SidebarMenu className="px-2 gap-1 my-2">
-          <LanguageChooser setUserLanguages={setUserLanguages} />
+          <LanguageChooser />
         </SidebarMenu>
         <SidebarMenu className="">
           <SidebarMenuItem>

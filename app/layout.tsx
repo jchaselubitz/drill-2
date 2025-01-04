@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import PhraseChat from '@/components/ai_elements/phrase_chat';
+import LanguageChoiceModal from '@/components/language_choice_modal';
 import { DesktopChatButton } from '@/components/specialButtons/chat_button';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
@@ -96,6 +97,7 @@ export default async function RootLayout({
               </SidebarProvider>
               <CreateDialog />
             </CreateModalProvider>
+            <LanguageChoiceModal />
           </UserContextProvider>
         ) : (
           <>{children}</>
