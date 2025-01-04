@@ -67,7 +67,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
         {!!setUserLanguages && (
           <>
             <SidebarMenu className="px-2 gap-1 my-4">
-              <LanguageChooser setUserLanguages={setUserLanguages} />
+              <LanguageChooser />
             </SidebarMenu>
             <DropdownMenuSeparator />
           </>
