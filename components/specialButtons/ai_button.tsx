@@ -1,19 +1,65 @@
 import { Stars } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+import { LoadingButton, LoadingButtonProps } from '../ui/button-loading';
+
 interface AIButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  onClick: () => void;
   children?: React.ReactNode;
   className?: string;
+  withStars?: boolean;
 }
 
-export function AIButton({ onClick, children = 'Discuss in chat', className = '' }: AIButtonProps) {
+export const aiButtonClass =
+  'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-cyan-600 hover:to-blue-600 hover:bg-gradient-to-r text-white w-fit flex gap-2';
+export function AIButton({
+  onClick,
+  children = 'Discuss in chat',
+  className = '',
+  withStars = true,
+}: AIButtonProps) {
   return (
-    <Button
-      className={`bg-gradient-to-r from-blue-600 to-cyan-600 text-white w-fit flex gap-2 ${className}`}
-      onClick={onClick}
-    >
-      <Stars /> {children}
+    <Button className={`${aiButtonClass} ${className}`} onClick={onClick}>
+      {withStars && <Stars />} {children}
     </Button>
+  );
+}
+
+type AILoadingButtonProps = AIButtonProps & LoadingButtonProps;
+
+export function AILoadingButton({
+  onClick,
+  text,
+  loadingText,
+  successText,
+  errorText,
+  className = '',
+  withStars = false,
+  buttonState,
+}: AILoadingButtonProps) {
+  return (
+    <LoadingButton
+      onClick={onClick}
+      className={`${aiButtonClass} ${className}`}
+      buttonState={buttonState}
+      text={
+        <>
+          {withStars && <Stars />}
+          {text}{' '}
+        </>
+      }
+      loadingText={
+        <>
+          {withStars && <Stars />}
+          {loadingText}{' '}
+        </>
+      }
+      successText={
+        <>
+          {withStars && <Stars />}
+          {successText}{' '}
+        </>
+      }
+      errorText={errorText}
+    />
   );
 }

@@ -1,6 +1,6 @@
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
-import { LanguagesISO639 } from '../lists';
+import { LanguagesISO639, PartSpeechType } from '../lists';
 import React from 'react';
 
 export type GenResponseType = {
@@ -11,7 +11,8 @@ export type GenResponseType = {
 export type HistoryVocabType = {
   text: string;
   difficulty: number;
-  partSpeech: string;
+  partSpeech: string | null | undefined;
+  isWord: boolean;
   id?: string;
 };
 export type ExistingHistoryType = {
@@ -48,7 +49,12 @@ export const CorrectionStructure = zodResponseFormat(
 export const HistoryStructure = zodResponseFormat(
   z.object({
     vocabulary: z.array(
-      z.object({ text: z.string(), difficulty: z.number(), partSpeech: z.string() })
+      z.object({
+        text: z.string(),
+        difficulty: z.number(),
+        partSpeech: z.nativeEnum(PartSpeechType).optional(),
+        isWord: z.boolean(),
+      })
     ),
     insights: z.string(),
     concepts: z.array(z.string()),

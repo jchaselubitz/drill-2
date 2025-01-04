@@ -2,7 +2,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import LightSuggestionList from '@/components/ai_elements/suggestions/light_suggestion_list';
 import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/ui/button-loading';
@@ -62,7 +62,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
       return;
     }
     setIsLoading(true);
-
+    setOptionListObject(null);
     ///===============
 
     const phrasesArray = await handleGeneratePhrases({

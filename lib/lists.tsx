@@ -73,6 +73,14 @@ export const Languages = [
   { name: 'Hindi', value: LanguagesISO639.Hindi, icon: '🇮🇳' },
   { name: 'Indonesian', value: LanguagesISO639.Indonesian, icon: '🇮🇩' },
   { name: 'Korean', value: LanguagesISO639.Korean, icon: '🇰🇷' },
+  { name: 'Malay', value: LanguagesISO639.Malay, icon: '🇲🇾' },
+  { name: 'Vietnamese', value: LanguagesISO639.Vietnamese, icon: '🇻🇳' },
+  { name: 'Chinese', value: LanguagesISO639.Chinese, icon: '🇨🇳' },
+  { name: 'Japanese', value: LanguagesISO639.Japanese, icon: '🇯🇵' },
+  { name: 'Urdu', value: LanguagesISO639.Urdu, icon: '🇵🇰' },
+  { name: 'Bengali', value: LanguagesISO639.Bengali, icon: '🇧🇩' },
+  { name: 'Russian', value: LanguagesISO639.Russian, icon: '🇷🇺' },
+  { name: 'Arabic', value: LanguagesISO639.Arabic, icon: '🇸🇦' },
 ].sort((a, b) => a.name.localeCompare(b.name));
 
 export const getLangName = (langCode: string | undefined | null) => {
@@ -121,7 +129,15 @@ export const getPhraseTypeIcon = (phraseType: string, size?: number) => {
   return icon;
 };
 
-export type PosType = 'noun' | 'verb' | 'adjective';
+export enum PartSpeechType {
+  Noun = 'noun',
+  Verb = 'verb',
+  Adjective = 'adjective',
+  Adverb = 'adverb',
+  Pronoun = 'pronoun',
+  Preposition = 'preposition',
+  Phrase = 'phrase',
+}
 
 export type PosListType = {
   name: string;
@@ -129,22 +145,26 @@ export type PosListType = {
   icon: LucideIcon;
   color: string;
 };
-export const PosTypes = [
-  { name: 'Noun', value: 'noun' as PosType, icon: 'N', color: 'blue' },
-  { name: 'Verb', value: 'verb' as PosType, icon: 'V', color: 'black' },
-  { name: 'Adjective', value: 'adjective' as PosType, icon: 'A', color: 'green' },
+export const PartSpeechTypes = [
+  { name: 'Noun', value: 'noun' as PartSpeechType, icon: 'N', color: 'blue' },
+  { name: 'Verb', value: 'verb' as PartSpeechType, icon: 'V', color: 'black' },
+  { name: 'Adjective', value: 'adjective' as PartSpeechType, icon: 'Adj', color: 'green' },
+  { name: 'Adverb', value: 'adverb' as PartSpeechType, icon: 'Adv', color: 'green' },
+  { name: 'Pronoun', value: 'pronoun' as PartSpeechType, icon: 'Pr', color: 'red' },
+  { name: 'Preposition', value: 'preposition' as PartSpeechType, icon: 'P', color: 'red' },
+  { name: 'Phrase', value: 'phrase' as PartSpeechType, icon: 'Ph', color: 'red' },
 ];
 
-export const getPosTypeName = (posType: string) => {
-  return PosTypes.find((type) => type.value === posType)?.name ?? '';
+export const getPartSpeechTypeName = (PartSpeechType: string) => {
+  return PartSpeechTypes.find((type) => type.value === PartSpeechType)?.name ?? '';
 };
 
-export const getPosTypeValue = (posTypeName: string) => {
-  return PosTypes.find((type) => type.name === posTypeName)?.value ?? '';
+export const getPartSpeechTypeValue = (PartSpeechTypeName: string) => {
+  return PartSpeechTypes.find((type) => type.name === PartSpeechTypeName)?.value ?? '';
 };
 
-export const getPosTypeIcon = (posType: string, size?: number) => {
-  return PosTypes.find((type) => type.value === posType)?.icon ?? '';
+export const getPartSpeechTypeIcon = (PartSpeechType: string, size?: number) => {
+  return PartSpeechTypes.find((type) => type.value === PartSpeechType)?.icon ?? '';
 };
 
 export const ContentSuggestions = [

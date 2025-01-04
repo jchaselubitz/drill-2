@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Button, buttonVariants } from './button';
 
 export type ButtonLoadingState = 'default' | 'disabled' | 'loading' | 'success' | 'error';
-export interface ButtonProps
+export interface LoadingButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
@@ -16,7 +16,7 @@ export interface ButtonProps
   errorText?: string;
 }
 
-const LoadingButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
   (
     {
       className,

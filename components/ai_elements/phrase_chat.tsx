@@ -96,11 +96,11 @@ const PhraseChat: React.FC = () => {
     setChatOpen(false);
     if (!messages) return;
     if (!learningLang) return;
-    try {
-      await processHistory({ messages, existingHistory, learningLang });
-    } catch (error) {
-      console.error('Error adding history:', error);
-    }
+    // try {
+    //   await processHistory({ messages, existingHistory, learningLang });
+    // } catch (error) {
+    //   console.error('Error adding history:', error);
+    // }
     onEndSession && onEndSession();
     setChatContext(undefined);
     setMessages([]);

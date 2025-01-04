@@ -14,3 +14,7 @@ export const getPhraseType = (phrase: string | null): PhraseType => {
 export const capitalizeFirstLetter = (phrase: string): string => {
   return phrase[0].toUpperCase() + phrase.slice(1);
 };
+
+export const removeMarkdownNotation = (phrase: string): string => {
+  return phrase.replace(/[*_`~]/g, '').trim();
+};

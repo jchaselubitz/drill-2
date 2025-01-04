@@ -5,6 +5,7 @@ import { RefreshCw, Stars } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import GrammarCorrectionForm from '@/components/ai_elements/grammar_correction_form';
 import GrammarCorrectionItem from '@/components/ai_elements/grammar_correction_item';
+import { AILoadingButton } from '@/components/specialButtons/ai_button';
 import {
   Accordion,
   AccordionContent,
@@ -20,6 +21,7 @@ import {
   generateTutorPrompt,
   ReviewUserParagraphSubmissionResponse,
 } from '@/lib/aiGenerators/generators_tutor';
+import { removeMarkdownNotation } from '@/lib/helpers/helpersPhrase';
 import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
@@ -116,7 +118,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
         <div className="flex justify-end gap-2 mt-2">
           {!!prompt && (
             <>
-              <LoadingButton
+              <AILoadingButton
                 onClick={() => handleChangePromptLength('shorter')}
                 className="w-fit bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg "
                 buttonState={shortenButtonState}
@@ -125,7 +127,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
                 successText={'Shorter'}
                 errorText="Something went wrong"
               />
-              <LoadingButton
+              <AILoadingButton
                 onClick={() => handleChangePromptLength('longer')}
                 className="w-fit bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg 0"
                 buttonState={lengthenButtonState}
@@ -136,7 +138,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
               />
             </>
           )}
-          <LoadingButton
+          <AILoadingButton
             onClick={handleInitiateLesson}
             className={cn(
               'w-fit bg-gradient-to-r from-blue-600 to-cyan-600',
@@ -180,7 +182,8 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
                 >
                   <AccordionTrigger className="flex w-full border-b-0 hover:no-underline ">
                     <span className="text-left line-clamp-1 ">
-                      {corrections.length - index}. {existingCorrection.response.correction}
+                      {corrections.length - index}.{' '}
+                      {removeMarkdownNotation(existingCorrection.response.correction)}
                     </span>
                   </AccordionTrigger>
                   <AccordionContent>

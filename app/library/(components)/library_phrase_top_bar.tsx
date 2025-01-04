@@ -18,13 +18,13 @@ import {
 } from '@/lib/actions/phraseActions';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 import {
+  getPartSpeechTypeIcon,
+  getPartSpeechTypeName,
   getPhraseTypeIcon,
   getPhraseTypeName,
-  getPosTypeIcon,
-  getPosTypeName,
+  PartSpeechTypes,
   PhraseListType,
   PhraseTypes,
-  PosTypes,
 } from '@/lib/lists';
 
 type LibraryPhraseTopBarProps = {
@@ -119,11 +119,11 @@ const LibraryPhraseTopBar: React.FC<LibraryPhraseTopBarProps> = ({ phrase, userT
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              {!phrase.partSpeech ? 'Pos' : getPosTypeIcon(phrase.partSpeech)}
+              {!phrase.partSpeech ? 'Pos' : getPartSpeechTypeIcon(phrase.partSpeech)}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {PosTypes.map((type) => {
+            {PartSpeechTypes.map((type) => {
               return (
                 <DropdownMenuCheckboxItem
                   key={type.value}
@@ -131,8 +131,8 @@ const LibraryPhraseTopBar: React.FC<LibraryPhraseTopBarProps> = ({ phrase, userT
                   checked={phrase.partSpeech === type.value}
                   onCheckedChange={() => handleSetPos(type.value)}
                 >
-                  {getPosTypeName(type.value)}
-                  {/* {type.value && getPosTypeIcon(type.value, 18)} */}
+                  {getPartSpeechTypeName(type.value)}
+                  {/* {type.value && getPartSpeechTypeIcon(type.value, 18)} */}
                 </DropdownMenuCheckboxItem>
               );
             })}

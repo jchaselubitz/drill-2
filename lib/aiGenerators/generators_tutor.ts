@@ -108,8 +108,7 @@ export const reviewUserParagraphSubmission = async ({
 
     {
       role: 'user',
-      content:
-        'Review the paragraph I wrote and repeat it back to me, but with correct grammar. Try to keep it as close the original in language and structure as possible. Explain your changes as feedback as bullet points. When appropriate, state the grammatical rule that necessitates the change.',
+      content: `Review the paragraph I wrote and repeat it back to me, but with correct grammar, using Markdown to indicate changes. Try to keep it as close the original in language and structure as possible so I can learn from my mistakes. Explain your feedback as bullet points. I want to understand the language's specific grammar rules, so instead of saying something is "correct" or "proper", explain the rule that makes it so.`,
     },
     {
       role: 'user',
@@ -121,8 +120,8 @@ export const reviewUserParagraphSubmission = async ({
 
   const modelParams = {
     format: CorrectionStructure,
-    max_tokens: 1000,
-    temperature: 0.6,
+    max_tokens: 2000,
+    temperature: 0.7,
   };
   const { data, error } = await supabase.functions.invoke('gen-text', {
     body: {

@@ -3,13 +3,19 @@
 import { Stars } from 'lucide-react';
 import React from 'react';
 import { useChatContext } from '@/contexts/chat_window_context';
+import { cn } from '@/lib/utils';
+
+import { aiButtonClass } from './ai_button';
 
 const ChatButton: React.FC = ({ isMobile }: { isMobile?: boolean }) => {
   const { setChatOpen } = useChatContext();
 
   return (
     <button
-      className="z-40 flex gap-2 bg-gradient-to-r p-3 md:h-fit h-14 w-14 md:w-fit rounded-full md:rounded-md from-blue-600 to-cyan-600 text-white font-semibold items-center justify-center"
+      className={cn(
+        'z-40 flex gap-2 p-3 md:h-fit h-14 w-14 md:w-fit rounded-full md:rounded-md  font-semibold items-center justify-center',
+        aiButtonClass
+      )}
       onClick={() => setChatOpen(true)}
     >
       <Stars /> <span className="hidden md:flex">Chat</span>

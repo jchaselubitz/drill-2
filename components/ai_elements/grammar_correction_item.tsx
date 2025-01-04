@@ -4,9 +4,12 @@ import Markdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { useChatContext } from '@/contexts/chat_window_context';
+import { removeMarkdownNotation } from '@/lib/helpers/helpersPhrase';
 import { LanguagesISO639 } from '@/lib/lists';
 
+import { AIButton } from '../specialButtons/ai_button';
 import { Button } from '../ui/button';
+import NestedObject from './nested_object';
 
 interface GrammarCorrectionItemProps {
   correction: BaseCorrection;
@@ -18,6 +21,7 @@ const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({
   learningLang,
 }) => {
   const { setChatContext, setChatOpen, setCurrentLang } = useChatContext();
+  const [capturedSentences, setCapturedSentences] = React.useState<string[]>([]);
   const correctionText = correction.response.correction;
   const feedback = correction.response.feedback.toString();
 
@@ -31,6 +35,19 @@ const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({
       assistantAnswer: `**Correction:** ${correctionText}  **Feedback:** ${feedback}`,
     });
     setChatOpen(true);
+  };
+
+  const captureSentences = () => {
+    if (capturedSentences.length > 0) {
+      setCapturedSentences([]);
+    } else {
+      const sentences = correctionText
+        .split(/[.?!]/)
+        .map((s) => removeMarkdownNotation(s))
+        .filter(Boolean)
+        .map((s) => s + '.');
+      setCapturedSentences(sentences);
+    }
   };
 
   const sectionClass = 'space-x-2';
@@ -57,12 +74,21 @@ const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({
           </div>
         </div>
       </div>
-      <Button
-        className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white w-fit "
-        onClick={openInChat}
-      >
-        Discuss in chat
-      </Button>
+      <div className="flex gap-3">
+        <AIButton onClick={openInChat}>Discuss in chat</AIButton>
+        <Button variant={'default'} onClick={captureSentences}>
+          Capture sentences
+        </Button>
+      </div>
+      {capturedSentences.length > 0 &&
+        capturedSentences.map((sentence, index) => (
+          <NestedObject
+            key={index}
+            data={{ content: sentence }}
+            lang={learningLang}
+            source={`correction - ${correction.id}`}
+          />
+        ))}
     </div>
   );
 };

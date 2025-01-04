@@ -51,6 +51,7 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
         messages: [{ role: 'assistant', content: JSON.stringify(review) }],
         existingHistory,
         learningLang,
+        markedOnly: true,
       });
     } catch (error: any) {
       setSubmitState('error');
@@ -77,6 +78,7 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
               <FormItem>
                 <Label className="text-xs uppercase font-semibold">Your response:</Label>
                 <Textarea
+                  rows={9}
                   {...field}
                   placeholder={response ? 'Try again?' : 'Write your response here...'}
                 />

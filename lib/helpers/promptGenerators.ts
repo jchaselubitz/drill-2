@@ -2,9 +2,10 @@
 
 import { PhraseType } from '@/app/lessons/(components)/lesson_option';
 import type { gptFormatType } from './helpersAI';
-import { LanguagesISO639, getLangName } from './lists';
+
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import { getLangName, LanguagesISO639 } from '../lists';
 
 export const requestLessonSuggestions = ({
   language,

@@ -2,11 +2,12 @@
 
 import { createClient } from '@/utils/supabase/server';
 import db from '../database';
-import { LanguagesISO639 } from '../helpers/lists';
+import { LanguagesISO639 } from '../lists';
 import { revalidatePath } from 'next/cache';
 import { BaseHistory } from 'kysely-codegen';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { HistoryVocabType } from '../aiGenerators/types_generation';
+import { removeMarkdownNotation } from '../helpers/helpersPhrase';
 
 export async function getUserHistory(): Promise<BaseHistory[]> {
   const supabase = createClient();
@@ -83,17 +84,20 @@ export async function addHistory({
         db.insertInto('phrase')
           .values({
             source: 'history',
-            text: v.text,
+            text: removeMarkdownNotation(v.text),
             lang,
             difficulty: v.difficulty,
             userId,
+            type: v.isWord ? 'word' : 'phrase',
             partSpeech: v.partSpeech,
             historyId,
           })
           .onConflict((p) =>
-            p
-              .constraint('unique_phrase_user_lang_part')
-              .doUpdateSet({ difficulty: v.difficulty, partSpeech: v.partSpeech })
+            p.constraint('unique_phrase_user_lang').doUpdateSet({
+              difficulty: v.difficulty,
+              partSpeech: v.partSpeech,
+              historyId: historyId,
+            })
           )
           .execute();
       });
@@ -122,7 +126,7 @@ export async function addHistory({
           })
           .onConflict((p) =>
             p
-              .constraint('unique_phrase_user_lang_part')
+              .constraint('unique_phrase_user_lang')
               .doUpdateSet({ difficulty: v.difficulty, partSpeech: v.partSpeech })
           )
           .execute();
