@@ -11,7 +11,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import LanguageChooser from './language_chooser';
 import { NavMain } from './nav_main';
