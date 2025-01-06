@@ -21,9 +21,9 @@ import {
   History,
   TutorTopic,
   Correction,
+  Iso639LanguageCode,
 } from 'kysely-codegen';
 import { Pool } from 'pg';
-import { LanguagesISO639 } from '../lists';
 import { HistoryVocabType } from '../aiGenerators/types_generation';
 import { ReviewUserParagraphSubmissionResponse } from '../aiGenerators/generators_tutor';
 
@@ -60,7 +60,7 @@ declare module 'kysely-codegen' {
     translations: TranslationWithPhrase[];
     level: string | null;
     subjectName: string | null;
-    lang: LanguagesISO639 | null;
+    lang: Iso639LanguageCode | null;
   };
   export type NewLesson = Insertable<Lesson>;
   export type EditedLesson = Updateable<Lesson>;
@@ -127,7 +127,6 @@ declare module 'kysely-codegen' {
   export type NewAssociation = Insertable<Association>;
 
   export type BaseHistory = Omit<Selectable<History>, 'vocabulary'> & {
-    // lang: LanguagesISO639;
     vocabulary: HistoryVocabType[];
   };
 
@@ -136,17 +135,14 @@ declare module 'kysely-codegen' {
   };
   export type NewCorrection = Insertable<Correction>;
 
-  export type BaseTutorTopic = Omit<Selectable<TutorTopic>, 'lang'> & {
-    lang: LanguagesISO639;
-  };
+  export type BaseTutorTopic = Selectable<TutorTopic>;
 
   export type TutorTopicWithCorrections = Omit<BaseTutorTopic, 'corrections'> & {
     corrections: BaseCorrection[];
   };
 
   export type NewTutorTopic = Insertable<TutorTopic>;
+
+  export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };
 }
-
-export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };
-
 export default db;

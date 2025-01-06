@@ -1,13 +1,13 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { addTranslationsToLesson } from '@/lib/actions/lessonActions';
 import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
-import { LanguagesISO639 } from '@/lib/lists';
 
 interface GenerateMorePhrasesProps {
   lessonId: string;
   lessonTitle: string;
-  studyLanguage: LanguagesISO639;
-  userLanguage: LanguagesISO639;
+  studyLanguage: Iso639LanguageCode;
+  userLanguage: Iso639LanguageCode;
   currentLevel: string | null;
 }
 

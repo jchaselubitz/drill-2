@@ -5,8 +5,8 @@ import db from '../database';
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
-import { LanguagesISO639 } from '../lists';
-import { ProfileWithMedia } from 'kysely-codegen';
+
+import { Iso639LanguageCode, ProfileWithMedia } from 'kysely-codegen';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { redirect } from 'next/navigation';
 
@@ -189,8 +189,8 @@ export const updateUserLanguage = async ({
   userLanguage,
   prefLanguage,
 }: {
-  userLanguage: LanguagesISO639 | null;
-  prefLanguage: LanguagesISO639 | null;
+  userLanguage: Iso639LanguageCode | null;
+  prefLanguage: Iso639LanguageCode | null;
 }) => {
   const supabase = createClient();
   const {

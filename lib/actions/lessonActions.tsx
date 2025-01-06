@@ -2,8 +2,8 @@
 
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import {
-  BaseLesson,
   BasePhrase,
+  Iso639LanguageCode,
   LessonWithTranslations,
   NewLesson,
   NewPhrase,
@@ -16,7 +16,6 @@ import { PhraseType } from '@/app/lessons/(components)/lesson_option';
 import { createClient } from '@/utils/supabase/server';
 
 import db from '../database';
-import { LanguagesISO639 } from '../lists';
 
 export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
   const supabase = createClient();
@@ -125,7 +124,7 @@ export const getLessons = async (lessonId?: string): Promise<LessonWithTranslati
   const lessonWithTranslationsArray = response.map((lesson) => ({
     ...lesson,
     level: lesson.level,
-    lang: (lesson.translations[0].phrasePrimary?.lang as LanguagesISO639) ?? null,
+    lang: (lesson.translations[0].phrasePrimary?.lang as Iso639LanguageCode) ?? null,
     translations: lesson.translations.map((translation) => ({
       ...translation,
       phrasePrimary: translation.phrasePrimary as BasePhrase,
@@ -143,6 +142,7 @@ export const addSubjectLessonWithTranslations = async ({
   phrases,
   subjectId,
   subjectName,
+  subjectLang,
 }: {
   title: string;
   description: string;
@@ -150,9 +150,9 @@ export const addSubjectLessonWithTranslations = async ({
   phrases: PhraseType[];
   subjectId?: string | undefined;
   subjectName: string;
+  subjectLang: Iso639LanguageCode;
 }) => {
   const supabase = createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -161,6 +161,8 @@ export const addSubjectLessonWithTranslations = async ({
     return;
   }
   const userId = user.id;
+
+  const sourceName = `Lesson: ${title}`;
   try {
     let newSubjectId = subjectId;
     return await db.transaction().execute(async (trx) => {
@@ -180,6 +182,7 @@ export const addSubjectLessonWithTranslations = async ({
               name: subjectName,
               level,
               userId,
+              lang: subjectLang,
             } as NewSubject)
             .returning('id')
             .executeTakeFirstOrThrow();
@@ -190,7 +193,7 @@ export const addSubjectLessonWithTranslations = async ({
       const lesson = await trx
         .insertInto('lesson')
         .values({
-          title,
+          title: `${subjectName} - ${title}`,
           shortDescription: description,
           subjectId: newSubjectId,
           userId,
@@ -204,7 +207,7 @@ export const addSubjectLessonWithTranslations = async ({
           .values({
             text: phrase.phrase_primary.text,
             lang: phrase.phrase_primary.lang,
-            source: title,
+            source: sourceName,
             userId,
           } as NewPhrase)
           .returning('id')
@@ -215,7 +218,7 @@ export const addSubjectLessonWithTranslations = async ({
           .values({
             text: phrase.phrase_secondary.text,
             lang: phrase.phrase_secondary.lang,
-            source: title,
+            source: sourceName,
             userId,
           } as NewPhrase)
           .returning('id')

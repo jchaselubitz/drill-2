@@ -1,12 +1,12 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import LessonOption, { OptionType } from './lesson_option';
 
 interface LessonOptionListProps {
   options: OptionType[];
-  userLanguage: LanguagesISO639;
-  studyLanguage: LanguagesISO639;
+  userLanguage: Iso639LanguageCode;
+  studyLanguage: Iso639LanguageCode;
   level: string;
   subjectId: string | undefined;
 }

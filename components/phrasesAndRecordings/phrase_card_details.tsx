@@ -1,4 +1,4 @@
-import { PhraseWithAssociations } from 'kysely-codegen';
+import { Iso639LanguageCode, PhraseWithAssociations } from 'kysely-codegen';
 import React from 'react';
 import {
   Accordion,
@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { useUserContext } from '@/contexts/user_context';
-import { getContentSuggestions, LanguagesISO639 } from '@/lib/lists';
+import { getContentSuggestions } from '@/lib/lists';
 
 import ContentRequest from '../ai_elements/content_request';
 import PhraseNote from './phrase_note';
@@ -22,7 +22,7 @@ interface PhraseCardDetailsProps {
 const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateToPhrase }) => {
   const { userId, userLanguage, prefLanguage } = useUserContext();
   const text = phrase.text;
-  const lang = phrase.lang as LanguagesISO639;
+  const lang = phrase.lang as Iso639LanguageCode;
   const phraseId = phrase.id;
   const translationsPhrases =
     phrase.translations

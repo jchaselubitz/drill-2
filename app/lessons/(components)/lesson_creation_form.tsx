@@ -1,5 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { set, z } from 'zod';
@@ -20,7 +21,7 @@ import { useUserContext } from '@/contexts/user_context';
 import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
 import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
 import { requestLessonSuggestions } from '@/lib/helpers/promptGenerators';
-import { ContentSuggestions, Languages, LanguagesISO639, Levels } from '@/lib/lists';
+import { ContentSuggestions, Languages, Levels } from '@/lib/lists';
 import { createClient } from '@/utils/supabase/client';
 
 import { OptionType } from './lesson_option';
@@ -28,7 +29,7 @@ import LessonOptionList from './lesson_option_list';
 
 interface LessonCreationFormProps {
   subjectId?: string | undefined;
-  subjectLanguage?: LanguagesISO639 | null;
+  subjectLanguage?: Iso639LanguageCode | null;
   subjectLevel?: string | null;
   startOpen?: boolean;
 }
@@ -45,7 +46,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
   const [showCreationForm, setShowCreationForm] = useState(startOpen);
   const { userLanguage, prefLanguage } = useUserContext();
   const [level, setLevel] = useState(subjectLevel);
-  const [studyLanguage, setStudyLanguage] = useState<LanguagesISO639 | null>(
+  const [studyLanguage, setStudyLanguage] = useState<Iso639LanguageCode | null>(
     subjectLanguage ?? null
   );
   const [request, setRequest] = useState('');
@@ -55,7 +56,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
 
   const handleGenerateCustomLesson = async () => {
     const level = form.getValues('level');
-    const language = form.getValues('language') as LanguagesISO639 | '';
+    const language = form.getValues('language') as Iso639LanguageCode | '';
 
     if (level === '' || language === '' || !userLanguage || request === '') {
       alert('Please select a language and level');
@@ -83,7 +84,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
 
   const handleGenerateLessonSuggestions = async () => {
     const level = form.getValues('level');
-    const studyLanguage = form.getValues('language') as LanguagesISO639 | '';
+    const studyLanguage = form.getValues('language') as Iso639LanguageCode | '';
     if (level === '' || studyLanguage === '') {
       alert('Please select a language and level');
       return;
@@ -163,7 +164,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
                       <SelectContent>
                         {Languages.map((language) => (
                           <SelectItem
-                            key={language.value as LanguagesISO639}
+                            key={language.value as Iso639LanguageCode}
                             value={language.value}
                           >
                             {language.name}

@@ -1,6 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { NewTutorTopic } from 'kysely-codegen';
+import { Iso639LanguageCode, NewTutorTopic } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -18,7 +18,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useUserContext } from '@/contexts/user_context';
 import { addTutorTopic } from '@/lib/actions/tutorActions';
-import { Languages, LanguagesISO639, Levels } from '@/lib/lists';
+import { Languages, Levels } from '@/lib/lists';
 
 interface TopicCreationFormProps {
   startOpen?: boolean;
@@ -91,7 +91,7 @@ const TopicCreationForm: React.FC<TopicCreationFormProps> = ({ startOpen }) => {
                   </FormControl>
                   <SelectContent>
                     {Languages.map((language) => (
-                      <SelectItem key={language.value as LanguagesISO639} value={language.value}>
+                      <SelectItem key={language.value as Iso639LanguageCode} value={language.value}>
                         {language.name}
                       </SelectItem>
                     ))}

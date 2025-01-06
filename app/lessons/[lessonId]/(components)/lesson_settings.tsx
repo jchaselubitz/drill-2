@@ -1,6 +1,6 @@
 'use client';
 
-import { LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
+import { Iso639LanguageCode, LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
 import React, { useEffect, useState } from 'react';
 import GenerateMorePhrases from '@/components/ai_elements/generate_more_phrases';
 import GeneratePhraseAudio from '@/components/ai_elements/generate_phrase_audio';
@@ -8,7 +8,6 @@ import { useUserContext } from '@/contexts/user_context';
 import { getFileList } from '@/lib/helpers/helpersAudio';
 import { hashString } from '@/lib/helpers/helpersDB';
 import { downloadApkg, downloadCSV } from '@/lib/helpers/helpersExport';
-import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
 
@@ -32,7 +31,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
   const [loadingAPKG, setLoadingAPKG] = useState(false);
 
   const translations = lesson.translations;
-  const studyLanguage = lesson.translations[0]?.phraseSecondary.lang as LanguagesISO639;
+  const studyLanguage = lesson.translations[0]?.phraseSecondary.lang as Iso639LanguageCode;
   const bucket = 'text_to_speech';
 
   useEffect(() => {

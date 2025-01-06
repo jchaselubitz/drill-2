@@ -1,6 +1,6 @@
 'use client';
 
-import { TutorTopicWithCorrections } from 'kysely-codegen';
+import { Iso639LanguageCode, TutorTopicWithCorrections } from 'kysely-codegen';
 import { RefreshCw, Stars } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import GrammarCorrectionForm from '@/components/ai_elements/grammar_correction_form';
@@ -22,7 +22,6 @@ import {
   ReviewUserParagraphSubmissionResponse,
 } from '@/lib/aiGenerators/generators_tutor';
 import { removeMarkdownNotation } from '@/lib/helpers/helpersPhrase';
-import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 interface TopicDetailsProps {
@@ -57,7 +56,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
       const prompt = await generateTutorPrompt({
         relatedPhraseArray: JSON.stringify(preparedPhrases),
         userLanguage,
-        topicLanguage: (topicLanguage as LanguagesISO639) ?? prefLanguage,
+        topicLanguage: (topicLanguage as Iso639LanguageCode) ?? prefLanguage,
         level,
         instructions,
       });

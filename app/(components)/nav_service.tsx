@@ -1,13 +1,12 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { Edit, Home, Library, LucidePartyPopper, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
-import { updateUserLanguage } from '@/lib/actions/userActions';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
-import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import { AppSidebar } from './app_sidebar';
@@ -16,7 +15,6 @@ import TopNav from './top_nav';
 
 export function NavService({ user, children }: { user: User; children: React.ReactNode }) {
   const { userLanguage, prefLanguage } = useUserContext();
-  const { chatOpen } = useChatContext();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -30,8 +28,8 @@ export function NavService({ user, children }: { user: User; children: React.Rea
   useEffect(() => {
     const hasUserLanguage = userLanguage !== null && userLanguage !== undefined;
     if (!hasUserLanguage) {
-      const userLanguage = navigator.language as LanguagesISO639;
-      const iso639Code = userLanguage.split('-')[0] as LanguagesISO639;
+      const userLanguage = navigator.language as Iso639LanguageCode;
+      const iso639Code = userLanguage.split('-')[0] as Iso639LanguageCode;
       setUserLanguages({
         lang: iso639Code,
         name: 'userLanguage',

@@ -1,12 +1,12 @@
 import { createClient } from '@/utils/supabase/client';
 import { CorrectionStructure, ExplanationResponseFormat } from './types_generation';
 import { getModelSelection, getOpenAiKey, gptFormatType } from '../helpers/helpersAI';
-import { LanguagesISO639 } from '../lists';
+import { Iso639LanguageCode } from 'kysely-codegen';
 
 type TutorPromptProps = {
   relatedPhraseArray: string;
-  userLanguage: LanguagesISO639;
-  topicLanguage: LanguagesISO639;
+  userLanguage: Iso639LanguageCode;
+  topicLanguage: Iso639LanguageCode;
   level: string;
   instructions: string;
 };
@@ -145,7 +145,7 @@ export const generateExplanation = async ({
 }: {
   subjectText: string;
   request: string;
-  userLanguage: LanguagesISO639 | undefined | null;
+  userLanguage: Iso639LanguageCode | undefined | null;
 }): Promise<{ type: string; data: string }> => {
   const supabase = createClient();
 

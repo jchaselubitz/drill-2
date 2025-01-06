@@ -1,9 +1,8 @@
-import { PhraseType } from 'kysely-codegen';
+import { Iso639LanguageCode, PhraseType } from 'kysely-codegen';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { addTranslation } from '@/lib/actions/phraseActions';
 import { GenResponseType, TranslationResponseType } from '@/lib/aiGenerators/types_generation';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
@@ -11,7 +10,7 @@ import SaveTranslationButton from './save_translation_button';
 interface DynamicResponsePanelProps {
   genResponse: GenResponseType;
   associatedPhraseId?: string;
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   primaryPhraseIds: string[];
   source: string | undefined;
   phraseType?: PhraseType;

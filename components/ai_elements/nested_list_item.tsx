@@ -1,7 +1,7 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { addPhrase } from '@/lib/actions/phraseActions';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import { Button } from '../ui/button';
 
@@ -9,7 +9,7 @@ interface NestedListItemProps {
   value: any;
   parentKeys: string[];
   source: string | undefined;
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   associatedPhraseId: string | undefined;
 }
 

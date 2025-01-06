@@ -1,16 +1,16 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { BookA, Home } from 'lucide-react';
 import React from 'react';
 import { SidebarMenuItem } from '@/components/ui/sidebar';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import LanguageMenu from './language_selector';
 
 const LanguageChooser: React.FC = () => {
   const { userLanguage, prefLanguage } = useUserContext();
 
-  const handleSetUserLanguages = ({ lang, name }: { lang: LanguagesISO639; name: string }) =>
+  const handleSetUserLanguages = ({ lang, name }: { lang: Iso639LanguageCode; name: string }) =>
     setUserLanguages({
       lang,
       name,

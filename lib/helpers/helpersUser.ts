@@ -1,5 +1,5 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { updateUserLanguage } from '../actions/userActions';
-import { LanguagesISO639 } from '../lists';
 
 export const setUserLanguages = async ({
   lang,
@@ -7,10 +7,10 @@ export const setUserLanguages = async ({
   prefLanguage,
   userLanguage,
 }: {
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   name: string;
-  prefLanguage: LanguagesISO639 | undefined | null;
-  userLanguage: LanguagesISO639 | undefined | null;
+  prefLanguage: Iso639LanguageCode | undefined | null;
+  userLanguage: Iso639LanguageCode | undefined | null;
 }) => {
   if (name === 'userLanguage') {
     await updateUserLanguage({

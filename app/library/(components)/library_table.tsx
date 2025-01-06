@@ -11,7 +11,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
+import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import * as React from 'react';
 import { FC, startTransition, useEffect, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
@@ -27,7 +27,6 @@ import {
 import { useLibraryContext } from '@/contexts/library_context';
 import { useUserContext } from '@/contexts/user_context';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
-import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import LibraryRow from './library_row';
@@ -49,7 +48,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
     ? prefLanguage
     : storedSortLang === '*'
       ? ''
-      : (storedSortLang as LanguagesISO639);
+      : (storedSortLang as Iso639LanguageCode);
   const storedSortType = localStorage.getItem('sort_type');
   const setSortType =
     !storedSortType || storedSortType === '*' ? '' : (storedSortType as PhraseType);
@@ -82,7 +81,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
     pageSize: 20, // Default number of rows per page
   });
   const mentionedLanguages = phrases.map((phrase) => phrase.lang);
-  const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as LanguagesISO639[];
+  const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as Iso639LanguageCode[];
   const userTags = [...new Set(phrases.flatMap((phrase) => phrase.tags.map((tag) => tag.label)))];
 
   const toggleFavorite = async (phraseId: string) => {

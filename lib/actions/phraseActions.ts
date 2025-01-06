@@ -1,20 +1,21 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import db, { RevalidationPath } from '../database';
+import db from '../database';
 import { createClient } from '@/utils/supabase/server';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import {
+  Iso639LanguageCode,
   NewAssociation,
   NewPhrase,
   NewPhraseTag,
   NewTag,
   NewTranslation,
-  Phrase,
   PhraseType,
   PhraseWithAssociations,
+  RevalidationPath,
 } from 'kysely-codegen';
-import { LanguagesISO639, SourceOptionType } from '../lists';
-import { string } from 'zod';
+import { SourceOptionType } from '../lists';
+
 import { TranslationResponseType } from '../aiGenerators/types_generation';
 
 export const getPhrases = async ({
@@ -24,7 +25,7 @@ export const getPhrases = async ({
 }: {
   source?: SourceOptionType;
   pastDays?: number;
-  lang?: LanguagesISO639;
+  lang?: Iso639LanguageCode;
 }): Promise<PhraseWithAssociations[]> => {
   const supabase = createClient();
   const {
@@ -199,7 +200,7 @@ export const addPhrase = async ({
   associationId,
 }: {
   text: string;
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   source?: string;
   filename?: string;
   type: PhraseType;

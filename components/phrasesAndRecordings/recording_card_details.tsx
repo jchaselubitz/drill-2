@@ -1,8 +1,8 @@
-import { PhraseWithTranslations } from 'kysely-codegen';
+import { Iso639LanguageCode, PhraseWithTranslations } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { useUserContext } from '@/contexts/user_context';
 import { deletePhrase } from '@/lib/actions/phraseActions';
-import { getContentSuggestions, LanguagesISO639, TranscriptRequestSuggestions } from '@/lib/lists';
+import { getContentSuggestions, TranscriptRequestSuggestions } from '@/lib/lists';
 
 import ContentRequest from '../ai_elements/content_request';
 import DeleteButton from '../specialButtons/delete_button';
@@ -42,7 +42,7 @@ const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({
       </div>
       <ContentRequest
         text={recording.text}
-        lang={recording.lang as LanguagesISO639}
+        lang={recording.lang as Iso639LanguageCode}
         userId={userId}
         phraseId={recording.id}
         phraseType={recording.type}
@@ -50,8 +50,8 @@ const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({
         source="transcript"
         suggestions={getContentSuggestions({
           userLanguage,
-          prefLanguage: recording.lang as LanguagesISO639,
-          contentLang: recording.lang as LanguagesISO639,
+          prefLanguage: recording.lang as Iso639LanguageCode,
+          contentLang: recording.lang as Iso639LanguageCode,
           suggestionList: TranscriptRequestSuggestions,
         })}
       />

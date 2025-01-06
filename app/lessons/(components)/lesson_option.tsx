@@ -1,7 +1,6 @@
-import { BasePhrase } from 'kysely-codegen';
+import { BasePhrase, Iso639LanguageCode } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
-import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import LessonOptionDetails from './lesson_option_details';
@@ -18,8 +17,8 @@ export interface OptionType {
 
 interface LessonOptionProps {
   option: OptionType;
-  userLanguage: LanguagesISO639;
-  studyLanguage: LanguagesISO639;
+  userLanguage: Iso639LanguageCode;
+  studyLanguage: Iso639LanguageCode;
   level: string;
   subjectId: string | undefined;
 }

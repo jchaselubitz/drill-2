@@ -1,6 +1,6 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
 import { GeneralResponseType } from '@/lib/actions/phraseActions';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import NestedListItem from './nested_list_item';
 
@@ -8,7 +8,7 @@ type NestedObjectProps = {
   data: GeneralResponseType;
   parentKeys?: string[];
   source?: string;
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   associatedPhraseId?: string;
 };
 

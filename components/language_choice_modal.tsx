@@ -1,11 +1,11 @@
 'use client';
 
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { BookA, Home } from 'lucide-react';
 import React, { useEffect } from 'react';
 import LanguageMenu from '@/app/(components)/language_selector';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import {
   Dialog,
@@ -26,7 +26,7 @@ const LanguageChoiceModal: React.FC = () => {
     }
   }, [userLanguage, prefLanguage]);
 
-  const handleSetUserLanguages = ({ lang, name }: { lang: LanguagesISO639; name: string }) =>
+  const handleSetUserLanguages = ({ lang, name }: { lang: Iso639LanguageCode; name: string }) =>
     setUserLanguages({
       lang,
       name,

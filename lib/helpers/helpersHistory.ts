@@ -1,9 +1,8 @@
 import { addHistory } from '../actions/actionsHistory';
 import { generateHistory } from '../aiGenerators/generators_history';
 import { ChatMessage } from '../aiGenerators/types_generation';
-import { LanguagesISO639 } from '../lists';
 
-import { BaseHistory } from 'kysely-codegen';
+import { BaseHistory, Iso639LanguageCode } from 'kysely-codegen';
 
 export async function processHistory({
   messages,
@@ -13,7 +12,7 @@ export async function processHistory({
 }: {
   messages: ChatMessage[];
   existingHistory: BaseHistory | undefined;
-  learningLang: LanguagesISO639;
+  learningLang: Iso639LanguageCode;
   markedOnly?: boolean;
 }) {
   try {

@@ -1,6 +1,6 @@
 import { ColumnsIcon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
-import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
+import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import { ChevronDown, Hash, Languages } from 'lucide-react';
 import React from 'react';
 import { useWindowSize } from 'react-use';
@@ -18,14 +18,13 @@ import {
   getLangName,
   getPhraseTypeIcon,
   getPhraseTypeName,
-  LanguagesISO639,
   PhraseListType,
   PhraseTypes,
 } from '@/lib/lists';
 
 interface LibraryTableHeaderToolsProps {
   table: Table<PhraseWithAssociations>;
-  uniqueLanguages: LanguagesISO639[];
+  uniqueLanguages: Iso639LanguageCode[];
   userTags: string[];
 }
 
@@ -42,7 +41,7 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
   const tagsColumnCurrentFilter = (tagsColumn?.getFilterValue() as string[]) ?? [];
 
   const langColumn = table.getColumn('lang');
-  const langColumnCurrentFilter = langColumn?.getFilterValue() as LanguagesISO639;
+  const langColumnCurrentFilter = langColumn?.getFilterValue() as Iso639LanguageCode;
 
   const typeColumn = table.getColumn('type');
   const typeColumnCurrentFilter = typeColumn?.getFilterValue() as PhraseType;
@@ -57,7 +56,7 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
       : tagsColumn?.setFilterValue(tagsColumnCurrentFilter?.filter((t) => t !== tag));
   };
 
-  const handleFilterLang = (v: boolean, lang: LanguagesISO639) => {
+  const handleFilterLang = (v: boolean, lang: Iso639LanguageCode) => {
     langColumn?.setFilterValue(v ? lang : undefined);
     localStorage.setItem('sort_lang', v ? lang : '*');
   };

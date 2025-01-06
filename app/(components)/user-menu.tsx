@@ -1,6 +1,7 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -16,14 +17,13 @@ import {
 import { SidebarMenu, SidebarMenuButton } from '@/components/ui/sidebar';
 import { useUserContext } from '@/contexts/user_context';
 import { signOut } from '@/lib/actions/userActions';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import LanguageChooser from './language_chooser';
 
 type UserMenuProps = {
   user: User | null | undefined;
   mobile?: boolean;
-  setUserLanguages?: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
+  setUserLanguages?: ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => void;
 };
 
 const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {

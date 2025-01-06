@@ -1,4 +1,4 @@
-import { PhraseType } from 'kysely-codegen';
+import { Iso639LanguageCode, PhraseType } from 'kysely-codegen';
 import { Stars } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useChatContext } from '@/contexts/chat_window_context';
@@ -11,7 +11,6 @@ import {
 import { generateExplanation } from '@/lib/aiGenerators/generators_tutor';
 import { GenResponseType } from '@/lib/aiGenerators/types_generation';
 import { handleReturnKeyPress } from '@/lib/helpers/helpersGeneral';
-import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import { LoadingButton } from '../ui/button-loading';
@@ -21,7 +20,7 @@ import LightSuggestionList from './suggestions/light_suggestion_list';
 
 interface ContentRequestProps {
   text: string | null;
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   userId: string | undefined;
   phraseId: string;
   phraseType?: PhraseType;

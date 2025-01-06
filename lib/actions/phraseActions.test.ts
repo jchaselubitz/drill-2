@@ -13,8 +13,8 @@ import {
   addTranslation,
   deletePhrase,
 } from './phraseActions';
-import { LanguagesISO639 } from '../lists';
-import { PhraseType } from 'kysely-codegen';
+
+import { Iso639LanguageCode, PhraseType } from 'kysely-codegen';
 import {
   mockSupabase,
   mockSelectFrom,
@@ -51,7 +51,7 @@ describe('Phrase Management Functions', () => {
         data: { user: { id: 'user-id' } },
       });
 
-      const result = await getPhrases();
+      const result = await getPhrases({});
       expect(result).toEqual([]);
       expect(mockSupabase.auth.getUser).toHaveBeenCalled();
       expect(mockSelectFrom).toHaveBeenCalledWith('phrase');
@@ -83,7 +83,7 @@ describe('Phrase Management Functions', () => {
 
       await addPhrase({
         text: 'Hello',
-        lang: 'en' as LanguagesISO639,
+        lang: 'en' as Iso639LanguageCode,
         source: 'test',
         filename: 'file.mp3',
         type: 'text' as PhraseType,

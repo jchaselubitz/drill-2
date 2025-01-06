@@ -6,14 +6,13 @@ import { XIcon } from 'lucide-react';
 import React from 'react';
 import LessonCreationForm from '@/app/lessons/(components)/lesson_creation_form';
 import { useLessonsContext } from '@/contexts/lessons_context';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import { Button } from '../ui/button';
 import LessonCard from './lesson_card';
 
 interface LessonListProps {
   lessons: BaseLesson[];
-  subjectLang: Iso639LanguageCode | LanguagesISO639 | undefined | null | '';
+  subjectLang: Iso639LanguageCode | undefined | null | '';
   subjectLevel: string | undefined | null;
   subjectId: string | undefined;
 }
@@ -44,7 +43,7 @@ const LessonList: React.FC<LessonListProps> = ({
       ))}
       <LessonCreationForm
         subjectId={subjectId}
-        subjectLanguage={subjectLang as LanguagesISO639}
+        subjectLanguage={subjectLang as Iso639LanguageCode}
         subjectLevel={subjectLevel}
       />
     </div>

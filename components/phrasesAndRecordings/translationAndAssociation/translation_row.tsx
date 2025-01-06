@@ -1,13 +1,14 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
 import TtsButton from '@/components/ai_elements/tts_button';
 import { useLibraryContext } from '@/contexts/library_context';
-import { getLangIcon, LanguagesISO639 } from '@/lib/lists';
+import { getLangIcon } from '@/lib/lists';
 
 interface TranslationRowProps {
   translationsPhrase: {
     id: string;
     text: string;
-    lang: LanguagesISO639;
+    lang: Iso639LanguageCode;
     lessonLink: string;
     lessonTitle: string;
   };

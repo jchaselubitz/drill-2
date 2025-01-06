@@ -1,11 +1,10 @@
-import { BaseCorrection } from 'kysely-codegen';
+import { BaseCorrection, Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
 import Markdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import { useChatContext } from '@/contexts/chat_window_context';
 import { removeMarkdownNotation } from '@/lib/helpers/helpersPhrase';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import { AIButton } from '../specialButtons/ai_button';
 import { Button } from '../ui/button';
@@ -13,7 +12,7 @@ import NestedObject from './nested_object';
 
 interface GrammarCorrectionItemProps {
   correction: BaseCorrection;
-  learningLang: LanguagesISO639;
+  learningLang: Iso639LanguageCode;
 }
 
 const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({

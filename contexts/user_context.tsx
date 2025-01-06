@@ -1,12 +1,11 @@
 'use client';
-import { BaseHistory, BaseMedia, ProfileWithMedia } from 'kysely-codegen';
+import { BaseHistory, BaseMedia, Iso639LanguageCode, ProfileWithMedia } from 'kysely-codegen';
 import React, { createContext, ReactNode, useContext } from 'react';
-import { LanguagesISO639 } from '@/lib/lists';
 
 type UserContextType = {
   userId: string;
-  userLanguage: LanguagesISO639 | undefined | null;
-  prefLanguage: LanguagesISO639 | undefined | null;
+  userLanguage: Iso639LanguageCode | undefined | null;
+  prefLanguage: Iso639LanguageCode | undefined | null;
   imageUrl: string | undefined | null;
   username: string | undefined | null;
   media: BaseMedia[] | undefined | null;
@@ -32,8 +31,8 @@ export const UserContextProvider = ({
     <UserContext.Provider
       value={{
         userId: profile.id,
-        userLanguage: profile.userLanguage as LanguagesISO639,
-        prefLanguage: profile.prefLanguage as LanguagesISO639,
+        userLanguage: profile.userLanguage as Iso639LanguageCode,
+        prefLanguage: profile.prefLanguage as Iso639LanguageCode,
         imageUrl: profile.imageUrl,
         username: profile.username,
         media: profile.media,

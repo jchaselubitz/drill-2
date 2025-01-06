@@ -1,16 +1,16 @@
 import { User } from '@supabase/supabase-js';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
 import BackButton from '@/components/back_button';
 import CreateButton from '@/components/specialButtons/create_button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { LanguagesISO639 } from '@/lib/lists';
 
 import UserMenu from './user-menu';
 
 interface TopNavProps {
   isMobile: boolean;
   user?: User;
-  setUserLanguages?: ({ lang, name }: { lang: LanguagesISO639; name: string }) => void;
+  setUserLanguages?: ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => void;
 }
 
 const TopNav: React.FC<TopNavProps> = ({ isMobile, user, setUserLanguages }) => {

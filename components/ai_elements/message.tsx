@@ -1,7 +1,7 @@
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
 import Markdown from 'react-markdown';
 import { ChatMessage } from '@/lib/aiGenerators/types_generation';
-import { LanguagesISO639 } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import DynamicResponsePanel from './dynamic_response_panel';
@@ -22,7 +22,7 @@ type EnrichedContent = {
 
 interface MessageProps {
   message: ChatMessage;
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
 }
 
 const Message: React.FC<MessageProps> = ({ message, lang }) => {

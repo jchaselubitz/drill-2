@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -8,9 +9,8 @@ import { useCreateModal } from '@/contexts/create_modal_context';
 import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
-import { Languages, LanguagesISO639 } from '@/lib/lists';
+import { Languages } from '@/lib/lists';
 
-import { Button } from '../ui/button';
 import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -39,7 +39,7 @@ const CaptureText: React.FC = () => {
 
   const onSubmit = async (data: FormValues) => {
     const text = data.text;
-    const lang = data.lang as LanguagesISO639;
+    const lang = data.lang as Iso639LanguageCode;
     setButtonState('loading');
     try {
       await addPhrase({ text, lang, source: 'home', type: getPhraseType(text) });

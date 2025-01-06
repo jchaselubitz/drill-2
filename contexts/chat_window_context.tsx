@@ -1,5 +1,6 @@
 'use client';
 
+import { Iso639LanguageCode } from 'kysely-codegen';
 import React, {
   createContext,
   ReactNode,
@@ -33,8 +34,8 @@ type ChatWindowType = {
   setMessages: (messages: ChatMessage[]) => void;
   chatContext: ChatContextType;
   setChatContext: (context: ChatContextType) => void;
-  currentLang: LanguagesISO639;
-  setCurrentLang: (lang: LanguagesISO639) => void;
+  currentLang: Iso639LanguageCode;
+  setCurrentLang: (lang: Iso639LanguageCode) => void;
   onEndSession?: () => void;
   setOnEndSession: (endSession: () => void) => void;
 };
@@ -45,7 +46,7 @@ export const ChatWindowProvider = ({ children }: { children: ReactNode }) => {
   const { prefLanguage } = useUserContext();
   const [chatOpen, setChatOpen] = useState(false);
   const [chatContext, setChatContext] = useState<ChatContextType | undefined>(undefined);
-  const [currentLang, setCurrentLang] = useState<LanguagesISO639>(
+  const [currentLang, setCurrentLang] = useState<Iso639LanguageCode>(
     prefLanguage ?? LanguagesISO639.German
   );
 

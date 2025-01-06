@@ -6,6 +6,7 @@ import type { gptFormatType } from './helpersAI';
 import { z } from 'zod';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { getLangName, LanguagesISO639 } from '../lists';
+import { Iso639LanguageCode } from 'kysely-codegen';
 
 export const requestLessonSuggestions = ({
   language,
@@ -37,8 +38,8 @@ export const phraseGenerationSystemInstructions = ({
   lang1,
   lang2,
 }: {
-  lang1: LanguagesISO639;
-  lang2: LanguagesISO639;
+  lang1: Iso639LanguageCode;
+  lang2: Iso639LanguageCode;
 }) =>
   `The student will ask you for a list of examples, which will be added to flashcards. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "phrases" JSON that is a list of objects, each with the following keys: phrase_primary, phrase_secondary. The phrase_primary is the ${lang1} phrase, and the phrase_secondary is the ${lang2} phrase. The format should therefore be: [{phrase_primary: {text: "phrase1", lang:${lang1}}, phrase_secondary: {text: "phrase2", lang:${lang2}}}, ...]`;
 
@@ -74,8 +75,8 @@ export const requestPhraseSuggestions = ({
   numberOfPhrases,
 }: {
   concept: string;
-  studyLanguage: LanguagesISO639 | '';
-  userLanguage: LanguagesISO639 | '';
+  studyLanguage: Iso639LanguageCode | '';
+  userLanguage: Iso639LanguageCode | '';
   level: string;
   numberOfPhrases: number;
 }): { prompt: string; format: gptFormatType } => {

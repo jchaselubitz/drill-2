@@ -2,7 +2,6 @@ import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import { LanguagesISO639, PartSpeechType } from '../lists';
 import React from 'react';
-
 export type GenResponseType = {
   type: string;
   data: any | TranslationResponseType;

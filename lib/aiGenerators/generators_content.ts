@@ -5,8 +5,9 @@ import {
   phraseGenerationSystemInstructions,
   phraseResponseChecks,
 } from '../helpers/promptGenerators';
-import { LanguagesISO639, getLangName } from '../lists';
+import { getLangName } from '../lists';
 import { TranslationResponseType, TranslationResponseFormat } from './types_generation';
+import { Iso639LanguageCode } from 'kysely-codegen';
 
 export const handleGeneratePhrases = async ({
   concept,
@@ -15,8 +16,8 @@ export const handleGeneratePhrases = async ({
   level,
 }: {
   concept: string;
-  studyLanguage: LanguagesISO639;
-  userLanguage: LanguagesISO639;
+  studyLanguage: Iso639LanguageCode;
+  userLanguage: Iso639LanguageCode;
   level: string | null;
 }) => {
   const supabase = createClient();
@@ -71,7 +72,7 @@ export const generateTranslation = async ({
 }: {
   subjectText: string;
   request: string;
-  prefLanguage: LanguagesISO639 | undefined | null;
+  prefLanguage: Iso639LanguageCode | undefined | null;
 }): Promise<{
   type: 'translation';
   data: TranslationResponseType;

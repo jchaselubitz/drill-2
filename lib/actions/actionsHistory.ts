@@ -2,9 +2,9 @@
 
 import { createClient } from '@/utils/supabase/server';
 import db from '../database';
-import { LanguagesISO639 } from '../lists';
+
 import { revalidatePath } from 'next/cache';
-import { BaseHistory } from 'kysely-codegen';
+import { BaseHistory, Iso639LanguageCode } from 'kysely-codegen';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { HistoryVocabType } from '../aiGenerators/types_generation';
 import { removeMarkdownNotation } from '../helpers/helpersPhrase';
@@ -48,7 +48,7 @@ export async function addHistory({
   existingHistory,
 }: {
   vocabulary: HistoryVocabType[];
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   insights: string;
   concepts: string[];
   existingHistory: BaseHistory | null | undefined;

@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/client';
-import { getLangName, LanguagesISO639 } from '../lists';
+import { getLangName } from '../lists';
 import {
   ChatMessage,
   ExistingHistoryType,
@@ -7,6 +7,7 @@ import {
   HistoryVocabType,
 } from './types_generation';
 import { getModelSelection, getOpenAiKey } from '../helpers/helpersAI';
+import { Iso639LanguageCode } from 'kysely-codegen';
 
 export const generateHistory = async ({
   messages,
@@ -16,7 +17,7 @@ export const generateHistory = async ({
 }: {
   messages: ChatMessage[];
   existingHistory?: ExistingHistoryType;
-  lang: LanguagesISO639;
+  lang: Iso639LanguageCode;
   markedOnly?: boolean;
 }): Promise<{
   vocabulary: HistoryVocabType[];
