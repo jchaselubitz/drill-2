@@ -8,13 +8,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
-  Table as TableType,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
 import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import * as React from 'react';
-import { FC, startTransition, useCallback, useOptimistic, useState } from 'react';
+import { FC, startTransition, useEffect, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useLibraryContext } from '@/contexts/library_context';
 import { useUserContext } from '@/contexts/user_context';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 import { LanguagesISO639 } from '@/lib/lists';
@@ -42,7 +42,7 @@ type LibraryTableProps = {
 
 const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, className }) => {
   const isMobile = useWindowSize().width < 768;
-
+  const { selectedPhraseId } = useLibraryContext();
   const { prefLanguage } = useUserContext();
   const storedSortLang = localStorage.getItem('sort_lang');
   const setSortLang = !storedSortLang
@@ -102,30 +102,10 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
     });
   };
 
-  const setSelectedPhrase = useCallback(
-    (phraseId: string, table: TableType<PhraseWithAssociations>, openPhrase?: string) => {
-      const tableRows = table.getCoreRowModel().rows;
-      const row = tableRows.find((row) => row.original.id === phraseId.toString());
-
-      if (!row) {
-        return;
-      }
-      const rowIndex = row.index;
-      const pageSize = pagination.pageSize;
-      const rowPage = Math.floor(rowIndex / pageSize);
-
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: rowPage,
-      }));
-    },
-    [setPagination, pagination.pageSize]
-  );
-
   const table = useReactTable({
     data: phrases,
     columns: LibraryColumns,
-    meta: { uniqueLanguages, toggleFavorite, setSelectedPhrase },
+    meta: { uniqueLanguages, toggleFavorite },
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -143,6 +123,23 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
       rowSelection,
     },
   });
+
+  const tableRows = table.getCoreRowModel().rows;
+  useEffect(() => {
+    if (selectedPhraseId === null) {
+      return;
+    }
+    const row = tableRows.find((row) => row.original.id === selectedPhraseId.toString());
+    if (!row) {
+      return;
+    }
+    const rowIndex = row.index;
+    const pageSize = pagination.pageSize;
+    const rowPage = Math.floor(rowIndex / pageSize);
+    if (rowPage !== pagination.pageIndex) {
+      table.setPageIndex(rowPage);
+    }
+  }, [selectedPhraseId, tableRows, pagination.pageSize]);
 
   return (
     <div className={cn('w-full px-1 ', className)}>
@@ -176,9 +173,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table
-                .getRowModel()
-                .rows.map((row) => <LibraryRow key={row.original.id} row={row} table={table} />)
+              table.getRowModel().rows.map((row) => <LibraryRow key={row.original.id} row={row} />)
             ) : (
               <TableRow>
                 <TableCell colSpan={LibraryColumns.length} className="h-24 text-center">

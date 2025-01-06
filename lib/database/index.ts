@@ -108,7 +108,6 @@ declare module 'kysely-codegen' {
   export type BaseSubject = Selectable<Subject>;
   export type SubjectWithLessons = BaseSubject & {
     lessons: BaseLesson[];
-    lang: LanguagesISO639;
   };
   export type NewSubject = Insertable<Subject>;
   export type EditedSubject = Updateable<Subject>;

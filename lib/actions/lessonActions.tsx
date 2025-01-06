@@ -28,17 +28,13 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
   }
   return (await db
     .selectFrom('subject' as never)
-    .innerJoin('lesson', 'subject.id', 'lesson.subjectId')
-    .limit(1)
-    .innerJoin('translation', 'lesson.id', 'translation.lessonId')
-    .innerJoin('phrase', 'translation.phraseSecondaryId', 'phrase.id')
     .select([
       'subject.id',
       'subject.name',
       'subject.level',
       'subject.createdAt',
       'subject.userId',
-      'phrase.lang as lang',
+      'subject.lang',
       jsonArrayFrom(
         db
           .selectFrom('lesson')
@@ -52,7 +48,6 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
             'lesson.reviewDate',
             'lesson.reviewDeck',
             'lesson.subjectId',
-            // 'subject.level as level',
           ])
           //@ts-ignore
           .whereRef('lesson.subjectId', '=', 'subject.id')
@@ -170,16 +165,26 @@ export const addSubjectLessonWithTranslations = async ({
     let newSubjectId = subjectId;
     return await db.transaction().execute(async (trx) => {
       if (!subjectId) {
-        const subject = await trx
-          .insertInto('subject')
-          .values({
-            name: subjectName,
-            level,
-            userId,
-          } as NewSubject)
-          .returning('id')
-          .executeTakeFirstOrThrow();
-        newSubjectId = subject.id;
+        const existingSubject = await trx
+          .selectFrom('subject')
+          .select(['id'])
+          .where('name', '=', subjectName)
+          .where('level', '=', level)
+          .executeTakeFirst();
+        if (existingSubject) {
+          newSubjectId = existingSubject.id;
+        } else {
+          const subject = await trx
+            .insertInto('subject')
+            .values({
+              name: subjectName,
+              level,
+              userId,
+            } as NewSubject)
+            .returning('id')
+            .executeTakeFirstOrThrow();
+          newSubjectId = subject.id;
+        }
       }
 
       const lesson = await trx

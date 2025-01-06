@@ -1,6 +1,7 @@
 'use client';
 
 import { BaseLesson } from 'kysely-codegen';
+import { Iso639LanguageCode } from 'kysely-codegen';
 import { XIcon } from 'lucide-react';
 import React from 'react';
 import LessonCreationForm from '@/app/lessons/(components)/lesson_creation_form';
@@ -12,7 +13,7 @@ import LessonCard from './lesson_card';
 
 interface LessonListProps {
   lessons: BaseLesson[];
-  subjectLang: string | undefined;
+  subjectLang: Iso639LanguageCode | LanguagesISO639 | undefined | null | '';
   subjectLevel: string | undefined | null;
   subjectId: string | undefined;
 }
@@ -24,7 +25,7 @@ const LessonList: React.FC<LessonListProps> = ({
   subjectId,
 }) => {
   const { setSelectedSubjectId } = useLessonsContext();
-  if (!lessons || lessons.length === 0 || !subjectId || !subjectLang || !subjectLevel)
+  if (!lessons || lessons.length === 0 || !subjectId || !subjectLevel)
     return (
       <div className="flex h-full items-center justify-center p-6 w-full">
         <div className="text-center">Select a subject to view lessons</div>
