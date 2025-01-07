@@ -19,12 +19,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { useUserContext } from '@/contexts/user_context';
 import { addTutorTopic } from '@/lib/actions/tutorActions';
 import { Languages, Levels } from '@/lib/lists';
+import { useRouter } from 'next/navigation';
 
 interface TopicCreationFormProps {
   startOpen?: boolean;
 }
 
 const TopicCreationForm: React.FC<TopicCreationFormProps> = ({ startOpen }) => {
+  const router = useRouter();
   const [showCreationForm, setShowCreationForm] = useState(startOpen);
   const { prefLanguage } = useUserContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -42,12 +44,15 @@ const TopicCreationForm: React.FC<TopicCreationFormProps> = ({ startOpen }) => {
       return;
     }
 
-    await addTutorTopic({
+    const newTopicId = await addTutorTopic({
       instructions: instructions,
       lang: language,
       level: level,
     } as NewTutorTopic);
     setIsLoading(false);
+    if (newTopicId) {
+      router.push(`/tutor/${newTopicId}`);
+    }
   };
   const formSchema = z.object({
     language: z.string().min(2, 'Language is required'),

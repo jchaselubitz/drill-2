@@ -60,7 +60,7 @@ export const getTutorTopics = async (topicId?: string): Promise<TutorTopicWithCo
   return topicsObject as TutorTopicWithCorrections[];
 };
 
-export const addTutorTopic = async (topic: NewTutorTopic) => {
+export const addTutorTopic = async (topic: NewTutorTopic): Promise<string | undefined> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -71,13 +71,16 @@ export const addTutorTopic = async (topic: NewTutorTopic) => {
 
   const userId = user.id;
 
-  db.insertInto('tutorTopic')
+  const newTopic = await db
+    .insertInto('tutorTopic')
     .values({
       ...topic,
       userId,
     })
-    .execute();
+    .returning('id')
+    .executeTakeFirstOrThrow();
   revalidatePath('/tutor', 'page');
+  return newTopic.id;
 };
 
 export const deleteTutorTopic = async (topicId: string) => {

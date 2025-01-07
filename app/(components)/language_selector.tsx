@@ -40,7 +40,6 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ props, onClick }) => {
       <SelectContent className="w-56">
         {Languages.map((lang) => (
           <SelectItem key={lang.value} value={lang.value}>
-            {' '}
             <div className="flex items-center gap-1 text-left text-sm leading-tight">
               <span className="text-lg font-bold">{getLangIcon(lang.value)}</span>
               <span className="truncate font-semibold">{getLangName(lang.value)}</span>

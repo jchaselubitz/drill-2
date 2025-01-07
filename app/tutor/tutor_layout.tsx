@@ -15,7 +15,7 @@ export default function ResponsiveTutorLayout({ topic, children }: TutorLayoutPr
     <ResponsiveLayout
       detailPanelActive={!!topicSelected}
       panel1={<div className="py-4 w-full">{children}</div>}
-      panel2={<div className="px-4 w-full">{topic}</div>}
+      panel2={<div className="w-full">{topic}</div>}
     />
   );
 }
