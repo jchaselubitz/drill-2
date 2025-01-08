@@ -327,7 +327,13 @@ export const TranscriptRequestSuggestions = [
   `List all the sentences.`,
 ];
 
-export type SourceOptionType = 'home' | 'lesson' | 'library' | 'inbox' | 'ai';
+const sourceOptionBase = ['home', 'history', 'lesson', 'correction', 'transcript', 'chat'];
+
+// export type SourceOptionType = (typeof sourceOptionBase)[number];
+
+export type SourceOptionType = 'home' | 'history' | 'lesson' | 'correction' | 'transcript' | 'chat';
+
+export const sourceOptions = sourceOptionBase as SourceOptionType[];
 
 export const getContentSuggestions = ({
   contentLang,

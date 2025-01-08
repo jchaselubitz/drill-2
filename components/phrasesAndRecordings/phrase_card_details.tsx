@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { useUserContext } from '@/contexts/user_context';
-import { getContentSuggestions } from '@/lib/lists';
+import { getContentSuggestions, SourceOptionType } from '@/lib/lists';
 
 import ContentRequest from '../ai_elements/content_request';
 import PhraseNote from './phrase_note';
@@ -23,6 +23,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateT
   const { userId, userLanguage, prefLanguage } = useUserContext();
   const text = phrase.text;
   const lang = phrase.lang as Iso639LanguageCode;
+  const source = phrase.source as SourceOptionType;
   const phraseId = phrase.id;
   const translationsPhrases =
     phrase.translations
@@ -90,7 +91,7 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateT
           phraseId={phrase.id}
           phraseType={phrase.type}
           primaryPhraseIds={[phrase.id]}
-          source="phrase"
+          source={source}
           suggestions={getContentSuggestions({
             userLanguage,
             prefLanguage,

@@ -43,36 +43,46 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
   const isMobile = useWindowSize().width < 768;
   const { selectedPhraseId } = useLibraryContext();
   const { prefLanguage } = useUserContext();
-  const storedSortLang = localStorage.getItem('sort_lang');
+  const storedSortLang = typeof window !== 'undefined' ? localStorage.getItem('sort_lang') : null;
   const setSortLang = !storedSortLang
     ? prefLanguage
     : storedSortLang === '*'
       ? ''
       : (storedSortLang as Iso639LanguageCode);
-  const storedSortType = localStorage.getItem('sort_type');
+  const storedSortType = typeof window !== 'undefined' ? localStorage.getItem('sort_type') : null;
   const setSortType =
     !storedSortType || storedSortType === '*' ? '' : (storedSortType as PhraseType);
+
+  const storedSortSource =
+    typeof window !== 'undefined' ? localStorage.getItem('sort_source') : null;
+  const setSortSource =
+    storedSortSource && JSON.parse(storedSortSource).length > 0 ? JSON.parse(storedSortSource) : [];
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     {
-      id: 'lang',
+      id: 'Language',
       value: setSortLang,
     },
     {
       id: 'type',
       value: setSortType,
     },
+    {
+      id: 'source',
+      value: setSortSource,
+    },
   ]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     select: !isMobile,
     favorite: true,
     text: true,
-    lang: false,
+    language: false,
     audio: !isMobile,
     tags: false,
     type: true,
-    createdAt: false,
+    Date: false,
+    source: false,
     actions: !isMobile,
   });
   const [rowSelection, setRowSelection] = useState({});
@@ -136,7 +146,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
     const pageSize = pagination.pageSize;
     const rowPage = Math.floor(rowIndex / pageSize);
     if (rowPage !== pagination.pageIndex) {
-      table.setPageIndex(rowPage);
+      table.setPageIndex(rowPage - 1);
     }
   }, [selectedPhraseId, tableRows, pagination.pageSize]);
 

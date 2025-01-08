@@ -2,13 +2,11 @@
 
 import { BaseTutorTopic } from 'kysely-codegen';
 import { Trash, XIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React, { useOptimistic } from 'react';
-
 import { Button } from '@/components/ui/button';
-
 import { useLibraryContext } from '@/contexts/library_context';
 import { deleteTutorTopic } from '@/lib/actions/tutorActions';
-import { useRouter } from 'next/navigation';
 
 type TopicTopBarProps = {
   topic: BaseTutorTopic;

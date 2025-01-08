@@ -1,7 +1,7 @@
 import { ColumnsIcon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
-import { ChevronDown, Hash, Languages } from 'lucide-react';
+import { ChevronDown, CircleArrowDown, FileType, Hash, Languages } from 'lucide-react';
 import React from 'react';
 import { useWindowSize } from 'react-use';
 import Tag from '@/components/tags/tag';
@@ -20,6 +20,8 @@ import {
   getPhraseTypeName,
   PhraseListType,
   PhraseTypes,
+  sourceOptions,
+  SourceOptionType,
 } from '@/lib/lists';
 
 interface LibraryTableHeaderToolsProps {
@@ -40,11 +42,14 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
   const tagsColumn = table.getColumn('tags');
   const tagsColumnCurrentFilter = (tagsColumn?.getFilterValue() as string[]) ?? [];
 
-  const langColumn = table.getColumn('lang');
+  const langColumn = table.getColumn('Language');
   const langColumnCurrentFilter = langColumn?.getFilterValue() as Iso639LanguageCode;
 
   const typeColumn = table.getColumn('type');
   const typeColumnCurrentFilter = typeColumn?.getFilterValue() as PhraseType;
+
+  const sourceColumn = table.getColumn('source');
+  const sourceColumnCurrentFilter = sourceColumn?.getFilterValue() as string[];
 
   const handleFilterText = (event: React.ChangeEvent<HTMLInputElement>) => {
     textColumn?.setFilterValue(event.target.value);
@@ -66,6 +71,18 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
     localStorage.setItem('sort_type', v ? type : '*');
   };
 
+  const handleFilterSource = (v: boolean, source: SourceOptionType) => {
+    const sourceColumnCurrentFilter = sourceColumn?.getFilterValue() as SourceOptionType[];
+    const newSortSource = () => {
+      if (v) {
+        return sourceColumnCurrentFilter ? [...sourceColumnCurrentFilter, source] : [source];
+      }
+      return sourceColumnCurrentFilter?.filter((s) => s !== source);
+    };
+    sourceColumn?.setFilterValue(newSortSource());
+    localStorage.setItem('sort_source', JSON.stringify(newSortSource()));
+  };
+
   return (
     <div className="flex flex-wrap items-center py-4 gap-2 justify-between">
       <Input
@@ -75,7 +92,7 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
         className="max-w-48"
       />
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-scroll">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -128,11 +145,13 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              {!typeColumnCurrentFilter
-                ? 'Type'
-                : isMobile
+              {isMobile
+                ? typeColumnCurrentFilter
                   ? getPhraseTypeIcon(typeColumnCurrentFilter)
-                  : getPhraseTypeName(typeColumnCurrentFilter)}{' '}
+                  : `Type`
+                : typeColumnCurrentFilter
+                  ? getPhraseTypeName(typeColumnCurrentFilter)
+                  : `Type`}
               <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
@@ -156,7 +175,32 @@ const LibraryTableHeaderTools: React.FC<LibraryTableHeaderToolsProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
+              {isMobile ? <CircleArrowDown /> : 'Sources'}
+
+              <ChevronDown />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {sourceOptions.map((source) => {
+              return (
+                <DropdownMenuCheckboxItem
+                  key={source}
+                  className="capitalize"
+                  checked={sourceColumnCurrentFilter?.includes(source)}
+                  onCheckedChange={(v) => handleFilterSource(v, source)}
+                >
+                  {source}
+                </DropdownMenuCheckboxItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
               {isMobile ? <ColumnsIcon /> : 'Columns'}
+
               <ChevronDown />
             </Button>
           </DropdownMenuTrigger>

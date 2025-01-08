@@ -6,7 +6,6 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
-
   const data = await req.json();
   const userApiKey = data.userApiKey;
   const text = data.text;

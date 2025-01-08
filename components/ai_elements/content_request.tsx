@@ -11,6 +11,7 @@ import {
 import { generateExplanation } from '@/lib/aiGenerators/generators_tutor';
 import { GenResponseType } from '@/lib/aiGenerators/types_generation';
 import { handleReturnKeyPress } from '@/lib/helpers/helpersGeneral';
+import { SourceOptionType } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import { LoadingButton } from '../ui/button-loading';
@@ -26,7 +27,7 @@ interface ContentRequestProps {
   phraseType?: PhraseType;
   primaryPhraseIds: string[];
   suggestions: string[];
-  source: string;
+  source: SourceOptionType;
 }
 
 const ContentRequest: React.FC<ContentRequestProps> = ({

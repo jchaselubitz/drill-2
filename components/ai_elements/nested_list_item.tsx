@@ -2,13 +2,14 @@ import { Iso639LanguageCode } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { addPhrase } from '@/lib/actions/phraseActions';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
+import { SourceOptionType } from '@/lib/lists';
 
 import { Button } from '../ui/button';
 
 interface NestedListItemProps {
   value: any;
   parentKeys: string[];
-  source: string | undefined;
+  source: SourceOptionType;
   lang: Iso639LanguageCode;
   associatedPhraseId: string | undefined;
 }

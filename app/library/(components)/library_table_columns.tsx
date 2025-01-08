@@ -10,6 +10,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { capitalizeFirstLetter } from '@/lib/helpers/helpersPhrase';
 import { getLangIcon, getPhraseTypeIcon } from '@/lib/lists';
+// import { ColumnFilterFn } from '@tanstack/react-table';
+
+// export const arrIncludes: ColumnFilterFn<any> = (row, columnId, filterValue) => {
+//   if (!filterValue || filterValue.length === 0) return true;
+//   const rowValue = row.getValue(columnId);
+//   return filterValue.includes(rowValue);
+// };
 
 export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
   {
@@ -126,11 +133,12 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
 
   {
     accessorKey: 'lang',
+    id: 'Language',
     header: () => {
       return <Languages size={18} />;
     },
     cell: ({ row }) => (
-      <div className="flex justify-center">{getLangIcon(row.getValue('lang'))}</div>
+      <div className="flex justify-center">{getLangIcon(row.getValue('Language'))}</div>
     ),
     size: 1,
     enableHiding: true,
@@ -147,10 +155,18 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
     size: 1,
     enableHiding: true,
   },
+  {
+    accessorKey: 'source',
+    header: 'Source',
+    cell: ({ row }) => <div className="flex justify-center">{row.getValue('source')}</div>,
+    filterFn: 'arrIncludesSome',
+    size: 1,
+    enableHiding: true,
+  },
 
   {
     accessorKey: 'createdAt',
-    id: 'createdAt',
+    id: 'Date',
     header: ({ column }) => {
       return (
         <Button
@@ -164,7 +180,7 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
     },
     cell: ({ row }) => (
       <span className="flex justify-center ">
-        <div className="capitalize ">{getHumanDate(row.getValue('createdAt'))}</div>
+        <div className="capitalize ">{getHumanDate(row.getValue('Date'))}</div>
       </span>
     ),
     size: 10,

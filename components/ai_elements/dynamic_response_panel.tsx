@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import { addTranslation } from '@/lib/actions/phraseActions';
 import { GenResponseType, TranslationResponseType } from '@/lib/aiGenerators/types_generation';
+import { SourceOptionType } from '@/lib/lists';
 
 import NestedObject from './nested_object';
 import SaveTranslationButton from './save_translation_button';
@@ -12,7 +13,7 @@ interface DynamicResponsePanelProps {
   associatedPhraseId?: string;
   lang: Iso639LanguageCode;
   primaryPhraseIds: string[];
-  source: string | undefined;
+  source: SourceOptionType;
   phraseType?: PhraseType;
 }
 

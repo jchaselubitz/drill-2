@@ -450,7 +450,7 @@ export type ExplanationResponseType = {
 type AddTranslationProps = {
   primaryPhraseIds?: string[];
   genResponse: TranslationResponseType;
-  source: string | undefined;
+  source: SourceOptionType;
   revalidationPath?: RevalidationPath;
   phraseType?: PhraseType;
 };

@@ -162,7 +162,6 @@ export const addSubjectLessonWithTranslations = async ({
   }
   const userId = user.id;
 
-  const sourceName = `Lesson: ${title}`;
   try {
     let newSubjectId = subjectId;
     return await db.transaction().execute(async (trx) => {
@@ -207,7 +206,7 @@ export const addSubjectLessonWithTranslations = async ({
           .values({
             text: phrase.phrase_primary.text,
             lang: phrase.phrase_primary.lang,
-            source: sourceName,
+            source: 'lesson',
             userId,
           } as NewPhrase)
           .returning('id')
@@ -218,7 +217,7 @@ export const addSubjectLessonWithTranslations = async ({
           .values({
             text: phrase.phrase_secondary.text,
             lang: phrase.phrase_secondary.lang,
-            source: sourceName,
+            source: 'lesson',
             userId,
           } as NewPhrase)
           .returning('id')

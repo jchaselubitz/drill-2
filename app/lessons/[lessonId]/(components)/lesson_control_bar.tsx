@@ -2,8 +2,8 @@
 
 import { BaseLesson } from 'kysely-codegen';
 import React, { useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
 import { Input } from '@/components/ui/input';
+import { createClient } from '@/utils/supabase/client';
 
 interface LessonControlBarProps {
   lesson: BaseLesson;

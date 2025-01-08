@@ -85,7 +85,7 @@ const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({
             key={index}
             data={{ content: sentence }}
             lang={learningLang}
-            source={`correction - ${correction.id}`}
+            source={`correction`}
           />
         ))}
     </div>
