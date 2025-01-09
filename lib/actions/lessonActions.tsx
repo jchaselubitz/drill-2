@@ -4,6 +4,7 @@ import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import {
   BasePhrase,
   Iso639LanguageCode,
+  LessonListType,
   LessonWithTranslations,
   NewLesson,
   NewPhrase,
@@ -54,6 +55,21 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
     ])
     .where('subject.userId', '=', user.id)
     .execute()) as SubjectWithLessons[];
+};
+
+export const getLessonList = async (): Promise<LessonListType[]> => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return [];
+  }
+  return (await db
+    .selectFrom('lesson' as never)
+    .select(['id', 'title', 'sideOne', 'sideTwo'])
+    .where('userId', '=', user.id)
+    .execute()) as LessonListType[];
 };
 
 export const getLessons = async (lessonId?: string): Promise<LessonWithTranslations[]> => {
@@ -244,7 +260,7 @@ export const addSubjectLessonWithTranslations = async ({
   }
 };
 
-export const addTranslationsToLesson = async ({
+export const addPhrasesToLesson = async ({
   lessonId,
   phrases,
 }: {
@@ -301,5 +317,35 @@ export const addTranslationsToLesson = async ({
     revalidatePath(`/lessons/${lessonId}`, 'page');
   } catch (error) {
     throw Error('Error adding translations to lesson to db');
+  }
+};
+
+export const addTranslationToLesson = async ({
+  lessonId,
+  translationId,
+}: {
+  lessonId: string;
+  translationId: string;
+}) => {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return;
+  }
+
+  try {
+    await db
+      .updateTable('translation')
+      .set({ lessonId })
+      .where('id', '=', translationId)
+      .executeTakeFirstOrThrow();
+
+    revalidatePath(`/lessons/${lessonId}`, 'page');
+  } catch (error) {
+    throw Error('Error adding translation to lesson to db');
   }
 };

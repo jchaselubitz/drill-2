@@ -76,9 +76,11 @@ export const getPhrases = async ({
           )
           .leftJoin('phrase as p1', 'p1.id', 'translation.phrasePrimaryId')
           .leftJoin('phrase as p2', 'p2.id', 'translation.phraseSecondaryId')
+          .leftJoin('lesson', 'lesson.id', 'translation.lessonId')
           .select([
             'translation.id',
             'translation.lessonId as lessonId',
+            'lesson.title as lessonTitle',
             'p1.id as p1_Id',
             'p1.text as p1_text',
             'p1.lang as p1_lang',
@@ -177,6 +179,7 @@ export const getPhrases = async ({
         return {
           id: relationship.id,
           lessonId: relationship.lessonId,
+          lessonTitle: relationship.lessonTitle,
           phrases,
         };
       });

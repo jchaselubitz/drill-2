@@ -22,5 +22,5 @@ export default async function LessonsLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <LessonsContextProvider> {children} </LessonsContextProvider>;
+  return children;
 }

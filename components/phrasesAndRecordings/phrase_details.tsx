@@ -12,7 +12,8 @@ import { getContentSuggestions, SourceOptionType } from '@/lib/lists';
 import ContentRequest from '../ai_elements/content_request';
 import PhraseNote from './phrase_note';
 import AssociationRow from './translationAndAssociation/association_row';
-import TranslationRow from './translationAndAssociation/translation_row';
+import LessonRow from './translationAndAssociation/lesson_association_row';
+import TranslationRow, { TranslationPhrase } from './translationAndAssociation/translation_row';
 
 interface PhraseDetailsProps {
   phrase: PhraseWithAssociations;
@@ -21,21 +22,32 @@ interface PhraseDetailsProps {
 
 const PhraseDetails: React.FC<PhraseDetailsProps> = ({ phrase, navigateToPhrase }) => {
   const { userId, userLanguage, prefLanguage } = useUserContext();
+
   const text = phrase.text;
   const lang = phrase.lang as Iso639LanguageCode;
   const source = phrase.source as SourceOptionType;
-  const phraseId = phrase.id;
+
   const translationsPhrases =
-    phrase.translations
-      ?.map((t: any) => t?.phrases)
-      .map((p) => p)
-      .flat() || [];
+    (phrase.translations
+      ?.map((t: any) => {
+        return t?.phrases.map((p: any) => {
+          return { ...p, translationId: t.id, lessonId: t.lessonId };
+        });
+      })
+      .flat() as TranslationPhrase[]) || [];
 
   const associatedPhrases =
     phrase.associations
-      ?.map((t: any) => t?.phrases)
-      .map((p) => p)
+      ?.map((a: any) => a?.phrases.map((aPhrase: any) => aPhrase))
+
       .flat() || [];
+
+  const associatedLessons = phrase.translations
+    .map((t: any) => {
+      if (t.lessonId === null) return [];
+      return { id: t.lessonId, title: t.lessonTitle };
+    })
+    .flat();
 
   const accordionItemClass = 'border-0 data-[state=open]:mb-3';
   const accordionTriggerClass =
@@ -61,6 +73,7 @@ const PhraseDetails: React.FC<PhraseDetailsProps> = ({ phrase, navigateToPhrase 
                       key={translationsPhrase.id}
                       translationsPhrase={translationsPhrase}
                       navigateToPhrase={navigateToPhrase}
+                      phraseLang={lang}
                     />
                   ))}
                 </AccordionContent>
@@ -76,6 +89,16 @@ const PhraseDetails: React.FC<PhraseDetailsProps> = ({ phrase, navigateToPhrase 
                       associatedPhrase={associatedPhrase}
                       navigateToPhrase={navigateToPhrase}
                     />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            {associatedLessons && associatedLessons.length > 0 && (
+              <AccordionItem value="associations" className={accordionItemClass}>
+                <AccordionTrigger className={accordionTriggerClass}>Lessons</AccordionTrigger>
+                <AccordionContent>
+                  {associatedLessons.map((lesson: any) => (
+                    <LessonRow key={lesson.id} lesson={lesson} />
                   ))}
                 </AccordionContent>
               </AccordionItem>

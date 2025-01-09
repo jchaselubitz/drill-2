@@ -55,6 +55,12 @@ declare module 'kysely-codegen' {
     mediaUrl: string;
   };
 
+  export type LessonListType = {
+    id: string;
+    title: string;
+    sideOne: Iso639LanguageCode;
+    sideTwo: Iso639LanguageCode;
+  };
   export type BaseLesson = Selectable<Lesson> & { level: string | null };
   export type LessonWithTranslations = BaseLesson & {
     translations: TranslationWithPhrase[];
@@ -79,6 +85,7 @@ declare module 'kysely-codegen' {
       id: string;
       userId: string;
       lessonId: string | null;
+      lessonTitle: string | null;
       phraseId: string;
     }[];
   };

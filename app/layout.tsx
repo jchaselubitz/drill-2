@@ -8,9 +8,11 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import { ChatWindowProvider } from '@/contexts/chat_window_context';
 import { CreateModalProvider } from '@/contexts/create_modal_context';
+import { LessonsContextProvider } from '@/contexts/lessons_context';
 import { LibraryContextProvider } from '@/contexts/library_context';
 import { UserContextProvider } from '@/contexts/user_context';
 import { getUserHistory } from '@/lib/actions/actionsHistory';
+import { getLessonList } from '@/lib/actions/lessonActions';
 import { getProfile } from '@/lib/actions/userActions';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
@@ -66,6 +68,7 @@ export default async function RootLayout({
   const supabase = createClient();
   const profile = await getProfile();
   const history = await getUserHistory();
+  const lessonList = await getLessonList();
 
   const {
     data: { user },
@@ -85,14 +88,16 @@ export default async function RootLayout({
             <CreateModalProvider>
               <SidebarProvider>
                 <LibraryContextProvider>
-                  <ChatWindowProvider>
-                    <NavService user={user}>{children}</NavService>
+                  <LessonsContextProvider lessons={lessonList}>
+                    <ChatWindowProvider>
+                      <NavService user={user}>{children}</NavService>
 
-                    <div className="relative max-h-screen">
-                      <PhraseChat />
-                      <DesktopChatButton />
-                    </div>
-                  </ChatWindowProvider>
+                      <div className="relative max-h-screen">
+                        <PhraseChat />
+                        <DesktopChatButton />
+                      </div>
+                    </ChatWindowProvider>
+                  </LessonsContextProvider>
                 </LibraryContextProvider>
               </SidebarProvider>
               <CreateDialog />

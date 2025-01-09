@@ -1,6 +1,6 @@
 import { Iso639LanguageCode } from 'kysely-codegen';
 import React, { useState } from 'react';
-import { addTranslationsToLesson } from '@/lib/actions/lessonActions';
+import { addPhrasesToLesson } from '@/lib/actions/lessonActions';
 import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
 
 interface GenerateMorePhrasesProps {
@@ -32,7 +32,7 @@ const GenerateMorePhrases: React.FC<GenerateMorePhrasesProps> = ({
       setIsLoading(false);
       return;
     }
-    await addTranslationsToLesson({
+    await addPhrasesToLesson({
       phrases: phraseArray,
       lessonId: lessonId,
     });

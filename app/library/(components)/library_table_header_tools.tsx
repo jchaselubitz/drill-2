@@ -1,7 +1,7 @@
 import { ColumnsIcon } from '@radix-ui/react-icons';
 import { Table } from '@tanstack/react-table';
 import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
-import { ChevronDown, CircleArrowDown, FileType, Hash, Languages } from 'lucide-react';
+import { ChevronDown, CircleArrowDown, Hash, Languages } from 'lucide-react';
 import React from 'react';
 import { useWindowSize } from 'react-use';
 import Tag from '@/components/tags/tag';

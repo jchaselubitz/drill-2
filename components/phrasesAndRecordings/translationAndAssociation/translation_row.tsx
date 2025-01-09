@@ -1,26 +1,41 @@
 import { Iso639LanguageCode } from 'kysely-codegen';
 import React from 'react';
 import TtsButton from '@/components/ai_elements/tts_button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useLessonsContext } from '@/contexts/lessons_context';
 import { useLibraryContext } from '@/contexts/library_context';
+import { addTranslationToLesson } from '@/lib/actions/lessonActions';
 import { getLangIcon } from '@/lib/lists';
 
+export interface TranslationPhrase {
+  id: string;
+  text: string;
+  lang: Iso639LanguageCode;
+  lessonId: string;
+  lessonTitle: string;
+  translationId: string;
+}
 interface TranslationRowProps {
-  translationsPhrase: {
-    id: string;
-    text: string;
-    lang: Iso639LanguageCode;
-    lessonLink: string;
-    lessonTitle: string;
-  };
+  translationsPhrase: TranslationPhrase;
+  phraseLang: Iso639LanguageCode;
   navigateToPhrase?: (id: string) => void;
 }
 
 const TranslationRow: React.FC<TranslationRowProps> = ({
   translationsPhrase,
   navigateToPhrase,
+  phraseLang,
 }) => {
   const bucket = 'text_to_speech';
   const { setSelectedPhraseId } = useLibraryContext();
+
+  const { userLessons } = useLessonsContext();
 
   const handlePhraseClick = () => {
     if (navigateToPhrase) {
@@ -29,6 +44,25 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
       setSelectedPhraseId(translationsPhrase.id);
     }
   };
+
+  const handleAddTooLesson = async (lessonId: string) => {
+    await addTranslationToLesson({
+      lessonId,
+      translationId: translationsPhrase.translationId,
+    });
+  };
+
+  const getCompatibleLessons = () => {
+    return userLessons.filter((lesson) => {
+      return (
+        (lesson.sideOne === translationsPhrase.lang ||
+          lesson.sideTwo === translationsPhrase.lang) &&
+        (lesson.sideOne === phraseLang || lesson.sideTwo === phraseLang)
+      );
+    });
+  };
+
+  const compatibleLessons = getCompatibleLessons();
 
   return (
     <div
@@ -46,6 +80,29 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
         <div className="w-12">
           <TtsButton text={translationsPhrase.text} bucket={bucket} lacksAudio={false} />
         </div>
+      </div>
+      <div className="mt-2">
+        {compatibleLessons[0] && (
+          <div className="ml-5  flex items-center gap-2 ">
+            Lesson:
+            <Select
+              onValueChange={(v) => handleAddTooLesson(v)}
+              defaultValue={translationsPhrase.lessonId?.toString() || ''}
+            >
+              <SelectTrigger className="flex flex-grow h-8 max-w-fit">
+                <SelectValue placeholder="Add to lesson" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {compatibleLessons.map((lesson) => (
+                  <SelectItem key={lesson.id} value={lesson.id}>
+                    {lesson.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
     </div>
   );

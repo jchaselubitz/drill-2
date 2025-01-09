@@ -1,18 +1,21 @@
 'use client';
 
+import { LessonListType } from 'kysely-codegen';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 interface LessonsContextProps {
   selectedSubjectId: string | null;
   setSelectedSubjectId: (id: string | null) => void;
+  userLessons: LessonListType[];
 }
 
 const LessonsContext = createContext<LessonsContextProps | undefined>(undefined);
 
 export const LessonsContextProvider: React.FC<{
   children: ReactNode;
-}> = ({ children }) => {
+  lessons: LessonListType[];
+}> = ({ children, lessons }) => {
   const searchParams = useSearchParams();
   const openSubject = searchParams.get('subject');
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(openSubject ?? null);
@@ -37,6 +40,7 @@ export const LessonsContextProvider: React.FC<{
       value={{
         selectedSubjectId,
         setSelectedSubjectId: setSelectedSubject,
+        userLessons: lessons,
       }}
     >
       {children}
