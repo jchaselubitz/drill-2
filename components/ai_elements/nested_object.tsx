@@ -33,7 +33,7 @@ const NestedObject: React.FC<NestedObjectProps> = ({
   }
 
   return (
-    <ul className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col gap-2 w-full">
       {Object.entries(data).map(([key, value]) => (
         <React.Fragment key={key}>
           {isObject(value) ? (
@@ -50,7 +50,7 @@ const NestedObject: React.FC<NestedObjectProps> = ({
               </div>
             </div>
           ) : (
-            <li>
+            <div className="w-full">
               <NestedListItem
                 value={value}
                 parentKeys={parentKeys}
@@ -58,11 +58,11 @@ const NestedObject: React.FC<NestedObjectProps> = ({
                 lang={lang}
                 associatedPhraseId={associatedPhraseId}
               />
-            </li>
+            </div>
           )}
         </React.Fragment>
       ))}
-    </ul>
+    </div>
   );
 };
 

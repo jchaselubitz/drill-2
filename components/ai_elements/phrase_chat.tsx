@@ -45,7 +45,6 @@ const PhraseChat: React.FC = () => {
   } = useChatContext();
 
   const learningLang = currentLang ?? prefLanguage;
-  const existingHistory = history?.find((h) => h.lang === learningLang);
 
   const handleMouseEvent = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -35,12 +35,16 @@ export function AILoadingButton({
   className = '',
   withStars = false,
   buttonState,
+  reset,
+  setButtonState,
 }: AILoadingButtonProps) {
   return (
     <LoadingButton
       onClick={onClick}
       className={`${aiButtonClass} ${className}`}
       buttonState={buttonState}
+      reset={reset}
+      setButtonState={setButtonState}
       text={
         <>
           {withStars && <Stars />}

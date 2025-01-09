@@ -37,15 +37,20 @@ const Message: React.FC<MessageProps> = ({ message, lang }) => {
   return (
     <div
       className={cn('flex my-4 w-full', {
-        'justify-start': role === 'assistant',
-        'justify-end': role !== 'assistant',
+        'justify-start': role !== 'user',
+        'justify-end': role === 'user',
       })}
     >
       <div
-        className={cn('max-w-full p-3 rounded-lg text-gray-800', {
-          'bg-blue-200 mr-8': role === 'assistant',
-          'bg-slate-200 ml-8': role !== 'assistant',
-        })}
+        className={cn(
+          'max-w-full w-full p-3 rounded-lg text-gray-800',
+
+          {
+            'bg-blue-200 mr-8': role !== 'user',
+            'bg-slate-200 ml-8': role === 'user',
+            'w-full': content.type !== 'message',
+          }
+        )}
       >
         {role === 'user' || content.type === 'message' ? (
           <Markdown className="max-w-full prose">{content.data}</Markdown>

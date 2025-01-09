@@ -15,6 +15,7 @@ interface DynamicResponsePanelProps {
   primaryPhraseIds: string[];
   source: SourceOptionType;
   phraseType?: PhraseType;
+  className?: string;
 }
 
 const DynamicResponsePanel: React.FC<DynamicResponsePanelProps> = ({
@@ -24,6 +25,7 @@ const DynamicResponsePanel: React.FC<DynamicResponsePanelProps> = ({
   associatedPhraseId,
   source,
   phraseType,
+  className,
 }) => {
   const pathname = usePathname();
 
@@ -42,12 +44,12 @@ const DynamicResponsePanel: React.FC<DynamicResponsePanelProps> = ({
   };
 
   return genResponse.type === 'translation' ? (
-    <div className="">
+    <div>
       <SaveTranslationButton data={genResponse.data} saveTranslation={saveTranslation} />
     </div>
   ) : (
     genResponse.type !== 'explanation' && (
-      <div className="">
+      <div className={className}>
         <NestedObject
           data={genResponse.data}
           lang={lang}

@@ -91,7 +91,7 @@ const MediaReview: React.FC<MediaReviewProps> = ({
           {transcriptionLoading
             ? 'Transcribing...'
             : audioDuration > maxDuration
-              ? `Transcribe (max ${maxDuration} minutes)`
+              ? `Transcribe (max ${maxDuration} seconds)`
               : 'Transcribe'}
         </Button>
       )}

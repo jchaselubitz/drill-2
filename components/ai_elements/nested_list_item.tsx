@@ -4,7 +4,7 @@ import { addPhrase } from '@/lib/actions/phraseActions';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
 import { SourceOptionType } from '@/lib/lists';
 
-import { Button } from '../ui/button';
+import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
 
 interface NestedListItemProps {
   value: any;
@@ -20,9 +20,10 @@ const NestedListItem: React.FC<NestedListItemProps> = ({
   lang,
   associatedPhraseId,
 }) => {
-  const [saved, setSaved] = useState(false);
+  const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
 
-  const saveContent = async (content: string): Promise<boolean> => {
+  const handleSave = async (content: string) => {
+    setButtonState('loading');
     try {
       await addPhrase({
         source,
@@ -31,16 +32,14 @@ const NestedListItem: React.FC<NestedListItemProps> = ({
         type: getPhraseType(content.trim()),
         associationId: associatedPhraseId,
       });
+      setButtonState('success');
     } catch (error) {
-      throw Error(`Error saving content: ${error}`);
-    }
-    return true;
-  };
-
-  const handleSave = async (content: string) => {
-    const success = await saveContent(content);
-    if (success) {
-      setSaved(true);
+      if (`${error}`.includes('unique_phrase_user_lang')) {
+        alert('Phrase already exists');
+        setButtonState('success');
+        return;
+      }
+      setButtonState('error');
     }
   };
 
@@ -48,9 +47,12 @@ const NestedListItem: React.FC<NestedListItemProps> = ({
     <div className="flex w-full gap-3 items-center justify-between border border-gray-300 rounded p-2 hover:bg-gray-100">
       <span>{value}</span>
 
-      <Button disabled={saved} onClick={() => handleSave(value)}>
-        {saved ? 'Saved' : 'Save'}
-      </Button>
+      <LoadingButton
+        onClick={() => handleSave(value)}
+        buttonState={buttonState}
+        text={'save'}
+        errorText="Error"
+      />
     </div>
   );
 };

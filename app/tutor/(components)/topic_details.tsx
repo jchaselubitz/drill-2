@@ -12,7 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
+import { ButtonLoadingState } from '@/components/ui/button-loading';
 import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/contexts/user_context';
 import { saveTopicPrompt, saveTopicResponse } from '@/lib/actions/tutorActions';
@@ -121,6 +121,8 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
                 onClick={() => handleChangePromptLength('shorter')}
                 className="w-fit bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg "
                 buttonState={shortenButtonState}
+                reset
+                setButtonState={setShortenButtonState}
                 text={'Shorter'}
                 loadingText={'Shortening ...'}
                 successText={'Shorter'}
@@ -130,6 +132,8 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
                 onClick={() => handleChangePromptLength('longer')}
                 className="w-fit bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg 0"
                 buttonState={lengthenButtonState}
+                reset
+                setButtonState={setLengthenButtonState}
                 text={'Longer'}
                 loadingText={'Lengthening ...'}
                 successText={'Longer'}
