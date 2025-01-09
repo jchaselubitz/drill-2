@@ -5,7 +5,7 @@ import React from 'react';
 
 import TtsButton from '../ai_elements/tts_button';
 import BaseObjectCard from './base_object_card';
-import PhraseCardDetails from './phrase_card_details';
+import PhraseDetails from './phrase_details';
 
 interface PhraseCardProps {
   phrase: PhraseWithAssociations;
@@ -24,7 +24,7 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
       withoutDetails={<TtsButton text={phrase.text} bucket={bucket} lacksAudio={false} />}
       objectDetails={
         <div className="bg-white rounded-md">
-          <PhraseCardDetails phrase={phrase} navigateToPhrase={setSelectedPhrase} />
+          <PhraseDetails phrase={phrase} navigateToPhrase={setSelectedPhrase} />
         </div>
       }
       text={phrase.text}

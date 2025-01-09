@@ -117,6 +117,8 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
       </div>
       <hr className="border-gray-300 my-5" />
       <PhraseList
+        side1={lesson.sideOne}
+        side2={lesson.sideTwo}
         translations={translations}
         bucket={bucket}
         translationsWithoutAudio={translationsWithoutAudio}

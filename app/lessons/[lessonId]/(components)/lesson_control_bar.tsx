@@ -4,6 +4,7 @@ import { BaseLesson } from 'kysely-codegen';
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { createClient } from '@/utils/supabase/client';
+import BackButton from '@/components/back_button';
 
 interface LessonControlBarProps {
   lesson: BaseLesson;
@@ -28,7 +29,8 @@ const LessonControlBar: React.FC<LessonControlBarProps> = ({ lesson }) => {
   };
 
   return (
-    <div className="md:flex justify-between">
+    <div className="md:flex gap-3">
+      <BackButton />
       {showTitleEditor ? (
         <Input
           type="text"

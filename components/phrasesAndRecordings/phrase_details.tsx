@@ -14,12 +14,12 @@ import PhraseNote from './phrase_note';
 import AssociationRow from './translationAndAssociation/association_row';
 import TranslationRow from './translationAndAssociation/translation_row';
 
-interface PhraseCardDetailsProps {
+interface PhraseDetailsProps {
   phrase: PhraseWithAssociations;
   navigateToPhrase?: (id: string) => void;
 }
 
-const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateToPhrase }) => {
+const PhraseDetails: React.FC<PhraseDetailsProps> = ({ phrase, navigateToPhrase }) => {
   const { userId, userLanguage, prefLanguage } = useUserContext();
   const text = phrase.text;
   const lang = phrase.lang as Iso639LanguageCode;
@@ -104,4 +104,4 @@ const PhraseCardDetails: React.FC<PhraseCardDetailsProps> = ({ phrase, navigateT
   );
 };
 
-export default PhraseCardDetails;
+export default PhraseDetails;

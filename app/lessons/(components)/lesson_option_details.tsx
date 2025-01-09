@@ -64,7 +64,6 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
         phrases: phraseArray,
         subjectId: subjectId,
         subjectName: getLangName(studyLanguage),
-        subjectLang: studyLanguage,
       });
 
       if (dbData) {

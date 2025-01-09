@@ -83,9 +83,10 @@ export const getLessons = async (lessonId?: string): Promise<LessonWithTranslati
       'lesson.recordingUrl',
       'lesson.reviewDate',
       'lesson.reviewDeck',
+      'lesson.sideOne',
+      'lesson.sideTwo',
       'subject.level as level',
       'subject.name as subjectName',
-
       jsonArrayFrom(
         eb
           .selectFrom('translation')
@@ -142,7 +143,6 @@ export const addSubjectLessonWithTranslations = async ({
   phrases,
   subjectId,
   subjectName,
-  subjectLang,
 }: {
   title: string;
   description: string;
@@ -150,7 +150,6 @@ export const addSubjectLessonWithTranslations = async ({
   phrases: PhraseType[];
   subjectId?: string | undefined;
   subjectName: string;
-  subjectLang: Iso639LanguageCode;
 }) => {
   const supabase = createClient();
   const {
@@ -161,6 +160,9 @@ export const addSubjectLessonWithTranslations = async ({
     return;
   }
   const userId = user.id;
+
+  const baseLang = phrases[0].phrase_primary.lang;
+  const subjectLang = phrases[0].phrase_secondary.lang;
 
   try {
     let newSubjectId = subjectId;
@@ -196,6 +198,8 @@ export const addSubjectLessonWithTranslations = async ({
           shortDescription: description,
           subjectId: newSubjectId,
           userId,
+          sideOne: baseLang,
+          sideTwo: subjectLang,
         } as NewLesson)
         .returning('id')
         .executeTakeFirstOrThrow();

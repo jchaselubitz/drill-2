@@ -43,23 +43,22 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
   const isMobile = useWindowSize().width < 768;
   const { selectedPhraseId } = useLibraryContext();
   const { prefLanguage } = useUserContext();
-  const storedSortLang = typeof window !== 'undefined' ? localStorage.getItem('sort_lang') : null;
+
+  const storedSortLang = localStorage.getItem('sort_lang');
   const setSortLang = !storedSortLang
     ? prefLanguage
     : storedSortLang === '*'
       ? ''
       : (storedSortLang as Iso639LanguageCode);
-  const storedSortType = typeof window !== 'undefined' ? localStorage.getItem('sort_type') : null;
+  const storedSortType = localStorage.getItem('sort_type');
   const setSortType =
     !storedSortType || storedSortType === '*' ? '' : (storedSortType as PhraseType);
 
-  const storedSortSource =
-    typeof window !== 'undefined' ? localStorage.getItem('sort_source') : null;
+  const storedSortSource = localStorage.getItem('sort_source');
   const setSortSource =
     storedSortSource && JSON.parse(storedSortSource).length > 0 ? JSON.parse(storedSortSource) : [];
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+  const defaultFilters = [
     {
       id: 'Language',
       value: setSortLang,
@@ -68,11 +67,17 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
       id: 'type',
       value: setSortType,
     },
-    {
+  ];
+  if (setSortSource.length) {
+    defaultFilters.push({
       id: 'source',
       value: setSortSource,
-    },
-  ]);
+    });
+  }
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(defaultFilters);
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     select: !isMobile,
     favorite: true,
