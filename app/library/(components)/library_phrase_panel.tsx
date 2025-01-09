@@ -1,14 +1,13 @@
 import { PhraseWithAssociations } from 'kysely-codegen';
 import { useWindowSize } from 'react-use';
 import TtsButton from '@/components/ai_elements/tts_button';
-
+import PhraseDetails from '@/components/phrasesAndRecordings/phrase_details';
 import TagList from '@/components/tags/tag_list';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { capitalizeFirstLetter } from '@/lib/helpers/helpersPhrase';
 import { getLangIcon } from '@/lib/lists';
 
 import LibraryPhraseTopBar from './library_phrase_top_bar';
-import PhraseDetails from '@/components/phrasesAndRecordings/phrase_details';
 
 interface LibraryPhrasePanelProps {
   phrase: PhraseWithAssociations | null;

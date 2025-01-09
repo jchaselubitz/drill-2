@@ -2,9 +2,9 @@
 
 import { BaseLesson } from 'kysely-codegen';
 import React, { useState } from 'react';
+import BackButton from '@/components/back_button';
 import { Input } from '@/components/ui/input';
 import { createClient } from '@/utils/supabase/client';
-import BackButton from '@/components/back_button';
 
 interface LessonControlBarProps {
   lesson: BaseLesson;
