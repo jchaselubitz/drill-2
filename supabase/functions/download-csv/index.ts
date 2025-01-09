@@ -1,30 +1,15 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import { createHash } from 'https://deno.land/std@0.114.0/hash/mod.ts';
-import { createClient } from 'jsr:@supabase/supabase-js@2';
-
-interface Lesson {
-  id: string;
-  title: string;
-  translations: Translation[];
-}
-
-interface Translation {
-  phrase_primary_id: Phrase;
-  phrase_secondary_id: Phrase;
-}
-
-interface Phrase {
-  text: string;
-  lang: string;
-}
+import { createClient, SupabaseClient } from 'jsr:@supabase/supabase-js@2';
+import { Lesson, Phrase, Translation } from '../_shared/types.ts';
 
 async function hashString(text: string): Promise<string> {
-  const hash = createHash('sha256');
+  const hash = await createHash('sha256');
   hash.update(text);
   return hash.toString();
 }
 
-async function getUrl(text: string, bucket: string, supabase: any) {
+async function getUrl(text: string, bucket: string, supabase: SupabaseClient) {
   const fileName = (await hashString(text)) + '.mp3';
   const { data } = supabase.storage.from(bucket).getPublicUrl(fileName, { download: true });
 
@@ -41,7 +26,6 @@ Deno.serve(async (req) => {
 
   const data = await req.json();
   const lessonId = data.lessonId;
-  const bucket = 'text_to_speech';
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
@@ -52,7 +36,7 @@ Deno.serve(async (req) => {
   const { data: lessons, error: errorLessons } = await supabase
     .from('lesson')
     .select(
-      'id, title, translation ( phrase_primary_id (text, lang), phrase_secondary_id (text, lang))'
+      'id, title, side_one, side_two, translation ( phrase_primary_id (text, lang), phrase_secondary_id (text, lang))'
     )
     .eq('id', lessonId);
 
@@ -60,18 +44,19 @@ Deno.serve(async (req) => {
     return new Response(errorLessons.message, { status: 500 });
   }
 
-  const lesson = lessons ? (lessons[0] as any) : ({} as Lesson);
+  const lesson = lessons ? (lessons[0] as Lesson) : ({} as Lesson);
 
   const createExportArray = async () =>
     await Promise.all(
-      lesson.translation?.map(async (t: any) => {
-        const primary = t.phrase_primary_id as Phrase;
-        const secondary = t.phrase_secondary_id as Phrase;
-        const fileUrl = await getUrl(secondary.text as string, 'text_to_speech', supabase);
+      lesson.translation?.map(async (t: Translation) => {
+        const phrases = [t.phrase_primary_id, t.phrase_secondary_id];
+        const side1 = phrases.find((p) => p.lang === lesson.side_one) as Phrase;
+        const side2 = phrases.find((p) => p.lang === lesson.side_two) as Phrase;
+        const fileUrl = await getUrl(side2.text as string, 'text_to_speech', supabase);
 
         return {
-          [primary.lang as any]: primary.text,
-          [secondary.lang as any]: secondary.text,
+          [side1.lang as string]: side2.text,
+          [side2.lang as string]: side2.text,
           ['media' as any]: fileUrl.publicUrl,
         };
       })
