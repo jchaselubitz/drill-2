@@ -8,6 +8,7 @@ import LessonCreationForm from '@/app/lessons/(components)/lesson_creation_form'
 import { useLessonsContext } from '@/contexts/lessons_context';
 
 import { Button } from '../ui/button';
+import { Skeleton } from '../ui/skeleton';
 import LessonCard from './lesson_card';
 
 interface LessonListProps {
@@ -51,3 +52,17 @@ const LessonList: React.FC<LessonListProps> = ({
 };
 
 export default LessonList;
+
+export const LessonListSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <div className="flex justify-end items-center">
+        <Button variant={'ghost'} size={'icon'}>
+          <XIcon />{' '}
+        </Button>
+      </div>
+      <Skeleton className="w-full h-20" />
+      <Skeleton className="w-full h-20" />
+    </div>
+  );
+};

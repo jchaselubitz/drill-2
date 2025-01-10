@@ -16,6 +16,7 @@ import * as React from 'react';
 import { FC, startTransition, useEffect, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -259,3 +260,22 @@ export default function LibraryTable({
     />
   );
 }
+
+export const LibraryTableSkeleton = () => {
+  return (
+    <div className="w-full px-1">
+      <Table>
+        <div className="flex flex-col gap-2 mt-4">
+          <Skeleton className="h-12" />
+          <Skeleton className="h-12" />
+          <Skeleton className="h-12" />
+          <Skeleton className="h-12" />
+          <Skeleton className="h-12" />
+          <Skeleton className="h-12" />
+          <Skeleton className="h-12" />
+          <Skeleton className="h-12" />
+        </div>
+      </Table>
+    </div>
+  );
+};

@@ -33,3 +33,13 @@ const SubjectItemList: React.FC<SubjectItemListProps> = ({ subjects, className }
 };
 
 export default SubjectItemList;
+
+export const SubjectItemListSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-3 w-full mt-2 ">
+      <div className="w-full h-20 bg-gray-200 rounded-md animate-pulse" />
+      <div className="w-full h-20 bg-gray-200 rounded-md animate-pulse" />
+      <div className="w-full h-20 bg-gray-200 rounded-md animate-pulse" />
+    </div>
+  );
+};

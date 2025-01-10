@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import CaptureAudio from '@/components/capture_audio';
 import CaptureText from '@/components/capture_text';
 import PhraseRecordingCardList from '@/components/phrasesAndRecordings/phrase_recording_list';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getPhrases } from '@/lib/actions/phraseActions';
 
 export default async function Home() {
@@ -13,23 +15,46 @@ export default async function Home() {
   return (
     <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
       <main className="flex flex-col gap-4 md:items-center w-full ">
-        <CaptureAudio />
-        <CaptureText />
+        <Suspense
+          fallback={
+            <div className="flex gap-3 items-center">
+              <Skeleton className="rounded-full h-12 w-12" />
+              <Skeleton className="rounded-full h-12 w-12" />
+              <Skeleton className="rounded-full h-24 w-24" />
+            </div>
+          }
+        >
+          <CaptureAudio />
+        </Suspense>
+        <Suspense fallback={<Skeleton className="w-full h-20" />}>
+          <CaptureText />
+        </Suspense>
         {recentPhrases.length > 0 && (
           <div className="flex flex-col items-center justify-center">
             <Separator className="w-2/3" />
           </div>
         )}
-        <div className="flex flex-col items-center gap-4 w-full">
-          <PhraseRecordingCardList phrases={recentPhrases} />
-          {recentPhrases.length > 0 && (
-            <Link href={'/library'}>
-              <Button size={'lg'} variant={'link'} className="text-base">
-                See all
-              </Button>
-            </Link>
-          )}
-        </div>
+
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center gap-4 w-full mt-4">
+              {' '}
+              <Skeleton className="w-full h-16" />
+              <Skeleton className="w-full h-16" />{' '}
+            </div>
+          }
+        >
+          <div className="flex flex-col items-center gap-4 w-full">
+            <PhraseRecordingCardList phrases={recentPhrases} />
+            {recentPhrases.length > 0 && (
+              <Link href={'/library'}>
+                <Button size={'lg'} variant={'link'} className="text-base">
+                  See all
+                </Button>
+              </Link>
+            )}
+          </div>
+        </Suspense>
       </main>
     </div>
   );
