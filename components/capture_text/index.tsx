@@ -47,6 +47,7 @@ const CaptureText: React.FC = () => {
     } catch (error) {
       setButtonState('error');
     }
+    form.reset();
     setModalOpen(false);
   };
 
@@ -98,6 +99,8 @@ const CaptureText: React.FC = () => {
                 text={'Submit'}
                 loadingText={'Saving ...'}
                 errorText="Something went wrong."
+                reset
+                setButtonState={setButtonState}
               />
             </>
           )}
