@@ -1,6 +1,7 @@
 import { PhraseWithAssociations } from 'kysely-codegen';
 import { useWindowSize } from 'react-use';
 import TtsButton from '@/components/ai_elements/tts_button';
+import PhraseContextMenu from '@/components/capture_text/phrase_context_menu';
 import PhraseDetails from '@/components/phrasesAndRecordings/phrase_details';
 import TagList from '@/components/tags/tag_list';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
@@ -33,16 +34,21 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({ phrase, userTag
       <div className=" flex flex-col p-4 border-b border-slate-200 gap-3  ">
         <div className="flex justify-between">
           <div className="flex justify-between w-full">
-            <div className="flex gap-3 font-bold ">
+            <div className="flex gap-3 font-semibold ">
               <div className="flex flex-col items-center gap-2">
                 <TtsButton
-                  className=" flex-shrink-0 "
+                  className="flex-shrink-0 "
                   text={phrase.text}
                   bucket="text_to_speech"
                   lacksAudio={false}
                 />
               </div>
-              <div>{phraseText}</div>
+
+              <PhraseContextMenu
+                phrase={phraseText}
+                associatedPhraseId={phrase.id}
+                lang={phrase.lang}
+              />
             </div>
           </div>
         </div>

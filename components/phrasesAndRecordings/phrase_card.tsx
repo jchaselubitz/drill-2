@@ -23,12 +23,14 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
     <BaseObjectCard
       withoutDetails={<TtsButton text={phrase.text} bucket={bucket} lacksAudio={false} />}
       objectDetails={
-        <div className="bg-white rounded-md">
+        <div className="rounded-md">
           <PhraseDetails phrase={phrase} navigateToPhrase={setSelectedPhrase} />
         </div>
       }
       text={phrase.text}
       date={phrase.createdAt}
+      phraseId={phrase.id}
+      lang={phrase.lang}
     />
   );
 };
