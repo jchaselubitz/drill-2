@@ -60,6 +60,8 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ phrase }) => {
       }
       text={phrase.text}
       date={date}
+      phraseId={phrase.id}
+      lang={phrase.lang}
     />
   );
 };
