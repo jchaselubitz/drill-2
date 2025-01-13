@@ -2,10 +2,7 @@
 
 import { BaseTutorPrompt, Iso639LanguageCode, TutorTopicWithCorrections } from 'kysely-codegen';
 import { RefreshCw, Stars } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import Markdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
-import remarkGfm from 'remark-gfm';
+import React, { useState } from 'react';
 import GrammarCorrectionForm from '@/components/ai_elements/grammar_correction_form';
 import GrammarCorrectionItem from '@/components/ai_elements/grammar_correction_item';
 import { AILoadingButton } from '@/components/specialButtons/ai_button';

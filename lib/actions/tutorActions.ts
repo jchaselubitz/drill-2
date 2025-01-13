@@ -113,7 +113,7 @@ export const saveTopicPrompt = async ({
 }: {
   topicId: string;
   newPrompt: string;
-}) => {
+}): Promise<string | undefined> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -122,14 +122,16 @@ export const saveTopicPrompt = async ({
     return;
   }
 
-  await db
+  const prompt = await db
     .insertInto('tutorPrompt')
     .values({
       text: newPrompt,
       topicId,
     })
-    .execute();
+    .returning('id')
+    .executeTakeFirstOrThrow();
   revalidatePath('/tutor/[topicId]', 'page');
+  return prompt.id;
 };
 
 export const updatePromptText = async ({

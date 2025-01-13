@@ -8,6 +8,7 @@ import { useUserContext } from '@/contexts/user_context';
 import { saveTopicPrompt } from '@/lib/actions/tutorActions';
 import { generateTutorPrompt } from '@/lib/aiGenerators/generators_tutor';
 import { cn } from '@/lib/utils';
+import { useTutorContext } from '@/contexts/tutor_context';
 
 interface TopicPromptFormProps {
   topic: TutorTopicWithCorrections;
@@ -15,6 +16,7 @@ interface TopicPromptFormProps {
 }
 
 const TopicPromptForm: React.FC<TopicPromptFormProps> = ({ topic, relevantPhrases }) => {
+  const { setSelectedPromptAndCorrection } = useTutorContext();
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
   const { id: topicId, lang: topicLanguage, level, instructions } = topic;
   const { userLanguage, prefLanguage } = useUserContext();
@@ -35,8 +37,11 @@ const TopicPromptForm: React.FC<TopicPromptFormProps> = ({ topic, relevantPhrase
         level,
         instructions,
       });
-      await saveTopicPrompt({ topicId, newPrompt });
-      setButtonState('default');
+      const promptId = await saveTopicPrompt({ topicId, newPrompt });
+      if (promptId) {
+        setSelectedPromptAndCorrection({ promptId, correctionId: null });
+        setButtonState('default');
+      }
     } catch (error: any) {
       setButtonState('error');
       throw new Error('Error:', error);
