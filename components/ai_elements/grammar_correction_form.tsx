@@ -70,7 +70,7 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
   return (
     <div className={cn('flex flex-col gap-3', className)}>
       <Form {...form}>
-        <form className="flex flex-col gap-2 w-full">
+        <form className="flex flex-col gap-3  w-full">
           <FormField
             control={form.control}
             name="text"

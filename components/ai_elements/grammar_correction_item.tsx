@@ -53,10 +53,10 @@ const GrammarCorrectionItem: React.FC<GrammarCorrectionItemProps> = ({
   const headerClass = 'text-xs uppercase font-semibold mb-2';
   return (
     <div className="flex flex-col gap-4">
-      <div className={sectionClass}>
+      {/* <div className={sectionClass}>
         <h3 className={headerClass}>Your response</h3>
         <div>{correction.userText}</div>
-      </div>
+      </div> */}
       <div>
         <div className={sectionClass}>
           <div className={headerClass}>Correction:</div>

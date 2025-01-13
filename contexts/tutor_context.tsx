@@ -1,11 +1,18 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 interface TutorContextProps {
-  selectedTopicId: string | null;
-  setSelectedTopicId: (id: string | null) => void;
+  selectedPromptAndCorrection: {
+    promptId: string | null;
+    correctionId: string | null;
+  };
+  setSelectedPromptAndCorrection: React.Dispatch<
+    React.SetStateAction<{
+      promptId: string | null;
+      correctionId: string | null;
+    }>
+  >;
 }
 
 const TutorContext = createContext<TutorContextProps | undefined>(undefined);
@@ -13,17 +20,16 @@ const TutorContext = createContext<TutorContextProps | undefined>(undefined);
 export const TutorContextProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const searchParams = useSearchParams();
-  const openTopic = searchParams.get('topic');
-  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(openTopic ?? null);
-
-  const setSelectedTopic = (id: string | null) => {};
+  const [selectedPromptAndCorrection, setSelectedPromptAndCorrection] = useState<{
+    promptId: string | null;
+    correctionId: string | null;
+  }>({ promptId: null, correctionId: null });
 
   return (
     <TutorContext.Provider
       value={{
-        selectedTopicId,
-        setSelectedTopicId: setSelectedTopic,
+        selectedPromptAndCorrection,
+        setSelectedPromptAndCorrection: setSelectedPromptAndCorrection,
       }}
     >
       {children}

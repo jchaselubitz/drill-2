@@ -22,6 +22,7 @@ import {
   TutorTopic,
   Correction,
   Iso639LanguageCode,
+  TutorPrompt,
 } from 'kysely-codegen';
 import { Pool } from 'pg';
 import { HistoryVocabType } from '../aiGenerators/types_generation';
@@ -142,12 +143,13 @@ declare module 'kysely-codegen' {
   };
   export type NewCorrection = Insertable<Correction>;
 
+  export type BaseTutorPrompt = Selectable<TutorPrompt> & { corrections: BaseCorrection[] };
+  export type NewTutorPrompt = Insertable<TutorPrompt>;
+
   export type BaseTutorTopic = Selectable<TutorTopic>;
-
   export type TutorTopicWithCorrections = Omit<BaseTutorTopic, 'corrections'> & {
-    corrections: BaseCorrection[];
+    prompts: BaseTutorPrompt[];
   };
-
   export type NewTutorTopic = Insertable<TutorTopic>;
 
   export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };

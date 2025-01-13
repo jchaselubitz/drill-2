@@ -31,16 +31,25 @@ export const getTutorTopics = async (topicId?: string): Promise<TutorTopicWithCo
       'instructions',
       'lang',
       'messages',
-      'prompt',
+
       'level',
       'userId',
       jsonArrayFrom(
         eb
-          .selectFrom('correction')
-          .select(['id', 'createdAt', 'response', 'userText', 'userId', 'topicId'])
+          .selectFrom('tutorPrompt')
+          .select(({ eb }) => [
+            'id',
+            'text',
+            jsonArrayFrom(
+              eb
+                .selectFrom('correction')
+                .select(['id', 'createdAt', 'response', 'userText', 'userId', 'tutorPromptId'])
+                .whereRef('tutorPromptId', '=', 'tutorPrompt.id')
+                .orderBy('createdAt', 'asc')
+            ).as('corrections'),
+          ])
           .whereRef('topicId', '=', 't.id')
-          .orderBy('createdAt', 'desc')
-      ).as('corrections'),
+      ).as('prompts'),
     ])
     .where('userId', '=', userId);
 
@@ -98,7 +107,13 @@ export const deleteTutorTopic = async (topicId: string) => {
   revalidatePath('/tutor', 'page');
 };
 
-export const saveTopicPrompt = async ({ topicId, prompt }: { topicId: string; prompt: string }) => {
+export const saveTopicPrompt = async ({
+  topicId,
+  newPrompt,
+}: {
+  topicId: string;
+  newPrompt: string;
+}) => {
   const supabase = createClient();
   const {
     data: { user },
@@ -107,28 +122,35 @@ export const saveTopicPrompt = async ({ topicId, prompt }: { topicId: string; pr
     return;
   }
 
-  const userId = user.id;
+  await db
+    .insertInto('tutorPrompt')
+    .values({
+      text: newPrompt,
+      topicId,
+    })
+    .execute();
+  revalidatePath('/tutor/[topicId]', 'page');
+};
 
-  await db.transaction().execute(async (trx) => {
-    await trx.deleteFrom('correction').where('topicId', '=', topicId).execute();
-    await db
-      .updateTable('tutorTopic')
-      .set({ prompt })
-      .where('userId', '=', userId)
-      .where('id', '=', topicId)
-      .execute();
-  });
-  revalidatePath('/tutor', 'page');
+export const updatePromptText = async ({
+  promptId,
+  newPrompt,
+}: {
+  promptId: string;
+  newPrompt: string;
+}) => {
+  await db.updateTable('tutorPrompt').set('text', newPrompt).where('id', '=', promptId).execute();
+  revalidatePath('/tutor/[topicId]', 'page');
 };
 
 export const saveTopicResponse = async ({
   response,
   userText,
-  topicId,
+  promptId,
 }: {
   response: ReviewUserParagraphSubmissionResponse;
   userText: string;
-  topicId: string;
+  promptId: string;
 }): Promise<string> => {
   const supabase = createClient();
   const {
@@ -138,11 +160,13 @@ export const saveTopicResponse = async ({
     return '';
   }
 
+  const userId = user.id;
+
   const correction = {
     response: JSON.stringify(response),
     userText,
-    userId: user.id,
-    topicId,
+    userId,
+    tutorPromptId: promptId,
   } as NewCorrection;
 
   const cor = await db

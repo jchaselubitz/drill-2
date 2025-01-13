@@ -51,10 +51,10 @@ export const generateTutorPrompt = async ({
 };
 
 export const changePromptLength = async ({
-  prompt,
+  promptText,
   length,
 }: {
-  prompt: string;
+  promptText: string;
   length: 'shorter' | 'longer';
 }): Promise<string> => {
   const messages = [
@@ -65,7 +65,7 @@ export const changePromptLength = async ({
     },
     {
       role: 'user',
-      content: `I have been given this prompt: ${prompt}. It should still be a prompt with the same structure and subject matter, but make it two sentences ${length}?`,
+      content: `I have been given this prompt: ${promptText}. It should still be a prompt with the same structure and subject matter, but make it two sentences ${length}?`,
     },
   ];
 
