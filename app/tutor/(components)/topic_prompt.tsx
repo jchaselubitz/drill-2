@@ -28,18 +28,18 @@ import { cn } from '@/lib/utils';
 interface TopicPromptProps {
   topic: TutorTopicWithCorrections;
   prompt: BaseTutorPrompt;
-  selectedPrompt: string | null;
   relevantPhrases: any;
 }
 
 const TopicPrompt: React.FC<TopicPromptProps> = ({
   topic,
   prompt,
-  selectedPrompt,
+
   relevantPhrases,
 }) => {
   const { selectedPromptAndCorrection, setSelectedPromptAndCorrection } = useTutorContext();
-  const selectedCorrection = selectedPromptAndCorrection?.correctionId;
+  const selectedCorrection = selectedPromptAndCorrection?.correctionId?.toString();
+  const selectedPrompt = selectedPromptAndCorrection?.promptId;
 
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
   const [shortenButtonState, setShortenButtonState] = useState<ButtonLoadingState>('default');
@@ -177,7 +177,6 @@ const TopicPrompt: React.FC<TopicPromptProps> = ({
                 errorText="Something went wrong"
               />
             </div>
-
             <div className="flex flex-col gap-4 mt-4">
               {corrections && (
                 <Accordion
@@ -195,14 +194,14 @@ const TopicPrompt: React.FC<TopicPromptProps> = ({
                     {corrections.map((existingCorrection, index) => (
                       <AccordionItem
                         className="w-full border-b-0 rounded-lg  hover:border px-4  data-[state=open]:bg-zinc-100 data-[state=open]:shadow-lg data-[state=open]:border-0"
-                        value={existingCorrection.id}
-                        key={existingCorrection.id}
+                        value={existingCorrection.id.toString()}
+                        key={existingCorrection.id.toString()}
                       >
                         <AccordionTrigger className="flex w-full border-b-0 hover:no-underline ">
                           <div
                             className={cn(
                               'text-left flex',
-                              existingCorrection.id.toString() !== selectedCorrection?.toString() &&
+                              existingCorrection.id.toString() !== selectedCorrection &&
                                 'line-clamp-1'
                             )}
                           >

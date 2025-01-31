@@ -16,6 +16,8 @@ import {
 import { processHistory } from '@/lib/helpers/helpersHistory';
 import { cn } from '@/lib/utils';
 
+import { Button } from '../ui/button';
+
 interface GrammarCorrectionFormProps {
   className?: string;
   existingCorrection?: BaseCorrection;
@@ -32,6 +34,7 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
   const { prefLanguage, history } = useUserContext();
   const { currentLang } = useChatContext();
   const [submitState, setSubmitState] = useState<ButtonLoadingState>('default');
+  const [showForm, setShowForm] = useState(false);
   const [response, setResponse] = useState<ReviewUserParagraphSubmissionResponse | undefined>(
     undefined
   );
@@ -47,6 +50,7 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
       setResponse(review);
       await onResponse?.({ response: review, userText: text });
       setSubmitState('success');
+      setShowForm(false);
       await processHistory({
         messages: [{ role: 'assistant', content: JSON.stringify(review) }],
         existingHistory,
@@ -69,35 +73,47 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
 
   return (
     <div className={cn('flex flex-col gap-3', className)}>
-      <Form {...form}>
-        <form className="flex flex-col gap-3  w-full">
-          <FormField
-            control={form.control}
-            name="text"
-            render={({ field }) => (
-              <FormItem>
-                <Label className="text-xs uppercase font-semibold">Your response:</Label>
-                <Textarea
-                  rows={9}
-                  {...field}
-                  placeholder={response ? 'Try again?' : 'Write your response here...'}
-                />
-              </FormItem>
-            )}
-          />
+      {!showForm ? (
+        <Button
+          variant="outline"
+          className="uppercase font-bold h-12"
+          onClick={() => {
+            setShowForm(true);
+          }}
+        >
+          Respond
+        </Button>
+      ) : (
+        <Form {...form}>
+          <form className="flex flex-col gap-3  w-full">
+            <FormField
+              control={form.control}
+              name="text"
+              render={({ field }) => (
+                <FormItem>
+                  <Label className="text-xs uppercase font-semibold">Your response:</Label>
+                  <Textarea
+                    rows={9}
+                    {...field}
+                    placeholder={response ? 'Try again?' : 'Write your response here...'}
+                  />
+                </FormItem>
+              )}
+            />
 
-          <LoadingButton
-            className="w-fit"
-            type="submit"
-            onClick={form.handleSubmit(handleResponseChange)}
-            buttonState={submitState}
-            text={'Submit'}
-            loadingText={'Correcting ...'}
-            successText={'Corrected'}
-            errorText={'An error occurred'}
-          />
-        </form>
-      </Form>
+            <LoadingButton
+              className="w-fit"
+              type="submit"
+              onClick={form.handleSubmit(handleResponseChange)}
+              buttonState={submitState}
+              text={'Submit'}
+              loadingText={'Correcting ...'}
+              successText={'Corrected'}
+              errorText={'An error occurred'}
+            />
+          </form>
+        </Form>
+      )}
     </div>
   );
 };

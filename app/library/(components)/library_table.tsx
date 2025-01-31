@@ -7,6 +7,8 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  OnChangeFn,
+  PaginationState,
   SortingState,
   useReactTable,
   VisibilityState,
@@ -33,14 +35,23 @@ import { cn } from '@/lib/utils';
 import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
 import LibraryTableHeaderTools from './library_table_header_tools';
+import { useRouter } from 'next/navigation';
 
 type LibraryTableProps = {
   phrases: PhraseWithAssociations[];
   className?: string;
+  pagination: PaginationState;
+  setPagination: OnChangeFn<PaginationState>;
   setOptPhraseData: (action: PhraseWithAssociations) => void;
 };
 
-const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, className }) => {
+const LibraryTableBase: FC<LibraryTableProps> = ({
+  phrases,
+  setOptPhraseData,
+  pagination,
+  setPagination,
+  className,
+}) => {
   const isMobile = useWindowSize().width < 768;
   const { selectedPhraseId } = useLibraryContext();
   const { prefLanguage } = useUserContext();
@@ -92,10 +103,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
     actions: !isMobile,
   });
   const [rowSelection, setRowSelection] = useState({});
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, // Default page index
-    pageSize: 20, // Default number of rows per page
-  });
+
   const mentionedLanguages = phrases.map((phrase) => phrase.lang);
   const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as Iso639LanguageCode[];
   const userTags = [...new Set(phrases.flatMap((phrase) => phrase.tags.map((tag) => tag.label)))];
@@ -152,9 +160,10 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
     const pageSize = pagination.pageSize;
     const rowPage = Math.floor(rowIndex / pageSize);
     if (rowPage !== pagination.pageIndex) {
-      table.setPageIndex(rowPage - 1);
+      //dont use table.setPageIndex(rowPage) because it will trigger a re-render
+      setPagination((prev) => ({ ...prev, pageIndex: rowPage }));
     }
-  }, [selectedPhraseId, tableRows, pagination.pageSize]);
+  }, [selectedPhraseId, tableRows, pagination.pageSize, setPagination]);
 
   return (
     <div className={cn('w-full px-1 ', className)}>
@@ -219,7 +228,9 @@ const LibraryTableBase: FC<LibraryTableProps> = ({ phrases, setOptPhraseData, cl
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
+            onClick={() => {
+              table.nextPage();
+            }}
             disabled={!table.getCanNextPage()}
           >
             Next
@@ -252,10 +263,17 @@ export default function LibraryTable({
     ];
   });
 
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, // Default page index
+    pageSize: 20, // Default number of rows per page
+  });
+
   return (
     <LibraryTableBase
       phrases={optPhraseData}
       setOptPhraseData={setOptPhraseData}
+      pagination={pagination}
+      setPagination={setPagination}
       className={className}
     />
   );

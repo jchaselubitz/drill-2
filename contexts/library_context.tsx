@@ -5,7 +5,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 
 interface LibraryContextProps {
   selectedPhraseId: string | null;
-  setSelectedPhraseId: (id: string | null) => void;
+  setSelectedPhraseId: (id: string | null, page?: string | null) => void;
 }
 
 const LibraryContext = createContext<LibraryContextProps | undefined>(undefined);
@@ -25,11 +25,11 @@ export const LibraryContextProvider: React.FC<{
 
   const router = useRouter();
 
-  const setSelected = (id: string | null) => {
+  const setSelected = (id: string | null, page?: string | null) => {
     setSelectedPhraseId(id);
     if (id === null) {
       router.push('/library');
-    } else router.push(`?phrase=${id}`);
+    } else router.push(`?phrase=${id}${page ? `&page=${page}` : ''}`);
   };
 
   return (
