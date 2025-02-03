@@ -40,9 +40,13 @@ export const LibraryContextProvider: React.FC<{
     if (page && phraseId) {
       router.push(`/library${`?page=${page + 1}&phrase=${phraseId}`}`);
     } else if (phraseId) {
-      router.push(`/library${`?phrase=${phraseId + 1}`}`);
+      router.push(
+        `/library${`?${selectedPage ? `page=${selectedPage}&` : ''}phrase=${phraseId + 1}`}`
+      );
     } else if (page) {
-      router.push(`/library${`?page=${page + 1}`}`);
+      router.push(
+        `/library${`?page=${page + 1}${selectedPhraseId ? `&phrase=${selectedPhraseId}` : ''}`}`
+      );
     } else router.push(`/library`);
   };
 

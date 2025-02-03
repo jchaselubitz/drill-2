@@ -33,7 +33,7 @@ type LibraryPhraseTopBarProps = {
 };
 
 const LibraryPhraseTopBar: React.FC<LibraryPhraseTopBarProps> = ({ phrase, userTags }) => {
-  const { setSelectedPhraseId } = useLibraryContext();
+  const { setSelectedPhrasePage } = useLibraryContext();
 
   const [optPhraseData, setOptPhraseData] = useOptimistic<
     PhraseWithAssociations,
@@ -139,7 +139,11 @@ const LibraryPhraseTopBar: React.FC<LibraryPhraseTopBarProps> = ({ phrase, userT
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <Button variant={'ghost'} size={'icon'} onClick={() => setSelectedPhraseId(null)}>
+      <Button
+        variant={'ghost'}
+        size={'icon'}
+        onClick={() => setSelectedPhrasePage({ phraseId: null })}
+      >
         <XIcon />
       </Button>
     </div>

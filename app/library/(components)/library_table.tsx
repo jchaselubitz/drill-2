@@ -7,17 +7,14 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  OnChangeFn,
-  PaginationState,
   SortingState,
-  Table as TableType,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
 import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import { FC, startTransition, useEffect, useOptimistic, useState } from 'react';
+import { FC, startTransition, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -157,26 +154,14 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
   });
 
   const getRowPage = (phraseId: string) => {
-    const row = table.getRowModel().rows.find((row) => row.original.id === phraseId);
+    const row = table
+      .getRowModel()
+      .rows.find((row) => row.original.id.toString() === phraseId.toString());
     if (!row) {
-      return 0;
+      return null;
     }
     return Math.floor(row.index / pagination.pageSize);
   };
-
-  const setRowPage = ({ phraseId }: { phraseId: string }) => {
-    const rowPage = getRowPage(phraseId);
-    if (rowPage !== null) {
-      setSelectedPhrasePage({ page: rowPage, phraseId });
-    }
-  };
-
-  // useEffect(() => {
-  //   if (selectedPhraseId === null) {
-  //     return;
-  //   }
-  //   setRowPage({ phraseId: selectedPhraseId });
-  // }, [selectedPhraseId, setRowPage]);
 
   return (
     <div className={cn('w-full px-1 ', className)}>
@@ -236,7 +221,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
             size="sm"
             onClick={() => {
               setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex - 1 }));
-              setSelectedPhrasePage({ page: pagination.pageIndex - 1, phraseId: selectedPhraseId });
+              setSelectedPhrasePage({ page: pagination.pageIndex - 1 });
             }}
             disabled={!table.getCanPreviousPage()}
           >
@@ -250,7 +235,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
             size="sm"
             onClick={() => {
               setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
-              setSelectedPhrasePage({ page: pagination.pageIndex + 1, phraseId: selectedPhraseId });
+              setSelectedPhrasePage({ page: pagination.pageIndex + 1 });
             }}
             disabled={!table.getCanNextPage()}
           >

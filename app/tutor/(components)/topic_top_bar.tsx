@@ -3,9 +3,8 @@
 import { BaseTutorTopic } from 'kysely-codegen';
 import { Trash, XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useOptimistic } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useLibraryContext } from '@/contexts/library_context';
 import { deleteTutorTopic } from '@/lib/actions/tutorActions';
 
 type TopicTopBarProps = {
@@ -13,18 +12,7 @@ type TopicTopBarProps = {
 };
 
 const TopicTopBar: React.FC<TopicTopBarProps> = ({ topic }) => {
-  const { setSelectedPhraseId } = useLibraryContext();
   const router = useRouter();
-
-  const [optTopicData, setOptTopicData] = useOptimistic<BaseTutorTopic, BaseTutorTopic>(
-    topic,
-    (state, updatedTopic) => {
-      return {
-        ...state,
-        ...updatedTopic,
-      };
-    }
-  );
 
   const handleDelete = async () => {
     confirm('Are you sure you want to delete this topic?');
