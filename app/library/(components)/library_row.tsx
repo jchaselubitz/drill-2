@@ -6,7 +6,7 @@ import { useLibraryContext } from '@/contexts/library_context';
 
 interface LibraryRowProps {
   row: Row<PhraseWithAssociations>;
-  page: number;
+  page: number | undefined;
 }
 
 const LibraryRow: React.FC<LibraryRowProps> = ({ row, page }) => {

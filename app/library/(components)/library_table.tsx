@@ -158,7 +158,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
       .getRowModel()
       .rows.find((row) => row.original.id.toString() === phraseId.toString());
     if (!row) {
-      return null;
+      return undefined;
     }
     return Math.floor(row.index / pagination.pageSize);
   };
