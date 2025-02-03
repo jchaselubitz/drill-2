@@ -1,5 +1,4 @@
 import { PhraseWithAssociations } from 'kysely-codegen';
-import { useWindowSize } from 'react-use';
 import TtsButton from '@/components/ai_elements/tts_button';
 import PhraseContextMenu from '@/components/capture_text/phrase_context_menu';
 import PhraseDetails from '@/components/phrasesAndRecordings/phrase_details';
@@ -16,7 +15,6 @@ interface LibraryPhrasePanelProps {
 }
 
 const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({ phrase, userTags }) => {
-  const isMobile = useWindowSize().width < 768;
   if (!phrase)
     return (
       <div className="flex h-svh items-center justify-center p-6 w-full">

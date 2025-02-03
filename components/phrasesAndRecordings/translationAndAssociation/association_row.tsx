@@ -17,13 +17,13 @@ interface AssociationRowProps {
 
 const AssociationRow: React.FC<AssociationRowProps> = ({ associatedPhrase, navigateToPhrase }) => {
   const bucket = 'text_to_speech';
-  const { setSelectedPhraseId } = useLibraryContext();
+  const { setSelectedPhrasePage } = useLibraryContext();
 
   const handlePhraseClick = () => {
     if (navigateToPhrase) {
       navigateToPhrase(associatedPhrase.id);
     }
-    setSelectedPhraseId(associatedPhrase.id);
+    setSelectedPhrasePage({ phraseId: associatedPhrase.id });
   };
 
   return (

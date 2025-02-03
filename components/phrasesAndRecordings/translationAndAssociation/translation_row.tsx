@@ -33,7 +33,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   phraseLang,
 }) => {
   const bucket = 'text_to_speech';
-  const { setSelectedPhraseId } = useLibraryContext();
+  const { setSelectedPhrasePage } = useLibraryContext();
 
   const { userLessons } = useLessonsContext();
 
@@ -41,7 +41,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
     if (navigateToPhrase) {
       navigateToPhrase(translationsPhrase.id);
     } else {
-      setSelectedPhraseId(translationsPhrase.id);
+      setSelectedPhrasePage({ phraseId: translationsPhrase.id });
     }
   };
 

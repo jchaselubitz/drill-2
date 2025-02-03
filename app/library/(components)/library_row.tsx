@@ -6,14 +6,15 @@ import { useLibraryContext } from '@/contexts/library_context';
 
 interface LibraryRowProps {
   row: Row<PhraseWithAssociations>;
+  page: number;
 }
 
-const LibraryRow: React.FC<LibraryRowProps> = ({ row }) => {
-  const { setSelectedPhraseId } = useLibraryContext();
+const LibraryRow: React.FC<LibraryRowProps> = ({ row, page }) => {
+  const { setSelectedPhrasePage } = useLibraryContext();
 
   const visibleCells = row.getVisibleCells();
   const setPhrase = (phraseId: string) => {
-    setSelectedPhraseId(phraseId.toString());
+    setSelectedPhrasePage({ page, phraseId: phraseId.toString() });
   };
 
   return (

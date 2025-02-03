@@ -10,10 +10,12 @@ import {
   OnChangeFn,
   PaginationState,
   SortingState,
+  Table as TableType,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
 import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { FC, startTransition, useEffect, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
@@ -35,38 +37,42 @@ import { cn } from '@/lib/utils';
 import LibraryRow from './library_row';
 import LibraryColumns from './library_table_columns';
 import LibraryTableHeaderTools from './library_table_header_tools';
-import { useRouter } from 'next/navigation';
 
 type LibraryTableProps = {
   phrases: PhraseWithAssociations[];
   className?: string;
-  pagination: PaginationState;
-  setPagination: OnChangeFn<PaginationState>;
+  selectedPage: number | undefined;
   setOptPhraseData: (action: PhraseWithAssociations) => void;
 };
 
 const LibraryTableBase: FC<LibraryTableProps> = ({
   phrases,
   setOptPhraseData,
-  pagination,
-  setPagination,
+  selectedPage,
   className,
 }) => {
   const isMobile = useWindowSize().width < 768;
-  const { selectedPhraseId } = useLibraryContext();
-  const { prefLanguage } = useUserContext();
 
-  const storedSortLang = localStorage.getItem('sort_lang');
+  const { prefLanguage } = useUserContext();
+  const { setSelectedPhrasePage, selectedPhraseId } = useLibraryContext();
+  const router = useRouter();
+
+  const getItem = (key: string) => {
+    if (typeof window === 'undefined') return null;
+    return window.localStorage.getItem(key);
+  };
+
+  const storedSortLang = getItem('sort_lang');
   const setSortLang = !storedSortLang
     ? prefLanguage
     : storedSortLang === '*'
       ? ''
       : (storedSortLang as Iso639LanguageCode);
-  const storedSortType = localStorage.getItem('sort_type');
+  const storedSortType = getItem('sort_type');
   const setSortType =
     !storedSortType || storedSortType === '*' ? '' : (storedSortType as PhraseType);
 
-  const storedSortSource = localStorage.getItem('sort_source');
+  const storedSortSource = getItem('sort_source');
   const setSortSource =
     storedSortSource && JSON.parse(storedSortSource).length > 0 ? JSON.parse(storedSortSource) : [];
 
@@ -89,6 +95,11 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(defaultFilters);
+  const [pagination, setPagination] = useState({
+    pageIndex: selectedPage ?? 0, // Default page index
+    pageSize: 20, // Default number of rows per page
+  });
+  console.log('pagination', pagination);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     select: !isMobile,
@@ -103,7 +114,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
     actions: !isMobile,
   });
   const [rowSelection, setRowSelection] = useState({});
-
   const mentionedLanguages = phrases.map((phrase) => phrase.lang);
   const uniqueLanguages = Array.from(new Set(mentionedLanguages)) as Iso639LanguageCode[];
   const userTags = [...new Set(phrases.flatMap((phrase) => phrase.tags.map((tag) => tag.label)))];
@@ -129,7 +139,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
     data: phrases,
     columns: LibraryColumns,
     meta: { uniqueLanguages, toggleFavorite },
-    onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -147,23 +156,27 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
     },
   });
 
-  const tableRows = table.getCoreRowModel().rows;
-  useEffect(() => {
-    if (selectedPhraseId === null) {
-      return;
-    }
-    const row = tableRows.find((row) => row.original.id === selectedPhraseId.toString());
+  const getRowPage = (phraseId: string) => {
+    const row = table.getRowModel().rows.find((row) => row.original.id === phraseId);
     if (!row) {
-      return;
+      return 0;
     }
-    const rowIndex = row.index;
-    const pageSize = pagination.pageSize;
-    const rowPage = Math.floor(rowIndex / pageSize);
-    if (rowPage !== pagination.pageIndex) {
-      //dont use table.setPageIndex(rowPage) because it will trigger a re-render
-      setPagination((prev) => ({ ...prev, pageIndex: rowPage }));
+    return Math.floor(row.index / pagination.pageSize);
+  };
+
+  const setRowPage = ({ phraseId }: { phraseId: string }) => {
+    const rowPage = getRowPage(phraseId);
+    if (rowPage !== null) {
+      setSelectedPhrasePage({ page: rowPage, phraseId });
     }
-  }, [selectedPhraseId, tableRows, pagination.pageSize, setPagination]);
+  };
+
+  // useEffect(() => {
+  //   if (selectedPhraseId === null) {
+  //     return;
+  //   }
+  //   setRowPage({ phraseId: selectedPhraseId });
+  // }, [selectedPhraseId, setRowPage]);
 
   return (
     <div className={cn('w-full px-1 ', className)}>
@@ -197,7 +210,11 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => <LibraryRow key={row.original.id} row={row} />)
+              table
+                .getRowModel()
+                .rows.map((row) => (
+                  <LibraryRow key={row.original.id} row={row} page={getRowPage(row.original.id)} />
+                ))
             ) : (
               <TableRow>
                 <TableCell colSpan={LibraryColumns.length} className="h-24 text-center">
@@ -217,7 +234,10 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
+            onClick={() => {
+              setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex - 1 }));
+              setSelectedPhrasePage({ page: pagination.pageIndex - 1, phraseId: selectedPhraseId });
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
@@ -229,7 +249,8 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
             variant="outline"
             size="sm"
             onClick={() => {
-              table.nextPage();
+              setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+              setSelectedPhrasePage({ page: pagination.pageIndex + 1, phraseId: selectedPhraseId });
             }}
             disabled={!table.getCanNextPage()}
           >
@@ -248,6 +269,7 @@ export default function LibraryTable({
   phrases: PhraseWithAssociations[];
   className?: string;
 }) {
+  const { selectedPage } = useLibraryContext();
   const [optPhraseData, setOptPhraseData] = useOptimistic<
     PhraseWithAssociations[],
     PhraseWithAssociations
@@ -263,17 +285,13 @@ export default function LibraryTable({
     ];
   });
 
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, // Default page index
-    pageSize: 20, // Default number of rows per page
-  });
-
   return (
     <LibraryTableBase
       phrases={optPhraseData}
       setOptPhraseData={setOptPhraseData}
-      pagination={pagination}
-      setPagination={setPagination}
+      selectedPage={selectedPage}
+      // pagination={pagination}
+      // setPagination={setPagination}
       className={className}
     />
   );
