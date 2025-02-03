@@ -10,6 +10,7 @@ import { setUserLanguages } from '@/lib/helpers/helpersUser';
 import { cn } from '@/lib/utils';
 
 import { AppSidebar } from './app_sidebar';
+import CompleteAccountDialog from './complete_account_dialog';
 import MobileNavbar from './mobile_navbar';
 import TopNav from './top_nav';
 
@@ -88,7 +89,12 @@ export function NavService({ user, children }: { user: User; children: React.Rea
     <>
       {!isMobile && <AppSidebar user={user} pages={pages} />}
       <main className={cn('w-full h-full flex flex-col')}>
-        {isMobile && <TopNav isMobile={true} user={user} />}
+        {isMobile ? (
+          <TopNav isMobile={true} user={user} />
+        ) : (
+          user.is_anonymous && <CompleteAccountDialog />
+        )}
+
         <div className={cn('flex justify-center pt-12 md:pt-0 md:justify-normal h-full ')}>
           {children}
         </div>

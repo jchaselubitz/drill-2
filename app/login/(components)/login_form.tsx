@@ -29,6 +29,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
   const router = useRouter();
   const [showCreateAccount, setShowCreateAccount] = useState(false);
   const [signInButtonState, setSignInButtonState] = useState<ButtonLoadingState>('default');
+  const [captchaToken, setCaptchaToken] = useState('');
   const isCreateAccount = (!isPasswordReset && !!showCreateAccount) || !!token;
 
   const zObject = {
@@ -45,7 +46,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
   const FormSchema = z.object(zObject);
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    mode: 'onBlur',
+    mode: 'onSubmit',
     resolver: zodResolver(FormSchema),
     defaultValues: { email: '', password: '' },
   });
@@ -149,7 +150,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
                 <FormItem>
                   <FormLabel htmlFor="name">Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Kirk Vartan" {...field} />
+                    <Input placeholder="Mr. Polyglot" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,19 +174,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
             errorText="Error"
           />
         </div>
-
-        <Button
-          variant="link"
-          className="text-sm justify-start pl-0"
-          onClick={(e) => {
-            e.preventDefault();
-            setSignInButtonState('default');
-            setShowCreateAccount(!showCreateAccount);
-          }}
-        >
-          {isCreateAccount ? 'Sign in to an existing account' : 'Create a new account'}
-        </Button>
       </form>
+      <Button
+        variant="link"
+        className="text-sm justify-start pl-0"
+        onClick={(e) => {
+          e.preventDefault();
+          setSignInButtonState('default');
+          setShowCreateAccount(!showCreateAccount);
+        }}
+      >
+        {isCreateAccount ? 'Sign in to an existing account' : 'Create a new account'}
+      </Button>
       {message && (
         <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">{message}</p>
       )}

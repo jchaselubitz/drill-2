@@ -7,14 +7,7 @@ import LanguageMenu from '@/app/(components)/language_selector';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 
 const LanguageChoiceModal: React.FC = () => {
   const { userLanguage, prefLanguage } = useUserContext();
@@ -41,7 +34,6 @@ const LanguageChoiceModal: React.FC = () => {
         setIsOpen(false);
       }}
     >
-      <DialogTrigger>Open</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Set your languages</DialogTitle>

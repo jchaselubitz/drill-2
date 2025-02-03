@@ -48,6 +48,37 @@ export const getProfile = async (): Promise<ProfileWithMedia | null | undefined>
   return profile;
 };
 
+export async function createAnonymousUser() {
+  const supabase = createClient();
+  const { error } = await supabase.auth.signInAnonymously({
+    options: {
+      data: {
+        name: 'Guest',
+      },
+    },
+  });
+
+  if (error) {
+    return redirect('/login?message=Could not authenticate user');
+  }
+}
+
+export async function convertAnonAccount(email: string, name: string) {
+  const supabase = createClient();
+  const { error } = await supabase.auth.updateUser(
+    {
+      email,
+      data: {
+        name,
+      },
+    },
+    { emailRedirectTo: `HELLO` }
+  );
+  if (error) {
+    console.log(error);
+  }
+}
+
 export async function signInWithEmail({
   email,
   shouldCreateUser,
@@ -158,15 +189,14 @@ export const updatePassword = async ({
   nextUrl?: string;
 }) => {
   const supabase = createClient();
+
   const { error } = await supabase.auth.updateUser({
     password,
-    data: { has_password: true },
   });
 
   if (error) {
-    return redirect('/login/reset?message=error-changing-password');
+    return error;
   }
-
   if (nextUrl) return redirect(nextUrl);
 };
 
@@ -208,4 +238,41 @@ export const updateUserLanguage = async ({
     .execute();
 
   revalidatePath('/');
+};
+
+export const upsertProfile = async ({
+  name,
+  imageUrl,
+}: {
+  name: string | null;
+  imageUrl?: string | null;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return;
+  }
+
+  await db.transaction().execute(async (trx) => {
+    const profile = await trx
+      .selectFrom('profile')
+      .selectAll()
+      .where('id', '=', userId)
+      .executeTakeFirst();
+    if (!profile) {
+      await trx.insertInto('profile').values({ id: userId, username: name }).execute();
+      return;
+    } else {
+      await trx
+        .updateTable('profile')
+        .set({ username: name, imageUrl })
+        .where('id', '=', userId)
+        .executeTakeFirst();
+    }
+  });
+
+  revalidatePath('/settings', 'page');
 };

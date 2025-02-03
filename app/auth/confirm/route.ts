@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       if (type === 'recovery') {
         return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/login/reset`);
       }
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}${next}`);
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/${next}`);
     }
     console.log('error', error);
   }

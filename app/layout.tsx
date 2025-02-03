@@ -76,7 +76,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={cn('bg-background bg-white font-sans antialiased ', fontSans.variable)}>
+      <body
+        className={cn(
+          'bg-background bg-white font-sans antialiased flex- flex-col ',
+          fontSans.variable
+        )}
+      >
         {/* <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -84,14 +89,13 @@ export default async function RootLayout({
             disableTransitionOnChange
           > */}
         {user ? (
-          <UserContextProvider profile={profile} userHistory={history}>
+          <UserContextProvider profile={profile} userHistory={history} user={user}>
             <CreateModalProvider>
               <SidebarProvider>
                 <LibraryContextProvider>
                   <LessonsContextProvider lessons={lessonList}>
                     <ChatWindowProvider>
                       <NavService user={user}>{children}</NavService>
-
                       <div className="relative max-h-screen">
                         <PhraseChat />
                         <DesktopChatButton />

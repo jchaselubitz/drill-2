@@ -105,7 +105,7 @@ refresh_token_reuse_interval = 10
 # Allow/disallow new user signups to your project.
 enable_signup = true
 # Allow/disallow anonymous sign-ins to your project.
-enable_anonymous_sign_ins = false
+enable_anonymous_sign_ins = true
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
 
@@ -133,6 +133,10 @@ content_path = "./supabase/templates/invite.html"
 [auth.email.template.recovery]
 subject = "Reset your password"
 content_path = "./supabase/templates/reset.html"
+
+[auth.email.template.email_change]
+subject = "Confirm email change"
+content_path = "./supabase/templates/emailChange.html"
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]

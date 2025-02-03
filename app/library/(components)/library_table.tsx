@@ -12,7 +12,6 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
-import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { FC, startTransition, useOptimistic, useState } from 'react';
 import { useWindowSize } from 'react-use';
@@ -51,8 +50,7 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
   const isMobile = useWindowSize().width < 768;
 
   const { prefLanguage } = useUserContext();
-  const { setSelectedPhrasePage, selectedPhraseId } = useLibraryContext();
-  const router = useRouter();
+  const { setSelectedPhrasePage } = useLibraryContext();
 
   const getItem = (key: string) => {
     if (typeof window === 'undefined') return null;
@@ -96,7 +94,6 @@ const LibraryTableBase: FC<LibraryTableProps> = ({
     pageIndex: selectedPage ?? 0, // Default page index
     pageSize: 20, // Default number of rows per page
   });
-  console.log('pagination', pagination);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     select: !isMobile,
