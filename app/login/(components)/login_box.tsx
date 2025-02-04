@@ -1,6 +1,8 @@
 'use client';
 
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createAnonymousUser } from '@/lib/actions/userActions';
@@ -18,6 +20,8 @@ export default function LoginBox({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const captchaKey = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY ?? '';
+  const [showCaptcha, setShowCaptcha] = useState(false);
 
   const handleAnonymousSignIn = async () => {
     await createAnonymousUser();
@@ -26,14 +30,21 @@ export default function LoginBox({
 
   return (
     <div className="animate-in items-center flex flex-col w-full px-2 sm:max-w-md justify-center">
-      <Button
-        className="mb-10 w-full bg-emerald-700 hover:bg-emerald-600 font-semibold"
-        variant="default"
-        size="lg"
-        onClick={handleAnonymousSignIn}
-      >
-        Try it before creating an account 🎉
-      </Button>
+      <div className="mb-10 w-full flex flex-col items-center">
+        <Button
+          className="mb-4 w-full bg-emerald-700 hover:bg-emerald-600 font-semibold"
+          variant="default"
+          size="lg"
+          onClick={() => setShowCaptcha(!showCaptcha)}
+        >
+          Try it before creating an account 🎉
+        </Button>
+        {showCaptcha && (
+          <div className="mb-4">
+            <HCaptcha sitekey={captchaKey} onVerify={handleAnonymousSignIn} />
+          </div>
+        )}
+      </div>
       <Tabs defaultValue={form ?? 'magic'} className="flex flex-col h-full w-full ">
         <TabsList className="grid grid-cols-2 w-full  rounded-lg ">
           <TabsTrigger

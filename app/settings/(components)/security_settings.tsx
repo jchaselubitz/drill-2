@@ -15,7 +15,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { updatePassword } from '@/lib/actions/userActions';
+import { Separator } from '@/components/ui/separator';
+import { updateEmail, updatePassword } from '@/lib/actions/userActions';
+
+const EmailSettingsSchema = z.object({
+  email: z.string().email({
+    message: 'Please enter a valid email address.',
+  }),
+});
 
 const SecuritySettingsSchema = z.object({
   password: z
@@ -38,29 +45,45 @@ const SecuritySettingsSchema = z.object({
 
 export function SecuritySettings({
   hasPassword,
-  providers,
+  userEmail,
 }: {
   hasPassword: boolean;
-  providers: string[] | undefined;
+  userEmail: string | undefined;
 }) {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  type EmailSettingsValue = z.infer<typeof EmailSettingsSchema>;
   type SecuritySettingsValues = z.infer<typeof SecuritySettingsSchema>;
 
-  // This can come from your database or API.
-  const defaultValues: Partial<SecuritySettingsValues> = {
+  const emailDefaultValues: Partial<EmailSettingsValue> = {
+    email: userEmail ?? '',
+  };
+
+  const passwordDefaultValues: Partial<SecuritySettingsValues> = {
     password: '',
     passwordRepeat: '',
   };
 
-  const form = useForm<SecuritySettingsValues>({
-    resolver: zodResolver(SecuritySettingsSchema),
-    defaultValues,
+  const emailForm = useForm<EmailSettingsValue>({
+    resolver: zodResolver(EmailSettingsSchema),
+    defaultValues: emailDefaultValues,
     mode: 'onChange',
   });
 
-  async function onSubmit(data: SecuritySettingsValues) {
+  const passwordForm = useForm<SecuritySettingsValues>({
+    resolver: zodResolver(SecuritySettingsSchema),
+    defaultValues: passwordDefaultValues,
+    mode: 'onChange',
+  });
+
+  async function onEmailSubmit(data: EmailSettingsValue) {
+    const error = await updateEmail(data.email);
+    if (error) {
+      alert('Could not update email');
+    }
+  }
+  async function onPasswordSubmit(data: SecuritySettingsValues) {
     if (data.password !== data.passwordRepeat) {
-      form.setError('passwordRepeat', {
+      passwordForm.setError('passwordRepeat', {
         type: 'manual',
         message: 'Passwords do not match',
       });
@@ -77,9 +100,29 @@ export function SecuritySettings({
   }
 
   return (
-    <div>
+    <div className="space-y-4 flex flex-col">
+      <Form {...emailForm}>
+        <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4 flex flex-col">
+          <FormField
+            control={emailForm.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="darth@vader.com" {...field} />
+                </FormControl>
+                {/* <FormDescription>This is your public display name.</FormDescription> */}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Change email</Button>
+        </form>
+        <Separator className="my-4" />
+      </Form>
       {!showPasswordForm ? (
-        <div className="flex flex-col gap-2">
+        <div className=" space-y- flex flex-col gap-2">
           <Button onClick={() => setShowPasswordForm(!showPasswordForm)} className="w-fit">
             {hasPassword ? 'Set new password' : 'Change password'}
           </Button>
@@ -92,10 +135,13 @@ export function SecuritySettings({
           )}
         </div>
       ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col">
+        <Form {...passwordForm}>
+          <form
+            onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+            className="space-y-4 flex flex-col"
+          >
             <FormField
-              control={form.control}
+              control={passwordForm.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
@@ -109,7 +155,7 @@ export function SecuritySettings({
               )}
             />
             <FormField
-              control={form.control}
+              control={passwordForm.control}
               name="passwordRepeat"
               render={({ field }) => (
                 <FormItem>

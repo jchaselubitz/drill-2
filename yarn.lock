@@ -1267,6 +1267,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.17.9":
+  version: 7.26.7
+  resolution: "@babel/runtime@npm:7.26.7"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10c0/60199c049f90e5e41c687687430052a370aca60bac7859ff4ee761c5c1739b8ba1604d391d01588c22dc0e93828cbadb8ada742578ad1b1df240746bce98729a
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.25.9, @babel/template@npm:^7.3.3":
   version: 7.25.9
   resolution: "@babel/template@npm:7.25.9"
@@ -1910,6 +1919,26 @@ __metadata:
   version: 2.2.3
   resolution: "@glideapps/ts-necessities@npm:2.2.3"
   checksum: 10c0/089ddce85cab120404c0e1c127cdbf76176433a9c9d41ff618641510c5f01ea35650d15ddad0eca590ecb36b22e3ee5140432c00a986e34473e26b4ad0a46cf9
+  languageName: node
+  linkType: hard
+
+"@hcaptcha/loader@npm:^1.2.1":
+  version: 1.2.4
+  resolution: "@hcaptcha/loader@npm:1.2.4"
+  checksum: 10c0/1c9d26dc159f0c5b518c74082439122d3ff97ca304dfeb9a6443f6ca88496827c28080e58e0420ee1e9800af8e798bd0f94a8e373c89643aba6aede1f97b88b3
+  languageName: node
+  linkType: hard
+
+"@hcaptcha/react-hcaptcha@npm:^1.11.1":
+  version: 1.11.1
+  resolution: "@hcaptcha/react-hcaptcha@npm:1.11.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.17.9"
+    "@hcaptcha/loader": "npm:^1.2.1"
+  peerDependencies:
+    react: ">= 16.3.0"
+    react-dom: ">= 16.3.0"
+  checksum: 10c0/54200ca3744982df590963200397e6be4e591f7a014ea9f453c588a5f249be988fe52581ef1859c0381c8c6d3d6fc35f8fad6f3164f29ddaea1c1f9fe08f8d6e
   languageName: node
   linkType: hard
 
@@ -9491,6 +9520,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "drill@workspace:."
   dependencies:
+    "@hcaptcha/react-hcaptcha": "npm:^1.11.1"
     "@hookform/resolvers": "npm:^3.9.0"
     "@radix-ui/react-accordion": "npm:^1.2.1"
     "@radix-ui/react-aspect-ratio": "npm:^1.1.1"
@@ -9557,6 +9587,7 @@ __metadata:
     prettier: "npm:^3.3.3"
     react: "npm:19.0.0-rc-69d4b800-20241021"
     react-dom: "npm:19.0.0-rc-69d4b800-20241021"
+    react-hcaptcha: "npm:^0.1.1"
     react-hook-form: "npm:^7.53.1"
     react-markdown: "npm:^9.0.1"
     react-resizable-panels: "npm:^2.1.7"
@@ -18143,6 +18174,16 @@ __metadata:
   peerDependencies:
     react: 19.0.0-rc-69d4b800-20241021
   checksum: 10c0/ab42f988544003a52660e65f7b2373a312d5e36067af056c0ff3950fbb5ca778726b0c168b95d02254714a19e99659625a9b3ed99fd5d4fe5258aef04ee2b00f
+  languageName: node
+  linkType: hard
+
+"react-hcaptcha@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "react-hcaptcha@npm:0.1.1"
+  peerDependencies:
+    react: ^16.4.1
+    react-dom: ^16.4.1
+  checksum: 10c0/5565356f08386910ad9b17c2cd7cee59de9cad431c3792e3f931395f7e9d375b07c60f8d245bca3d5d4af048bf6a1d50cdc5c6d05a60c3be25e44b72b5a63950
   languageName: node
   linkType: hard
 

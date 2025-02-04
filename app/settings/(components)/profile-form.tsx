@@ -105,8 +105,8 @@ export function ProfileForm({ profile }: { profile: ProfileWithMedia | undefined
   return (
     <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col">
-          {/* <div className=" rounded-full h-full w-fit">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col">
+          <div className=" rounded-full h-full w-fit">
             {profile?.imageUrl ? (
               <div className="relative">
                 <div>
@@ -139,14 +139,15 @@ export function ProfileForm({ profile }: { profile: ProfileWithMedia | undefined
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="p-0 rounded-full  border-0"
+                  className="rounded-full w-14 h-14 border"
                   onClick={handlePhotoButtonClick}
                 >
-                  <CameraIcon className="w-10 h-10" />
+                  <CameraIcon className="w-14 h-14" />
                 </Button>
               </div>
             )}
-          </div> */}
+          </div>
+
           <FormField
             control={form.control}
             name="imageUrl"
@@ -166,6 +167,7 @@ export function ProfileForm({ profile }: { profile: ProfileWithMedia | undefined
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="name"

@@ -49,7 +49,9 @@ export async function uploadProfileImage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
   const userId = user?.id;
+
   if (!userId) {
     return;
   }
@@ -63,11 +65,14 @@ export async function uploadProfileImage({
     await deleteFile({ bucket, url: oldImageUrl, folderPath: profileId });
   }
   const fileForUpload = file.get('image') as File;
+
   const { data, error } = await uploadFile({
     bucket,
     file: fileForUpload,
     path: `${profileId}/${fileName}`,
   });
+
+  console.log(data, error);
   if (!data) return null;
 
   return getPublicFile({ bucket, path: data?.path });

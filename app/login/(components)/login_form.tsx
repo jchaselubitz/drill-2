@@ -29,7 +29,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
   const router = useRouter();
   const [showCreateAccount, setShowCreateAccount] = useState(false);
   const [signInButtonState, setSignInButtonState] = useState<ButtonLoadingState>('default');
-  const [captchaToken, setCaptchaToken] = useState('');
   const isCreateAccount = (!isPasswordReset && !!showCreateAccount) || !!token;
 
   const zObject = {

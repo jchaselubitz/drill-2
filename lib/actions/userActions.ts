@@ -200,19 +200,18 @@ export const updatePassword = async ({
   if (nextUrl) return redirect(nextUrl);
 };
 
-export const updateEmail = async (formData: FormData) => {
+export const updateEmail = async (email: string) => {
   const supabase = createClient();
-  const email = formData.get('email') as string;
 
   const { error } = await supabase.auth.updateUser({
     email,
   });
 
   if (error) {
-    return redirect('/login?message=error-changing-email');
+    return error;
   }
 
-  return redirect('/');
+  revalidatePath('/settings', 'page');
 };
 
 export const updateUserLanguage = async ({
