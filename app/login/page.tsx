@@ -1,4 +1,5 @@
 import LoginBox from './(components)/login_box';
+import LoginMedia from './(components)/login_media';
 export default async function Login({
   searchParams,
 }: {
@@ -7,8 +8,13 @@ export default async function Login({
   const { token, message, form } = await searchParams;
 
   return (
-    <div className="animate-in mt-20 md:mt-72 flex flex-col w-full px-8 sm:max-w-md justify-center">
-      <LoginBox token={token} message={message} form={form} />
+    <div className="flex flex-row h-screen w-full">
+      <div className="animate-in  flex flex-col items-center justify-center w-full">
+        <LoginBox token={token} message={message} form={form} />
+      </div>
+      {/* <div className="bg-slate-100 col-span-2 w-full flex flex-col items-center justify-center">
+        <LoginMedia />
+      </div> */}
     </div>
   );
 }

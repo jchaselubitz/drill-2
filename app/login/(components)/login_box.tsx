@@ -1,9 +1,23 @@
 'use client';
 
 import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { Youtube } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import ReactPlayer from 'react-player';
+import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createAnonymousUser } from '@/lib/actions/userActions';
 
@@ -20,8 +34,10 @@ export default function LoginBox({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const isMobile = useWindowSize().width < 640;
   const captchaKey = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY ?? '';
   const [showCaptcha, setShowCaptcha] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleAnonymousSignIn = async () => {
     await createAnonymousUser();
@@ -32,12 +48,49 @@ export default function LoginBox({
     <div className="animate-in items-center flex flex-col w-full px-2 sm:max-w-md justify-center">
       <div className="mb-10 w-full flex flex-col items-center">
         <Button
-          className="mb-4 w-full bg-emerald-700 hover:bg-emerald-600 font-semibold"
-          variant="default"
+          className="mb-4 w-full border-slate-700 hover:bg-slate-100 font-semibold gap-2"
+          variant="outline"
+          size="lg"
+          onClick={() => {
+            isMobile ? router.push('https://www.youtube.com/watch?v=uilJL5JW-2g') : setIsOpen(true);
+          }}
+        >
+          Watch the tutorial <div>📺</div>
+        </Button>
+
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Learn about Drill.</DrawerTitle>
+              {/* <DrawerDescription>This action cannot be undone.</DrawerDescription> */}
+            </DrawerHeader>
+            <div className="mx-auto my-10">
+              <Button
+                className="mb-4 w-full border-slate-700 hover:bg-slate-100 font-semibold gap-2"
+                variant="outline"
+                size="lg"
+                // onClick={() => setShowCaptcha(!showCaptcha)}
+              >
+                Open in Youtube <Youtube />
+              </Button>
+              <ReactPlayer url="https://youtu.be/uilJL5JW-2g" width="1000px" height={'600px'} />
+            </div>
+            <DrawerFooter>
+              <DrawerClose className="w-full">
+                <Button variant="secondary" className="w-full">
+                  close
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+        <Button
+          className="mb-4 w-full  border-emerald-700 hover:bg-emerald-50 font-semibold"
+          variant="outline"
           size="lg"
           onClick={() => setShowCaptcha(!showCaptcha)}
         >
-          Try it before creating an account 🎉
+          Try it before creating an account <div>🎉</div>
         </Button>
         {showCaptcha && (
           <div className="mb-4">

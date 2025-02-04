@@ -51,8 +51,8 @@ export default async function Settings() {
       {histories.map((h) => {
         return (
           <div key={h.id} className="flex flex-col gap-4">
-            <div className="flex flex-row gap-4">
-              <div className="border p-4 rounded-lg w-1/2 h-fit min-w-fit flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="border p-4 rounded-lg md:w-1/2 h-fit min-w-fit flex flex-col gap-4">
                 <div>
                   <h4 className="font-semibold">Concepts</h4>
                   <p className="text-sm text-muted-foreground">
