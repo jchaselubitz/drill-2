@@ -9587,7 +9587,6 @@ __metadata:
     prettier: "npm:^3.3.3"
     react: "npm:19.0.0-rc-69d4b800-20241021"
     react-dom: "npm:19.0.0-rc-69d4b800-20241021"
-    react-hcaptcha: "npm:^0.1.1"
     react-hook-form: "npm:^7.53.1"
     react-markdown: "npm:^9.0.1"
     react-resizable-panels: "npm:^2.1.7"
@@ -18174,16 +18173,6 @@ __metadata:
   peerDependencies:
     react: 19.0.0-rc-69d4b800-20241021
   checksum: 10c0/ab42f988544003a52660e65f7b2373a312d5e36067af056c0ff3950fbb5ca778726b0c168b95d02254714a19e99659625a9b3ed99fd5d4fe5258aef04ee2b00f
-  languageName: node
-  linkType: hard
-
-"react-hcaptcha@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "react-hcaptcha@npm:0.1.1"
-  peerDependencies:
-    react: ^16.4.1
-    react-dom: ^16.4.1
-  checksum: 10c0/5565356f08386910ad9b17c2cd7cee59de9cad431c3792e3f931395f7e9d375b07c60f8d245bca3d5d4af048bf6a1d50cdc5c6d05a60c3be25e44b72b5a63950
   languageName: node
   linkType: hard
 
