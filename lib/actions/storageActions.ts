@@ -3,11 +3,27 @@
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-async function uploadFile({ bucket, file, path }: { bucket: string; file: File; path: string }) {
+export async function uploadFile({
+  bucket,
+  file,
+  path,
+}: {
+  bucket: string;
+  file: File;
+  path: string;
+}) {
   const supabase = createClient();
   const { data, error } = await supabase.storage.from(bucket).upload(`${path}`, file);
   return { data, error };
 }
+
+export type StorageObject = {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  metadata: any;
+};
 
 async function deleteFile({
   bucket,

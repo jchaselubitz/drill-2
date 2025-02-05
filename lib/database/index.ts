@@ -23,6 +23,7 @@ import {
   Correction,
   Iso639LanguageCode,
   TutorPrompt,
+  Feedback,
 } from 'kysely-codegen';
 import { Pool } from 'pg';
 import { HistoryVocabType } from '../aiGenerators/types_generation';
@@ -151,6 +152,8 @@ declare module 'kysely-codegen' {
     prompts: BaseTutorPrompt[];
   };
   export type NewTutorTopic = Insertable<TutorTopic>;
+
+  export type BaseFeedback = Selectable<Feedback>;
 
   export type RevalidationPath = { path: string; type?: 'page' | 'layout' | undefined };
 }

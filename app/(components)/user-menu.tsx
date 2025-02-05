@@ -2,7 +2,7 @@
 
 import { User } from '@supabase/supabase-js';
 import { Iso639LanguageCode } from 'kysely-codegen';
-import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
+import { ChevronsUpDown, LogOut, MessageSquareDiff, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { FC } from 'react';
 import DeveloperPlug from '@/components/developer_plug';
@@ -79,13 +79,13 @@ const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        {/*  <DropdownMenuItem asChild>
-          <Link href={`/${organizationId}/feedback/`}>
+        <DropdownMenuItem asChild>
+          <Link href={`/feedback/`}>
             <MessageSquareDiff className="mr-2 h-4 w-4" />
             <span>Feedback</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator /> */}
+        <DropdownMenuSeparator />
 
         <DropdownMenuItem
           onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
