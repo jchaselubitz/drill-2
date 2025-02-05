@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createAnonymousUser } from '@/lib/actions/userActions';
 
 import LoginForm from './login_form';
-import { DemoVideoURL } from '@/app/page';
+import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 
 export default function LoginBox({
   token,

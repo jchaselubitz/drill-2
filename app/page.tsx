@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getPhrases } from '@/lib/actions/phraseActions';
-
-export const DemoVideoURL = 'https://www.youtube.com/watch?v=uilJL5JW-2g';
+import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 
 export default async function Home() {
   const phrases = await getPhrases({ source: 'home' });

@@ -17,10 +17,10 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 
-import { DemoVideoURL } from '../page';
 import LanguageChooser from './language_chooser';
 import { NavMain } from './nav_main';
 import UserMenu from './user-menu';
+import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 
 export type AppSidebarProps = {
   user: User;
