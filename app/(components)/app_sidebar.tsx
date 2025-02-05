@@ -40,9 +40,9 @@ export function AppSidebar({ user, pages }: AppSidebarProps) {
         <SidebarMenu className="px-2">
           <SidebarMenuItem key={1}>
             <SidebarMenuButton asChild={true}>
-              <Link href={`/feedback/`} className="flex items-center gap-1 ">
+              <Link href={`/feedback/`} className="flex items-center gap-1 text-orange-700 ">
                 <MessageSquareDiff className="h-5 w-5" />
-                <span>Feedback</span>
+                <span>Leave feedback</span>
               </Link>
             </SidebarMenuButton>
             <SidebarMenuButton asChild={true}>
