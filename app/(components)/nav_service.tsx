@@ -4,7 +4,6 @@ import { User } from '@supabase/supabase-js';
 import { Iso639LanguageCode } from 'kysely-codegen';
 import { Edit, Home, Library, LucidePartyPopper, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useChatContext } from '@/contexts/chat_window_context';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
 import { cn } from '@/lib/utils';
@@ -90,7 +89,7 @@ export function NavService({ user, children }: { user: User; children: React.Rea
       {!isMobile && <AppSidebar user={user} pages={pages} />}
       <main className={cn('w-full h-full flex flex-col')}>
         {isMobile ? (
-          <TopNav isMobile={true} user={user} />
+          <TopNav user={user} isMobile={isMobile} />
         ) : (
           user.is_anonymous && <CompleteAccountDialog />
         )}

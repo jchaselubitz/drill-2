@@ -1,3 +1,4 @@
+import { Youtube } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import CaptureAudio from '@/components/capture_audio';
@@ -7,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getPhrases } from '@/lib/actions/phraseActions';
+
+export const DemoVideoURL = 'https://www.youtube.com/watch?v=uilJL5JW-2g';
 
 export default async function Home() {
   const phrases = await getPhrases({ source: 'home' });
@@ -29,10 +32,21 @@ export default async function Home() {
         <Suspense fallback={<Skeleton className="w-full h-20" />}>
           <CaptureText />
         </Suspense>
-        {recentPhrases.length > 0 && (
+        {recentPhrases.length > 0 ? (
           <div className="flex flex-col items-center justify-center">
             <Separator className="w-2/3" />
           </div>
+        ) : (
+          <a
+            href={DemoVideoURL}
+            target="_blank"
+            referrerPolicy="no-referrer"
+            className="flex items-center gap-1 "
+          >
+            <Button size="lg" variant={'outline'}>
+              <Youtube className="h-5 w-5" /> Watch the tutorial
+            </Button>
+          </a>
         )}
 
         <Suspense

@@ -1,5 +1,5 @@
 import LoginBox from './(components)/login_box';
-import LoginMedia from './(components)/login_media';
+
 export default async function Login({
   searchParams,
 }: {

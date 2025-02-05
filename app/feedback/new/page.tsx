@@ -1,5 +1,6 @@
-import { FeedbackForm } from '../(components)/feedback_form';
 import { Separator } from '@/components/ui/separator';
+
+import { FeedbackForm } from '../(components)/feedback_form';
 
 export default async function FeedbackFormPage() {
   return (

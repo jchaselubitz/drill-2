@@ -1,8 +1,9 @@
-import FeedbackContainer from './(components)/feedback_container';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getFeedback } from '@/lib/actions/feedbackActions';
 import { Separator } from '@/components/ui/separator';
+import { getFeedback } from '@/lib/actions/feedbackActions';
+
+import FeedbackContainer from './(components)/feedback_container';
 
 export default async function FeedbackPage() {
   const feedback = await getFeedback();

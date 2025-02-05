@@ -1,10 +1,11 @@
 'use client';
 
+import { TrashIcon } from '@radix-ui/react-icons';
 import React, { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+
 import { Skeleton } from '../ui/skeleton';
-import { TrashIcon } from '@radix-ui/react-icons';
 
 interface PreviewImageProps {
   classNames?: string;

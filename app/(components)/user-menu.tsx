@@ -1,7 +1,6 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Iso639LanguageCode } from 'kysely-codegen';
 import { ChevronsUpDown, LogOut, MessageSquareDiff, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -23,11 +22,10 @@ import LanguageChooser from './language_chooser';
 
 type UserMenuProps = {
   user: User | null | undefined;
-  mobile?: boolean;
-  setUserLanguages?: ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => void;
+  isMobile?: boolean;
 };
 
-const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
+const UserMenu: FC<UserMenuProps> = ({ user, isMobile }) => {
   const { username, imageUrl } = useUserContext();
   const userEmail = user?.email;
 
@@ -49,7 +47,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
               />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
-            {!mobile && (
+            {!isMobile && (
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{username}</span>
                 <span className="truncate text-xs">{userEmail}</span>
@@ -65,7 +63,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {!!setUserLanguages && (
+        {isMobile && (
           <>
             <SidebarMenu className="px-2 gap-1 my-4">
               <LanguageChooser />
