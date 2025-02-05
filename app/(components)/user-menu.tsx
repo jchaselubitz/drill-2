@@ -5,6 +5,7 @@ import { Iso639LanguageCode } from 'kysely-codegen';
 import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { FC } from 'react';
+import DeveloperPlug from '@/components/developer_plug';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -95,6 +96,9 @@ const UserMenu: FC<UserMenuProps> = ({ user, mobile, setUserLanguages }) => {
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
+        <div className="flex md:hidden">
+          <DeveloperPlug />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

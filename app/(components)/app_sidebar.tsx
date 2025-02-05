@@ -1,6 +1,7 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
+import DeveloperPlug from '@/components/developer_plug';
 import Logo from '@/components/logo';
 import {
   Sidebar,
@@ -38,6 +39,7 @@ export function AppSidebar({ user, pages }: AppSidebarProps) {
           <SidebarMenuItem>
             <UserMenu user={user} />
           </SidebarMenuItem>
+          <DeveloperPlug />
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
