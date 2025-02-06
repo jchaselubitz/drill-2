@@ -13,7 +13,7 @@ const ChatButton: React.FC = ({ isMobile }: { isMobile?: boolean }) => {
   return (
     <button
       className={cn(
-        'z-40 flex gap-2 p-3 md:h-fit h-14 w-14 md:w-fit rounded-full md:rounded-md  font-semibold items-center justify-center',
+        'z-40 md:flex md:gap-2 p-4 md:p-3 md:h-fit w-14 md:w-fit rounded-full md:rounded-md font-semibold items-center justify-center',
         aiButtonClass
       )}
       onClick={() => setChatOpen(true)}

@@ -11,6 +11,7 @@ interface AIButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const aiButtonClass =
   'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-cyan-600 hover:to-blue-600 hover:bg-gradient-to-r text-white w-fit flex gap-2';
+
 export function AIButton({
   onClick,
   children = 'Discuss in chat',
