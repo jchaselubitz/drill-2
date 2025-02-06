@@ -14,12 +14,12 @@ import { UserContextProvider } from '@/contexts/user_context';
 import { getUserHistory } from '@/lib/actions/actionsHistory';
 import { getLessonList } from '@/lib/actions/lessonActions';
 import { getProfile } from '@/lib/actions/userActions';
+import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
 
 import { CreateDialog } from './(components)/create_dialog';
 import { NavService } from './(components)/nav_service';
-import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 
 const fontSans = FontSans({
   subsets: ['latin'],

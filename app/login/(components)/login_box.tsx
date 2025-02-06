@@ -5,6 +5,7 @@ import { Youtube } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ReactPlayer from 'react-player';
+import YouTubePlayer from 'react-player/youtube';
 import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,10 +18,9 @@ import {
 } from '@/components/ui/drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createAnonymousUser } from '@/lib/actions/userActions';
+import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 
 import LoginForm from './login_form';
-import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
-import YouTubePlayer from 'react-player/youtube';
 
 export default function LoginBox({
   token,

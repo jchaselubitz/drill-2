@@ -4,7 +4,9 @@ import { BaseLesson } from 'kysely-codegen';
 import { Iso639LanguageCode } from 'kysely-codegen';
 import { XIcon } from 'lucide-react';
 import React from 'react';
-import LessonCreationForm from '@/app/lessons/(components)/lesson_creation_form';
+import LessonGenerationForm, {
+  LessonCreationForm,
+} from '@/app/lessons/(components)/lesson_creation_form';
 import { useLessonsContext } from '@/contexts/lessons_context';
 
 import { Button } from '../ui/button';
@@ -42,11 +44,14 @@ const LessonList: React.FC<LessonListProps> = ({
       {lessons.map((lesson) => (
         <LessonCard key={lesson.id} lesson={lesson} />
       ))}
-      <LessonCreationForm
-        subjectId={subjectId}
-        subjectLanguage={subjectLang as Iso639LanguageCode}
-        subjectLevel={subjectLevel}
-      />
+      <div className="flex flex-wrap gap-2">
+        <LessonGenerationForm
+          subjectId={subjectId}
+          subjectLanguage={subjectLang as Iso639LanguageCode}
+          subjectLevel={subjectLevel}
+        />
+        <LessonCreationForm subjectId={subjectId} lang={subjectLang as Iso639LanguageCode} />
+      </div>
     </div>
   );
 };

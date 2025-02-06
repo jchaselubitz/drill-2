@@ -22,7 +22,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
 
   const withoutAudio = await Promise.all(
     lesson.translations.map(async (translation) => {
-      const text = translation?.phraseSecondary.text as string;
+      const text = translation?.phraseTarget.text as string;
       const fileName = ((await hashString(text as string)) + '.mp3') as string;
       if (!fileList.includes(fileName)) {
         return translation;

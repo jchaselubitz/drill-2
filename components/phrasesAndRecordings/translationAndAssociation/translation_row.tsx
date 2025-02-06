@@ -1,6 +1,8 @@
 import { Iso639LanguageCode } from 'kysely-codegen';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import TtsButton from '@/components/ai_elements/tts_button';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -8,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { useLessonsContext } from '@/contexts/lessons_context';
 import { useLibraryContext } from '@/contexts/library_context';
 import { addTranslationToLesson } from '@/lib/actions/lessonActions';
@@ -32,6 +35,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   navigateToPhrase,
   phraseLang,
 }) => {
+  const router = useRouter();
   const bucket = 'text_to_speech';
   const { setSelectedPhrasePage } = useLibraryContext();
 
@@ -99,6 +103,15 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
                     {lesson.title}
                   </SelectItem>
                 ))}
+                <Separator />
+
+                <Button
+                  variant={'secondary'}
+                  className="mt-1 w-full"
+                  onClick={() => router.push('/lessons')}
+                >
+                  + New lesson
+                </Button>
               </SelectContent>
             </Select>
           </div>

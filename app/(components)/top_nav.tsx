@@ -1,12 +1,12 @@
 import { User } from '@supabase/supabase-js';
+import { MessageSquareDiff } from 'lucide-react';
+import Link from 'next/link';
 import React from 'react';
 import BackButton from '@/components/back_button';
 import CreateButton from '@/components/specialButtons/create_button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
 import UserMenu from './user-menu';
-import { MessageSquareDiff } from 'lucide-react';
-import Link from 'next/link';
 
 interface TopNavProps {
   isMobile: boolean;

@@ -1,6 +1,7 @@
 import { SubjectWithLessons } from 'kysely-codegen';
 import React from 'react';
 import { useLessonsContext } from '@/contexts/lessons_context';
+import { getLangName } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 type SubjectItemProps = {
@@ -19,7 +20,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({ subject }) => {
       onClick={() => setSelectedSubjectId(subject.id)}
     >
       <h2 className="text-base font-bold">{subject.level}</h2>
-      <h1 className="text-sm">{subject.name}</h1>
+      <h1 className="text-sm">{getLangName(subject.lang)}</h1>
       <div>
         {numLessons} lesson{`${numLessons > 1 ? 's' : ''}`}
       </div>

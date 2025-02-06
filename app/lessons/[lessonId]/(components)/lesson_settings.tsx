@@ -4,6 +4,7 @@ import { Iso639LanguageCode, LessonWithTranslations, TranslationWithPhrase } fro
 import React, { useEffect, useState } from 'react';
 import GenerateMorePhrases from '@/components/ai_elements/generate_more_phrases';
 import GeneratePhraseAudio from '@/components/ai_elements/generate_phrase_audio';
+import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/contexts/user_context';
 import { getFileList } from '@/lib/helpers/helpersAudio';
 import { hashString } from '@/lib/helpers/helpersDB';
@@ -31,7 +32,8 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
   const [loadingAPKG, setLoadingAPKG] = useState(false);
 
   const translations = lesson.translations;
-  const studyLanguage = lesson.translations[0]?.phraseSecondary.lang as Iso639LanguageCode;
+  const studyLanguage = lesson.sideTwo;
+
   const bucket = 'text_to_speech';
 
   useEffect(() => {
@@ -39,7 +41,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
       const fileList = (await getFileList({ supabase, bucket })).map((file) => file.name);
       const withoutAudio = await Promise.all(
         translations.map(async (translation) => {
-          const text = translation?.phraseSecondary.text as string;
+          const text = translation?.phraseTarget.text as string;
           const fileName = ((await hashString(text as string)) + '.mp3') as string;
           if (!fileList.includes(fileName)) {
             return translation;
@@ -64,7 +66,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
       <hr className="border-gray-300 my-5" />
       <div className="flex flex-col md:flex-row w-full items-center justify-around gap-3">
         <div className="flex gap-2 w-full">
-          <button
+          <Button
             className={cn(baseButtonClass, ' bg-blue-600 text-white')}
             onClick={() => {
               setLoadingCSV(true);
@@ -72,8 +74,8 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
             }}
           >
             {loadingCSV ? 'Downloading' : 'Download CSV'}
-          </button>
-          <button
+          </Button>
+          <Button
             className={cn(baseButtonClass, ' bg-blue-600 text-white')}
             onClick={() => {
               setLoadingAPKG(true);
@@ -81,15 +83,18 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
             }}
           >
             {loadingAPKG ? 'Downloading' : 'Download Anki Deck'}
-          </button>
+          </Button>
         </div>
-        <GenerateMorePhrases
-          lessonId={lesson.id}
-          lessonTitle={lesson.title}
-          studyLanguage={studyLanguage}
-          userLanguage={userLanguage}
-          currentLevel={lesson.level}
-        />
+        {
+          <GenerateMorePhrases
+            hasPhrases={translations.length > 0}
+            lessonId={lesson.id}
+            lessonTitle={lesson.title}
+            studyLanguage={studyLanguage}
+            userLanguage={userLanguage}
+            currentLevel={lesson.level}
+          />
+        }
         {translationsWithoutAudio && translationsWithoutAudio.length > 0 && (
           <GeneratePhraseAudio
             translations={translationsWithoutAudio}
@@ -99,7 +104,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
                 const fileList = (await getFileList({ supabase, bucket })).map((file) => file.name);
                 const withoutAudio = await Promise.all(
                   translations.map(async (translation) => {
-                    const text = translation?.phraseSecondary.text as string;
+                    const text = translation?.phraseTarget.text as string;
                     const fileName = ((await hashString(text as string)) + '.mp3') as string;
                     if (!fileList.includes(fileName)) {
                       return translation;

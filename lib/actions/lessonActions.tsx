@@ -3,6 +3,7 @@
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import {
   BasePhrase,
+  BaseTranslation,
   Iso639LanguageCode,
   LessonListType,
   LessonWithTranslations,
@@ -11,12 +12,14 @@ import {
   NewSubject,
   NewTranslation,
   SubjectWithLessons,
+  TranslationWithPhrase,
 } from 'kysely-codegen';
 import { revalidatePath } from 'next/cache';
 import { PhraseType } from '@/app/lessons/(components)/lesson_option';
 import { createClient } from '@/utils/supabase/server';
 
 import db from '../database';
+import { sortLessonTranslation } from '../helpers/helpersTranslation';
 
 export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
   const supabase = createClient();
@@ -55,6 +58,32 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
     ])
     .where('subject.userId', '=', user.id)
     .execute()) as SubjectWithLessons[];
+};
+
+export const createSubject = async ({
+  level,
+  lang,
+}: {
+  level: string;
+  lang: Iso639LanguageCode;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return;
+  }
+  await db
+    .insertInto('subject')
+    .values({
+      level,
+      lang,
+      userId: user.id,
+    } as NewSubject)
+    .executeTakeFirstOrThrow();
+
+  revalidatePath('/lessons', 'page');
 };
 
 export const getLessonList = async (): Promise<LessonListType[]> => {
@@ -102,7 +131,7 @@ export const getLessons = async (lessonId?: string): Promise<LessonWithTranslati
       'lesson.sideOne',
       'lesson.sideTwo',
       'subject.level as level',
-      'subject.name as subjectName',
+      'subject.lang as lang',
       jsonArrayFrom(
         eb
           .selectFrom('translation')
@@ -141,15 +170,43 @@ export const getLessons = async (lessonId?: string): Promise<LessonWithTranslati
   const lessonWithTranslationsArray = response.map((lesson) => ({
     ...lesson,
     level: lesson.level,
-    lang: (lesson.translations[0].phrasePrimary?.lang as Iso639LanguageCode) ?? null,
-    translations: lesson.translations.map((translation) => ({
+    translations: lesson.translations.map((translation: BaseTranslation) => ({
       ...translation,
-      phrasePrimary: translation.phrasePrimary as BasePhrase,
-      phraseSecondary: translation.phraseSecondary as BasePhrase,
+      phraseBase: sortLessonTranslation(translation, lesson).base,
+      phraseTarget: sortLessonTranslation(translation, lesson).target,
     })),
   }));
 
   return lessonWithTranslationsArray;
+};
+
+export const createBlankLesson = async ({
+  title,
+  shortDescription,
+  subjectId,
+}: {
+  title: string;
+  shortDescription: string;
+  subjectId: string;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return;
+  }
+  await db
+    .insertInto('lesson')
+    .values({
+      title,
+      shortDescription,
+      subjectId,
+      userId: user.id,
+    } as NewLesson)
+    .executeTakeFirstOrThrow();
+
+  revalidatePath('/lessons', 'page');
 };
 
 export const addSubjectLessonWithTranslations = async ({

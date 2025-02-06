@@ -2,7 +2,7 @@
 
 import { SubjectWithLessons } from 'kysely-codegen';
 import React from 'react';
-import LessonCreationForm from '@/app/lessons/(components)/lesson_creation_form';
+import SubjectCreateForm from '@/app/lessons/(components)/subject_form';
 import { cn } from '@/lib/utils';
 
 import SubjectItem from './subject_item';
@@ -17,7 +17,7 @@ const SubjectItemList: React.FC<SubjectItemListProps> = ({ subjects, className }
     return (
       <div className="flex h-full items-center justify-center p-6 w-full">
         <div className="text-center">
-          <LessonCreationForm startOpen={true} />
+          <SubjectCreateForm startOpen={true} />
         </div>
       </div>
     );
@@ -27,7 +27,7 @@ const SubjectItemList: React.FC<SubjectItemListProps> = ({ subjects, className }
       {subjects.map((subject) => (
         <SubjectItem key={subject.id} subject={subject} />
       ))}
-      <LessonCreationForm />
+      <SubjectCreateForm />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { BasePhrase, Iso639LanguageCode, TranslationWithPhrase } from 'kysely-codegen';
+import Link from 'next/link';
 import React from 'react';
 import TtsButton from '@/components/ai_elements/tts_button';
 import { Input } from '@/components/ui/input';
@@ -28,11 +29,19 @@ const PhraseList: React.FC<PhraseListProps> = ({
   };
 
   if (!translations || translations.length === 0) {
-    return <div>No translations found</div>;
+    return (
+      <div>
+        No translations found. Either add some from your{' '}
+        <Link className="underline" href="/library">
+          library
+        </Link>
+        , or generate some using the button above.
+      </div>
+    );
   }
 
   const getSidePhrase = (translation: TranslationWithPhrase, side: 1 | 2): BasePhrase => {
-    const phrases = [translation?.phrasePrimary, translation?.phraseSecondary];
+    const phrases = [translation?.phraseBase, translation?.phraseTarget];
     const phrase = phrases.find((p) => p?.lang === (side === 1 ? side1 : side2));
     if (!phrase) {
       throw Error('missing phrase');

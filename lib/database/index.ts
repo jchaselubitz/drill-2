@@ -67,8 +67,7 @@ declare module 'kysely-codegen' {
   export type LessonWithTranslations = BaseLesson & {
     translations: TranslationWithPhrase[];
     level: string | null;
-    subjectName: string | null;
-    lang: Iso639LanguageCode | null;
+    lang: Iso639LanguageCode;
   };
   export type NewLesson = Insertable<Lesson>;
   export type EditedLesson = Updateable<Lesson>;
@@ -124,8 +123,8 @@ declare module 'kysely-codegen' {
   export type BaseTranslation = Selectable<Translation>;
   export type TranslationWithPhrase =
     | (BaseTranslation & {
-        phrasePrimary: BasePhrase;
-        phraseSecondary: BasePhrase;
+        phraseBase: BasePhrase;
+        phraseTarget: BasePhrase;
       })
     | null;
   export type NewTranslation = Insertable<Translation>;

@@ -1,96 +1,152 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Iso639LanguageCode } from 'kysely-codegen';
-import React, { useState } from 'react';
+import { XIcon } from 'lucide-react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { set, z } from 'zod';
+import { z } from 'zod';
 import LightSuggestionList from '@/components/ai_elements/suggestions/light_suggestion_list';
 import { Button } from '@/components/ui/button';
-import { LoadingButton } from '@/components/ui/button-loading';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserContext } from '@/contexts/user_context';
+import { createBlankLesson } from '@/lib/actions/lessonActions';
 import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
 import { getModelSelection, getOpenAiKey } from '@/lib/helpers/helpersAI';
 import { requestLessonSuggestions } from '@/lib/helpers/promptGenerators';
-import { ContentSuggestions, Languages, Levels } from '@/lib/lists';
+import { ContentSuggestions } from '@/lib/lists';
 import { createClient } from '@/utils/supabase/client';
 
 import { OptionType } from './lesson_option';
 import LessonOptionList from './lesson_option_list';
 
 interface LessonCreationFormProps {
-  subjectId?: string | undefined;
-  subjectLanguage?: Iso639LanguageCode | null;
-  subjectLevel?: string | null;
+  subjectId: string;
+  lang: Iso639LanguageCode;
+}
+
+export const LessonCreationForm: FC<LessonCreationFormProps> = ({ subjectId, lang }) => {
+  const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
+  const [showCreationForm, setShowCreationForm] = useState(false);
+  const formSchema = z.object({
+    title: z.string().min(3, 'Name is required'),
+  });
+  type FormValues = z.infer<typeof formSchema>;
+  const form = useForm<FormValues>({
+    mode: 'onBlur',
+    resolver: zodResolver(formSchema),
+    defaultValues: { title: '' },
+  });
+
+  async function submitForm(data: FormValues) {
+    const { title } = data;
+    setButtonState('loading');
+    try {
+      await createBlankLesson({ title, shortDescription: lang, subjectId });
+      setButtonState('success');
+      setShowCreationForm(false);
+    } catch (error) {
+      setButtonState('error');
+    }
+  }
+
+  if (!showCreationForm) {
+    return (
+      <Button onClick={() => setShowCreationForm(true)} variant={'outline'} className="w-fit">
+        {`Create empty lesson`}
+      </Button>
+    );
+  }
+  return (
+    <div className="p-4 bg-zinc-50 rounded-lg w-full">
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-lg font-semibold">Create blank lesson</h2>
+        <Button variant={'ghost'} size={'icon'} onClick={() => setShowCreationForm(false)}>
+          <XIcon />{' '}
+        </Button>
+      </div>
+      <Form {...form}>
+        <form className="flex flex-col gap-2 w-full mb-5" onSubmit={form.handleSubmit(submitForm)}>
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <Label>Lesson name</Label>
+                <FormControl>
+                  <Input
+                    className="w-full"
+                    placeholder="e.g. verb-adjective agreement"
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <LoadingButton
+            buttonState={buttonState}
+            text="Save"
+            loadingText="Saving..."
+            errorText="Error"
+          />
+        </form>
+      </Form>
+    </div>
+  );
+};
+
+interface LessonGenerationFormProps {
+  subjectId: string;
+  subjectLanguage: Iso639LanguageCode;
+  subjectLevel: string;
   startOpen?: boolean;
 }
 
-const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
+const LessonGenerationForm: FC<LessonGenerationFormProps> = ({
   subjectId,
   subjectLanguage,
   subjectLevel,
   startOpen,
 }) => {
-  if (subjectId && (!subjectLanguage || !subjectLevel)) {
-    throw new Error('Subject ID provided without language or level');
-  }
   const [showCreationForm, setShowCreationForm] = useState(startOpen);
-  const { userLanguage, prefLanguage } = useUserContext();
-  const [level, setLevel] = useState(subjectLevel);
-  const [studyLanguage, setStudyLanguage] = useState<Iso639LanguageCode | null>(
-    subjectLanguage ?? null
-  );
+  const { userLanguage } = useUserContext();
   const [request, setRequest] = useState('');
   const [optionListObject, setOptionListObject] = useState<OptionType[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
 
   const handleGenerateCustomLesson = async () => {
-    const level = form.getValues('level');
-    const language = form.getValues('language') as Iso639LanguageCode | '';
-
-    if (level === '' || language === '' || !userLanguage || request === '') {
-      alert('Please select a language and level');
-      return;
-    }
     setIsLoading(true);
     setOptionListObject(null);
-    ///===============
 
+    if (request === '' || !userLanguage) {
+      setIsLoading(false);
+      return;
+    }
     const phrasesArray = await handleGeneratePhrases({
       concept: request,
-      studyLanguage: language,
+      studyLanguage: subjectLanguage,
       userLanguage: userLanguage,
-      level: level,
+      level: subjectLevel,
     });
     if (!phrasesArray) {
       setIsLoading(false);
       return;
     }
-    setOptionListObject([{ title: request, description: level, phrases: phrasesArray }]);
-    setLevel(level);
-    setStudyLanguage(language);
+    setOptionListObject([{ title: request, description: subjectLevel, phrases: phrasesArray }]);
     setIsLoading(false);
   };
 
   const handleGenerateLessonSuggestions = async () => {
-    const level = form.getValues('level');
-    const studyLanguage = form.getValues('language') as Iso639LanguageCode | '';
-    if (level === '' || studyLanguage === '') {
-      alert('Please select a language and level');
-      return;
-    }
     setIsLoading(true);
-    const { prompt, format } = requestLessonSuggestions({ level, language: studyLanguage });
+    const { prompt, format } = requestLessonSuggestions({
+      level: subjectLevel,
+      language: subjectLanguage,
+    });
 
     const modelParams = { format };
     const messages = [
@@ -121,8 +177,7 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
   };
 
   const formSchema = z.object({
-    language: z.string().min(3, 'Text is required'),
-    level: z.string().min(1, 'Language is required'),
+    request: z.string().min(3, 'Text is required'),
   });
 
   type FormValues = z.infer<typeof formSchema>;
@@ -130,80 +185,27 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
   const form = useForm<FormValues>({
     mode: 'onBlur',
     resolver: zodResolver(formSchema),
-    defaultValues: { level: level ?? '', language: studyLanguage ?? prefLanguage ?? '' },
+    defaultValues: { request: '' },
   });
 
   if (!showCreationForm) {
     return (
       <Button onClick={() => setShowCreationForm(true)} variant={'outline'} className="w-fit">
-        Create a new lesson
+        {`Generate a new lesson`}
       </Button>
     );
   }
 
   return (
     <div className="p-4 bg-zinc-50 rounded-lg w-full">
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-lg font-semibold">Generate a lesson</h2>
+        <Button variant={'ghost'} size={'icon'} onClick={() => setShowCreationForm(false)}>
+          <XIcon />{' '}
+        </Button>
+      </div>
       <Form {...form}>
         <form className="flex flex-col gap-2 w-full mb-5">
-          {!subjectId && (
-            <>
-              <FormField
-                control={form.control}
-                name="language"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      onValueChange={(v) => field.onChange(v)}
-                      defaultValue={field.value as string}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select language" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Languages.map((language) => (
-                          <SelectItem
-                            key={language.value as Iso639LanguageCode}
-                            value={language.value}
-                          >
-                            {language.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="level"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      onValueChange={(v) => field.onChange(v)}
-                      defaultValue={field.value as string}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select level" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Levels.map((level) => (
-                          <SelectItem key={level.value} value={level.value}>
-                            {level.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
           <Label>Describe the material you would like to drill</Label>
           <Textarea
             name="request"
@@ -232,12 +234,12 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
           )}
         </form>
       </Form>
-      {optionListObject && level && userLanguage && studyLanguage && (
+      {optionListObject && subjectLevel && userLanguage && subjectLanguage && (
         <LessonOptionList
           options={optionListObject}
-          studyLanguage={studyLanguage}
+          studyLanguage={subjectLanguage}
           userLanguage={userLanguage}
-          level={level}
+          level={subjectLevel}
           subjectId={subjectId}
         />
       )}
@@ -245,4 +247,4 @@ const LessonCreationForm: React.FC<LessonCreationFormProps> = ({
   );
 };
 
-export default LessonCreationForm;
+export default LessonGenerationForm;
