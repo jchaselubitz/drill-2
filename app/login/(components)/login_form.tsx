@@ -78,9 +78,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
           return router.push('/confirm-your-email?email=' + email);
         }
         if (!isCreateAccount) {
-          await signIn({ email, password });
-          setSignInButtonState('default');
-          return router.push('/');
+          try {
+            await signIn({ email, password });
+            setSignInButtonState('success');
+            return router.push('/');
+          } catch (error) {
+            setSignInButtonState('error');
+            throw Error(`Error signing in ${error}`);
+          }
         }
         return;
       }
@@ -169,7 +174,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
             }
             text={buttonText}
             loadingText={isCreateAccount ? 'Creating ...' : 'Logging in ...'}
-            successText="Check your email for a login link"
+            successText={isMagicLink ? 'Check your email for a login link' : 'Loading ...'}
             errorText="Error"
           />
         </div>
