@@ -20,6 +20,7 @@ import { createAnonymousUser } from '@/lib/actions/userActions';
 
 import LoginForm from './login_form';
 import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
+import YouTubePlayer from 'react-player/youtube';
 
 export default function LoginBox({
   token,
@@ -77,15 +78,22 @@ export default function LoginBox({
             {/* <DrawerDescription>This action cannot be undone.</DrawerDescription> */}
           </DrawerHeader>
           <div className="mx-auto my-10">
-            <Button
-              className="mb-4 w-full border-slate-700 hover:bg-slate-100 font-semibold gap-2"
-              variant="outline"
-              size="lg"
-              // onClick={() => setShowCaptcha(!showCaptcha)}
-            >
-              Open in Youtube <Youtube />
-            </Button>
-            <ReactPlayer url="https://youtu.be/uilJL5JW-2g" width="1000px" height={'600px'} />
+            <a href={DemoVideoURL} target="_blank" rel="noreferrer">
+              <Button
+                className="mb-4 w-full border-slate-700 hover:bg-slate-100 font-semibold gap-2"
+                variant="outline"
+                size="lg"
+              >
+                Open in Youtube <Youtube />
+              </Button>
+            </a>
+            <YouTubePlayer
+              url="https://youtu.be/uilJL5JW-2g"
+              width="1000px"
+              height={'600px'}
+              controls
+              playsinline={true}
+            />
           </div>
           <DrawerFooter>
             <DrawerClose className="w-full">
