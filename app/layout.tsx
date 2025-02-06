@@ -19,6 +19,7 @@ import { createClient } from '@/utils/supabase/server';
 
 import { CreateDialog } from './(components)/create_dialog';
 import { NavService } from './(components)/nav_service';
+import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -38,22 +39,42 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'Drill',
+  title: 'Drill AI',
   description: 'Create learning content.',
   generator: 'Next.js',
+  keywords: ['Drill', 'Learning', 'content generation', 'study', 'anki'],
   manifest: `/manifest.json`,
+  openGraph: {
+    url: defaultUrl,
+    siteName: 'Drill AI',
+    images: [
+      {
+        url: `${defaultUrl}/images/drill_ai_header.png`, // Must be an absolute URL
+        width: 1200,
+        height: 675,
+      },
+    ],
+    videos: [
+      {
+        url: DemoVideoURL, // Must be an absolute URL
+        width: 800,
+        height: 600,
+      },
+    ],
+    type: 'website',
+  },
   appleWebApp: {
-    title: 'Tasks, Operations & Procedures',
+    title: 'Drill AI',
     statusBarStyle: 'default',
     capable: true,
     startupImage: [
-      '/assets/images/iphone-splash.png',
+      '/images/icons/drill-logo.png',
       {
-        url: '/assets/images/iphone-splash.png',
+        url: '/images/iphone-splash.png',
         media: '(device-width: 390px) and (device-height: 844px)',
       },
       {
-        url: '/assets/images/ipad-pro-splash.png',
+        url: '/images/ipad-pro-splash.png',
         media: '(device-width: 834px) and (device-height: 1366px)',
       },
     ],
