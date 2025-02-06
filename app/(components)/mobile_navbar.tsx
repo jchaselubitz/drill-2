@@ -9,8 +9,8 @@ import { NavMain } from './nav_main';
 const MobileNavbar: FC<AppSidebarProps> = ({ pages, user }) => {
   const mobilePages = pages.filter((page) => page.mobile);
   return (
-    <div className="fixed z-30 bottom-3 right-3 left-3 flex flex-col">
-      <div className=" px-1 p-2  flex h-16 drop-shadow-lg bg-sidebar rounded-iPhone items-center justify-between">
+    <div className="fixed z-30 bottom-3 right-3 left-3 flex flex-col bg-transparent">
+      <div className=" px-1 p-2 flex h-16 drop-shadow-xl border bg-zinc-50 rounded-iPhone bg-opacity-30 backdrop-blur-md items-center justify-between">
         <CreateButton isMobile />
         <NavMain items={mobilePages} className="px-2" mobile />
         <ChatButton />
