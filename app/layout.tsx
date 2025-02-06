@@ -29,7 +29,7 @@ const fontSans = FontSans({
 const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export const viewport: Viewport = {
-  themeColor: '#f1f5f9',
+  themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
