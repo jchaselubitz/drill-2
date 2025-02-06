@@ -25,10 +25,10 @@ import LessonOptionList from './lesson_option_list';
 
 interface LessonCreationFormProps {
   subjectId: string;
-  lang: Iso639LanguageCode;
+  level: Iso639LanguageCode;
 }
 
-export const LessonCreationForm: FC<LessonCreationFormProps> = ({ subjectId, lang }) => {
+export const LessonCreationForm: FC<LessonCreationFormProps> = ({ subjectId, level }) => {
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
   const [showCreationForm, setShowCreationForm] = useState(false);
   const formSchema = z.object({
@@ -45,7 +45,7 @@ export const LessonCreationForm: FC<LessonCreationFormProps> = ({ subjectId, lan
     const { title } = data;
     setButtonState('loading');
     try {
-      await createBlankLesson({ title, shortDescription: lang, subjectId });
+      await createBlankLesson({ title, shortDescription: level, subjectId });
       setButtonState('success');
       setShowCreationForm(false);
     } catch (error) {

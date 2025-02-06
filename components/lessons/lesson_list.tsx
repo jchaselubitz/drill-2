@@ -50,7 +50,7 @@ const LessonList: React.FC<LessonListProps> = ({
           subjectLanguage={subjectLang as Iso639LanguageCode}
           subjectLevel={subjectLevel}
         />
-        <LessonCreationForm subjectId={subjectId} lang={subjectLang as Iso639LanguageCode} />
+        <LessonCreationForm subjectId={subjectId} level={subjectLevel as Iso639LanguageCode} />
       </div>
     </div>
   );
