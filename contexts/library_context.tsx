@@ -27,7 +27,6 @@ export const LibraryContextProvider: React.FC<{
   }, [phraseId, selectedPhraseId]);
 
   const router = useRouter();
-
   const setSelectedPhrasePage = ({
     phraseId,
     page,
@@ -40,9 +39,7 @@ export const LibraryContextProvider: React.FC<{
     if (page && phraseId) {
       router.push(`/library${`?page=${page + 1}&phrase=${phraseId}`}`);
     } else if (phraseId) {
-      router.push(
-        `/library${`?${selectedPage ? `page=${selectedPage}&` : ''}phrase=${phraseId + 1}`}`
-      );
+      router.push(`/library${`?${selectedPage ? `page=${selectedPage}&` : ''}phrase=${phraseId}`}`);
     } else if (page) {
       router.push(
         `/library${`?page=${page + 1}${selectedPhraseId ? `&phrase=${selectedPhraseId}` : ''}`}`
