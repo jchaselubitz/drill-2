@@ -1,11 +1,10 @@
 import { Iso639LanguageCode } from 'kysely-codegen';
 import { BookA, Home } from 'lucide-react';
 import React from 'react';
+import LanguageMenu from '@/components/selectors/language_selector';
 import { SidebarMenuItem } from '@/components/ui/sidebar';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
-
-import LanguageMenu from './language_selector';
 
 const LanguageChooser: React.FC = () => {
   const { userLanguage, prefLanguage } = useUserContext();

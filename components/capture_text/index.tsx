@@ -8,15 +8,15 @@ import { z } from 'zod';
 import { useCreateModal } from '@/contexts/create_modal_context';
 import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
+import { LangCheckStructure } from '@/lib/aiGenerators/types_generation';
 import { getPhraseType } from '@/lib/helpers/helpersPhrase';
 import { Languages } from '@/lib/lists';
+import { createClient } from '@/utils/supabase/client';
 
 import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
-import { createClient } from '@/utils/supabase/client';
-import { LangCheckStructure } from '@/lib/aiGenerators/types_generation';
 
 const CaptureText: React.FC = () => {
   const { prefLanguage } = useUserContext();

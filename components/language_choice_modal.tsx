@@ -3,11 +3,11 @@
 import { Iso639LanguageCode } from 'kysely-codegen';
 import { BookA, Home } from 'lucide-react';
 import React, { useEffect } from 'react';
-import LanguageMenu from '@/app/(components)/language_selector';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
+import LanguageMenu from './selectors/language_selector';
 
 const LanguageChoiceModal: React.FC = () => {
   const { userLanguage, prefLanguage } = useUserContext();

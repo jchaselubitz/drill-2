@@ -1,17 +1,20 @@
 'use client';
 
+import { Iso639LanguageCode } from 'kysely-codegen';
+import { Languages, Stars } from 'lucide-react';
 import React, { FC, useState } from 'react';
 import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
+import { LangCheckStructure } from '@/lib/aiGenerators/types_generation';
 import { recordAudio, RecordAudioResult, savePrivateAudioFile } from '@/lib/helpers/helpersAudio';
 import { createClient } from '@/utils/supabase/client';
 
+import LanguageMenu from '../selectors/language_selector';
 import { ButtonLoadingState } from '../ui/button-loading';
 import ImportPodcast from './import_podcast';
 import MediaReview from './media_review';
 import RecordButton, { RecordButtonStateType } from './record_button';
 import UploadButton from './upload_button';
-import { LangCheckStructure } from '@/lib/aiGenerators/types_generation';
 
 type AudioResponse = {
   blob: Blob;
@@ -19,13 +22,15 @@ type AudioResponse = {
 };
 
 const CaptureAudio: FC = () => {
-  const { userId } = useUserContext();
+  const { userId, prefLanguage } = useUserContext();
   const supabase = createClient();
+
   const [transcriptionLoading, setTranscriptionLoading] = useState<boolean>(false);
   const [transcript, setTranscript] = useState<string>('');
   const [recordingButtonState, setRecordingButtonState] = useState<RecordButtonStateType>('idle');
   const [recordingState, setRecordingState] = useState<RecordAudioResult | null>(null);
   const [audioResponse, setAudioResponse] = useState<AudioResponse | undefined | null>(null);
+  const [selectedLang, setSelectedLang] = useState<Iso639LanguageCode | '' | 'auto'>('');
 
   const [saveButtonState, setSaveButtonState] = useState<ButtonLoadingState>('default');
   // const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -117,7 +122,7 @@ const CaptureAudio: FC = () => {
         audioFile: audioResponse.blob,
       });
     }
-    const { data, error: langError } = await supabase.functions.invoke('check-language', {
+    const { data: autoLang, error: langError } = await supabase.functions.invoke('check-language', {
       body: {
         text: transcript,
         format: LangCheckStructure,
@@ -127,7 +132,8 @@ const CaptureAudio: FC = () => {
       setSaveButtonState('error');
       throw Error(`Error checking language: ${langError}`);
     }
-    const lang = JSON.parse(data).lng;
+    const useAuto = selectedLang === '' || selectedLang === 'auto';
+    const lang = !useAuto ? selectedLang : (JSON.parse(autoLang)?.lng ?? prefLanguage);
 
     try {
       await addPhrase({
@@ -158,12 +164,28 @@ const CaptureAudio: FC = () => {
     }
   };
 
+  const handleLangSelection = ({ lang }: { lang: Iso639LanguageCode; name: string }) => {
+    setSelectedLang(lang);
+  };
+
   return (
     <div>
       <div className="flex justify-center items-center gap-3 mb-2 w-full">
         <ImportPodcast importPodcast={importPodcast} />
         <UploadButton handleUpload={handleUpload} />
         <RecordButton recordingButtonState={recordingButtonState} handleClick={handleClick} />
+
+        <LanguageMenu
+          props={{
+            icon: Languages,
+            label: <Stars />,
+            name: '',
+            language: selectedLang,
+          }}
+          iconOnly
+          automaticOption
+          onClick={handleLangSelection}
+        />
       </div>
       {importingPodcast ? (
         <div>Importing podcast...</div>
