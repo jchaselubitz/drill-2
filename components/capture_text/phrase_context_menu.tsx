@@ -69,8 +69,10 @@ export const WordContextMenu: React.FC<WordContextMenuProps> = ({
     <DropdownMenu open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
       <DropdownMenuTrigger asChild>
         <span>
-          <span>{'\u00A0'}</span>
-          <span className={cn(isOpen && 'underline decoration-4 decoration-sky-500')}>{word}</span>
+          <span className={cn(isOpen && 'underline decoration-4 decoration-sky-500')}>
+            {word}
+            {'\u00A0'}
+          </span>
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -122,7 +124,7 @@ const PhraseContextMenu: React.FC<PhraseContextMenuProps> = ({
   };
 
   return (
-    <div className="flex flex-wrap tracking-tighter">
+    <div className="flex flex-wrap">
       {phraseArray.map((word, index) => (
         <WordContextMenu
           key={index}
