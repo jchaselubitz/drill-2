@@ -27,12 +27,15 @@ const LessonList: React.FC<LessonListProps> = ({
   subjectId,
 }) => {
   const { setSelectedSubjectId } = useLessonsContext();
-  if (!lessons || lessons.length === 0 || !subjectId || !subjectLevel)
+  if (!subjectId || !subjectLevel)
     return (
       <div className="flex h-full items-center justify-center p-6 w-full">
         <div className="text-center">Select a subject to view lessons</div>
       </div>
     );
+  if (!subjectId) {
+    return <LessonCreationForm subjectId={subjectId} level={subjectLevel as Iso639LanguageCode} />;
+  }
 
   return (
     <div className="flex flex-col gap-3 w-full">
