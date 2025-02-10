@@ -1,4 +1,4 @@
-import { OpenAI } from 'https://deno.land/x/openai@v4.69.0/mod.ts';
+import OpenAI from 'jsr:@openai/openai';
 import { corsHeaders } from '../_shared/cors.ts';
 import { OpenAiModel } from '../_shared/enums.ts';
 import { ChatCompletionMessageParam } from 'https://deno.land/x/openai@v4.69.0/resources/mod.ts';
@@ -8,6 +8,7 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
   const data = await req.json();
+  const format = data.format;
   const text = data.text;
   const snippet = text.slice(0, 20);
   const messages = [
@@ -26,7 +27,7 @@ Deno.serve(async (req) => {
     const completion = await openai.chat.completions.create({
       model: OpenAiModel.gpt4oMini,
       messages: messages,
-      response_format: { type: 'json_object' },
+      response_format: format,
       presence_penalty: 0,
       frequency_penalty: 0,
       temperature: 1,

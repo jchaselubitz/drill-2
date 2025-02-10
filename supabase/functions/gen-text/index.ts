@@ -1,4 +1,4 @@
-import { OpenAI } from 'https://deno.land/x/openai@v4.69.0/mod.ts';
+import OpenAI from 'jsr:@openai/openai';
 import { corsHeaders } from '../_shared/cors.ts';
 import { OpenAiModel } from '../_shared/enums.ts';
 

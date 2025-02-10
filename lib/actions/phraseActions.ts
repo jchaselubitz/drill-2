@@ -238,7 +238,7 @@ export const addPhrase = async ({
     });
   } catch (error) {
     if (error) {
-      throw error;
+      throw Error(`Failed to add phrase: ${error}`);
     }
   }
   revalidatePath('/');

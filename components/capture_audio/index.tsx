@@ -11,6 +11,7 @@ import ImportPodcast from './import_podcast';
 import MediaReview from './media_review';
 import RecordButton, { RecordButtonStateType } from './record_button';
 import UploadButton from './upload_button';
+import { LangCheckStructure } from '@/lib/aiGenerators/types_generation';
 
 type AudioResponse = {
   blob: Blob;
@@ -35,8 +36,7 @@ const CaptureAudio: FC = () => {
     setRecordingState(null);
     setTranscriptionLoading(false);
     setTranscript('');
-    // setIsSaving(false);
-    // setIsPlaying(false);
+    setSaveButtonState('default');
     setImportingPodcast(false);
     setAudioResponse(null);
   };
@@ -120,6 +120,7 @@ const CaptureAudio: FC = () => {
     const { data, error: langError } = await supabase.functions.invoke('check-language', {
       body: {
         text: transcript,
+        format: LangCheckStructure,
       },
     });
     if (langError) {

@@ -1,7 +1,7 @@
-// @ts-ignore
-import { OpenAI } from 'https://deno.land/x/openai@v4.69.0/mod.ts';
-import type { Uploadable } from 'openai/uploads.mjs';
+import OpenAI from 'jsr:@openai/openai';
+// import type { Uploadable } from 'openai/uploads.mjs';
 import { corsHeaders } from '../_shared/cors.ts';
+import { Uploadable } from 'https://deno.land/x/openai@v4.69.0/core.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
         status: 200,
       });
     } catch (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({ error: error }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       });

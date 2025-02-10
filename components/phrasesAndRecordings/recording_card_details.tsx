@@ -40,21 +40,23 @@ const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({
           exists={true}
         />
       </div>
-      <ContentRequest
-        text={recording.text}
-        lang={recording.lang as Iso639LanguageCode}
-        userId={userId}
-        phraseId={recording.id}
-        phraseType={recording.type}
-        primaryPhraseIds={[recording.id]}
-        source="transcript"
-        suggestions={getContentSuggestions({
-          userLanguage,
-          prefLanguage: recording.lang as Iso639LanguageCode,
-          contentLang: recording.lang as Iso639LanguageCode,
-          suggestionList: TranscriptRequestSuggestions,
-        })}
-      />
+      <div className="p-4">
+        <ContentRequest
+          text={recording.text}
+          lang={recording.lang as Iso639LanguageCode}
+          userId={userId}
+          phraseId={recording.id}
+          phraseType={recording.type}
+          primaryPhraseIds={[recording.id]}
+          source="transcript"
+          suggestions={getContentSuggestions({
+            userLanguage,
+            prefLanguage: recording.lang as Iso639LanguageCode,
+            contentLang: recording.lang as Iso639LanguageCode,
+            suggestionList: TranscriptRequestSuggestions,
+          })}
+        />
+      </div>
     </div>
   );
 };

@@ -15,21 +15,24 @@ import { ButtonLoadingState, LoadingButton } from '../ui/button-loading';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
+import { createClient } from '@/utils/supabase/client';
+import { LangCheckStructure } from '@/lib/aiGenerators/types_generation';
 
 const CaptureText: React.FC = () => {
   const { prefLanguage } = useUserContext();
   const { setModalOpen } = useCreateModal();
+  const supabase = createClient();
 
   const [buttonState, setButtonState] = React.useState<ButtonLoadingState>('default');
 
   const formSchema = z.object({
-    text: z.string().min(3, 'Text is required'),
-    lang: z.string().min(1, 'Language is required'),
+    text: z.string(),
+    lang: z.string().optional(),
   });
 
   type FormValues = z.infer<typeof formSchema>;
 
-  const defaultValues: Partial<FormValues> = { text: '', lang: prefLanguage ?? '' };
+  const defaultValues: Partial<FormValues> = { text: '', lang: '' };
 
   const form = useForm<FormValues>({
     mode: 'onBlur',
@@ -39,10 +42,27 @@ const CaptureText: React.FC = () => {
 
   const onSubmit = async (data: FormValues) => {
     const text = data.text;
-    const lang = data.lang as Iso639LanguageCode;
+    const selectedLang = data.lang as Iso639LanguageCode | '';
     setButtonState('loading');
+    const { data: autoLang, error: langError } = await supabase.functions.invoke('check-language', {
+      body: {
+        text: text,
+        format: LangCheckStructure,
+      },
+    });
+    if (langError) {
+      setButtonState('error');
+      throw Error(`Error checking language: ${langError}`);
+    }
+    const lang = selectedLang !== '' ? selectedLang : (JSON.parse(autoLang)?.lng ?? prefLanguage);
+
     try {
-      await addPhrase({ text, lang, source: 'home', type: getPhraseType(text) });
+      await addPhrase({
+        text,
+        lang,
+        source: 'home',
+        type: getPhraseType(text),
+      });
       setButtonState('success');
     } catch (error) {
       setButtonState('error');
@@ -78,7 +98,7 @@ const CaptureText: React.FC = () => {
                     <Select onValueChange={field.onChange} defaultValue={field.value as string}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select language" />
+                          <SelectValue placeholder="Detect language automatically" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

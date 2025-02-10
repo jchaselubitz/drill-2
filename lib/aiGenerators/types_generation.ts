@@ -61,6 +61,13 @@ export const HistoryStructure = zodResponseFormat(
   'history'
 );
 
+export const LangCheckStructure = zodResponseFormat(
+  z.object({
+    lng: z.nativeEnum(LanguagesISO639),
+  }),
+  'lang'
+);
+
 export type TranslationResponseType = {
   input_text: string;
   input_lang: string;

@@ -323,7 +323,7 @@ export const ContentSuggestions = [
 
 export const TranscriptRequestSuggestions = [
   `Extract all of the nouns`,
-  `Generate four more paragraphs like this one`,
+  `Generate four paragraphs like this one`,
   `List all the sentences.`,
 ];
 
