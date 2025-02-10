@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 
 import PhraseContextMenu from '../capture_text/phrase_context_menu';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import Link from 'next/link';
 
 interface BaseObjectCardProps {
   withoutDetails: React.ReactNode;
@@ -56,7 +57,17 @@ const BaseObjectCard: React.FC<BaseObjectCardProps> = ({
           </div>
         </div>
       </div>
-      {detailsOpen && <div className="p-2">{objectDetails}</div>}
+      {detailsOpen && (
+        <>
+          <div className="">{objectDetails}</div>
+
+          <div className="border-t border-slate-200 p-4 py-2">
+            <Link href={`/library?phrase=${phraseId}`} className="text-xs hover:underline">
+              See in Library
+            </Link>
+          </div>
+        </>
+      )}
     </div>
   );
 };
