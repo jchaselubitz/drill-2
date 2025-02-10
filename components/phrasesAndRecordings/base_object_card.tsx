@@ -39,7 +39,7 @@ const BaseObjectCard: React.FC<BaseObjectCardProps> = ({
             <div className="text-gray-400 text-xs mb-1">{getHumanDate(date)}</div>
             <h3
               className={cn('text-gray-700 text-sm font-bold')}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => detailsOpen && e.stopPropagation()}
             >
               {!detailsOpen ? (
                 <div className="line-clamp-2">{text}</div>
