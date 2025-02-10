@@ -1,6 +1,6 @@
 import { StarFilledIcon } from '@radix-ui/react-icons';
-import { PhraseType, PhraseWithAssociations } from 'kysely-codegen';
-import { ChevronDown, StarIcon, Tag, Trash, XIcon } from 'lucide-react';
+import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
+import { Languages, StarIcon, Tag, Trash, XIcon } from 'lucide-react';
 import React, { startTransition, useOptimistic } from 'react';
 import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
@@ -13,11 +13,13 @@ import {
 import { useLibraryContext } from '@/contexts/library_context';
 import {
   deletePhrase,
+  updatePhraseLang,
   updatePhrasePartSpeech,
   updatePhraseType,
 } from '@/lib/actions/phraseActions';
 import { togglePhraseFavorite } from '@/lib/actions/phraseActions';
 import {
+  getLangIcon,
   getPartSpeechTypeIcon,
   getPartSpeechTypeName,
   getPhraseTypeIcon,
@@ -26,6 +28,7 @@ import {
   PhraseListType,
   PhraseTypes,
 } from '@/lib/lists';
+import LanguageMenu from '@/components/selectors/language_selector';
 
 type LibraryPhraseTopBarProps = {
   phrase: PhraseWithAssociations;
@@ -62,6 +65,13 @@ const LibraryPhraseTopBar: React.FC<LibraryPhraseTopBarProps> = ({ phrase, userT
   const handleDelete = async () => {
     confirm('Are you sure you want to delete this phrase?');
     await deletePhrase(phrase.id);
+  };
+
+  const handleChangeLang = async ({ lang }: { lang: Iso639LanguageCode; name: string }) => {
+    startTransition(() => {
+      setOptPhraseData({ ...optPhraseData, lang });
+    });
+    await updatePhraseLang({ phraseId: phrase.id, lang });
   };
 
   const toggleFavorite = () => {
@@ -138,6 +148,22 @@ const LibraryPhraseTopBar: React.FC<LibraryPhraseTopBarProps> = ({ phrase, userT
             })}
           </DropdownMenuContent>
         </DropdownMenu>
+        {phrase.translations.length === 0 ? (
+          <LanguageMenu
+            props={{
+              icon: Languages,
+              label: <Languages />,
+              name: '',
+              language: phrase.lang,
+            }}
+            iconOnly
+            borderZero
+            automaticOption
+            onClick={handleChangeLang}
+          />
+        ) : (
+          <div className="flex items-center ml-4 opacity-50">{getLangIcon(phrase.lang)}</div>
+        )}
       </div>
       <Button
         variant={'ghost'}

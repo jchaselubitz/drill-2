@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { getLangIcon, getLangName, Languages } from '@/lib/lists';
+import { cn } from '@/lib/utils';
 
 type LanguageMenuProps = {
   props: {
@@ -20,11 +21,18 @@ type LanguageMenuProps = {
     icon: LucideIcon;
   };
   iconOnly?: boolean;
+  borderZero?: boolean;
   automaticOption?: boolean;
   onClick?: ({ lang, name }: { lang: Iso639LanguageCode; name: string }) => void;
 };
 
-const LanguageMenu: FC<LanguageMenuProps> = ({ props, onClick, iconOnly, automaticOption }) => {
+const LanguageMenu: FC<LanguageMenuProps> = ({
+  props,
+  onClick,
+  iconOnly,
+  automaticOption,
+  borderZero,
+}) => {
   const { label, name, language } = props;
   const handleClick = (lang: Iso639LanguageCode) => {
     if (onClick) {
@@ -33,7 +41,9 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ props, onClick, iconOnly, automat
   };
 
   const standardTrigger = (
-    <SelectTrigger>
+    <SelectTrigger
+      className={cn(borderZero && 'border-0 focus:ring-0 focus:border-0 focus:ring-offset-0')}
+    >
       <div className="flex flex-1 text-left text-sm gap-2 ">
         <span className="text-lg font-bold">
           <props.icon size={18} />
@@ -44,7 +54,13 @@ const LanguageMenu: FC<LanguageMenuProps> = ({ props, onClick, iconOnly, automat
   );
 
   const iconTrigger = (
-    <SelectTrigger className="rounded-full w-fit gap-2">
+    <SelectTrigger
+      className={cn(
+        'rounded-full w-fit gap-2 ',
+        borderZero &&
+          'border-0 focus:ring-0 focus:border-0 focus:ring-offset-0 hover:bg-zinc-100 rounded-lg'
+      )}
+    >
       <SelectValue placeholder={language ? getLangIcon(language) : <Stars size={18} />} />
     </SelectTrigger>
   );

@@ -336,6 +336,48 @@ export const updatePhrase = async ({ phraseId, text }: { phraseId: string; text:
   }
 };
 
+export const updatePhraseLang = async ({
+  phraseId,
+  lang,
+}: {
+  phraseId: string;
+  lang: Iso639LanguageCode;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+  if (!userId) {
+    return [];
+  }
+
+  try {
+    await db.transaction().execute(async (trx) => {
+      const existingTrans = await trx
+        .selectFrom('translation')
+        .select(['id'])
+        .where('userId', '=', userId)
+        .where((eb) =>
+          eb.or([eb('phrasePrimaryId', '=', phraseId), eb('phraseSecondaryId', '=', phraseId)])
+        )
+        .execute();
+
+      if (existingTrans.length === 0) {
+        trx
+          .updateTable('phrase')
+          .set({ lang })
+          .where('id', '=', phraseId)
+          .where('userId', '=', userId)
+          .execute();
+      }
+    });
+  } catch (error) {
+    throw Error(`Failed to update lang: ${error}`);
+  }
+  revalidatePath('/library', 'page');
+};
+
 export const updatePhraseNote = async ({ phraseId, note }: { phraseId: string; note: string }) => {
   const supabase = createClient();
   const {
