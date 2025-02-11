@@ -50,14 +50,7 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ phrase }) => {
           exists={true}
         />
       }
-      objectDetails={
-        <RecordingCardDetails
-          recording={phrase}
-          userId={userId}
-          handlePlayClick={handlePlayClick}
-          isPlaying={isPlaying}
-        />
-      }
+      objectDetails={<RecordingCardDetails recording={phrase} userId={userId} />}
       text={phrase.text}
       date={date}
       phraseId={phrase.id}

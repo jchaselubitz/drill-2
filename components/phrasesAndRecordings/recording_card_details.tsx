@@ -9,15 +9,9 @@ import ContentRequest from '../ai_elements/content_request';
 interface RecordingCardDetailsProps {
   userId?: string;
   recording: PhraseWithTranslations;
-  isPlaying: boolean;
-  handlePlayClick: () => void;
 }
 
-const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({
-  recording,
-  isPlaying,
-  handlePlayClick,
-}) => {
+const RecordingCardDetails: React.FC<RecordingCardDetailsProps> = ({ recording }) => {
   const { userId, userLanguage } = useUserContext();
 
   return (
