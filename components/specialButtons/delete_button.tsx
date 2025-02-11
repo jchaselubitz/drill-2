@@ -10,12 +10,12 @@ const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
   ({ onClick, isLoading, ...props }, ref) => {
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
-      onClick();
+      confirm('Are you sure you want to delete this phrase?') && onClick();
     };
 
     return (
       <button ref={ref} {...props} onClick={handleClick} className="text-red-700">
-        {!isLoading ? <TrashIcon /> : <Loader2Icon className="animate-spin" />}
+        {!isLoading ? <TrashIcon size={18} /> : <Loader2Icon size={18} className="animate-spin" />}
       </button>
     );
   }

@@ -7,6 +7,8 @@ import { getLangIcon } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import PhraseContextMenu from '../capture_text/phrase_context_menu';
+import { deletePhrase } from '@/lib/actions/phraseActions';
+import DeleteButton from '../specialButtons/delete_button';
 
 interface BaseObjectCardProps {
   withoutDetails: React.ReactNode;
@@ -26,6 +28,14 @@ const BaseObjectCard: React.FC<BaseObjectCardProps> = ({
   lang,
 }) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleteLoading(true);
+    await deletePhrase(phraseId);
+    setDeleteLoading(false);
+  };
+
   return (
     <div
       className={cn(
@@ -64,10 +74,11 @@ const BaseObjectCard: React.FC<BaseObjectCardProps> = ({
         <>
           <div className="">{objectDetails}</div>
 
-          <div className="border-t border-slate-200 p-4 py-2">
+          <div className="flex border-t border-slate-200 p-4 py-2 items-center justify-between">
             <Link href={`/library?phrase=${phraseId}`} className="text-xs hover:underline">
               See in Library
             </Link>
+            <DeleteButton onClick={handleDelete} isLoading={deleteLoading} />
           </div>
         </>
       )}
