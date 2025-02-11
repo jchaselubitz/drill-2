@@ -1,3 +1,4 @@
+'use client';
 import { BasePhrase, Iso639LanguageCode, TranslationWithPhrase } from 'kysely-codegen';
 import Link from 'next/link';
 import React from 'react';

@@ -196,17 +196,48 @@ export const createBlankLesson = async ({
   if (!user) {
     return;
   }
-  await db
-    .insertInto('lesson')
-    .values({
-      title,
-      shortDescription,
-      subjectId,
-      userId: user.id,
-    } as NewLesson)
-    .executeTakeFirstOrThrow();
+  try {
+    await db
+      .insertInto('lesson')
+      .values({
+        title,
+        shortDescription,
+        subjectId,
+        userId: user.id,
+      } as NewLesson)
+      .executeTakeFirstOrThrow();
+  } catch (error) {
+    throw Error('Error creating lesson');
+  }
 
   revalidatePath('/lessons', 'page');
+};
+
+export const updateLessonTitle = async ({
+  lessonId,
+  newTitle,
+}: {
+  lessonId: string;
+  newTitle: string;
+}) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return;
+  }
+  try {
+    await db
+      .updateTable('lesson')
+      .set({ title: newTitle })
+      .where('id', '=', lessonId)
+      .executeTakeFirstOrThrow();
+  } catch (error) {
+    throw Error('Error updating lesson title');
+  }
+
+  revalidatePath(`/lessons/${lessonId}`, 'page');
 };
 
 export const addSubjectLessonWithTranslations = async ({
@@ -346,8 +377,9 @@ export const addPhrasesToLesson = async ({
               source: '',
               userId,
             } as NewPhrase)
+            .onConflict((oc) => oc.doNothing())
             .returning('id')
-            .executeTakeFirstOrThrow();
+            .executeTakeFirst();
           const phrase2 = await trx
             .insertInto('phrase')
             .values({
@@ -356,25 +388,27 @@ export const addPhrasesToLesson = async ({
               source: '',
               userId,
             } as NewPhrase)
+            .onConflict((oc) => oc.doNothing())
             .returning('id')
-            .executeTakeFirstOrThrow();
-
-          await trx
-            .insertInto('translation')
-            .values({
-              userId,
-              lessonId,
-              phrasePrimaryId: phrase1.id,
-              phraseSecondaryId: phrase2.id,
-            } as NewTranslation)
-            .executeTakeFirstOrThrow();
+            .executeTakeFirst();
+          if (phrase1 && phrase2) {
+            await trx
+              .insertInto('translation')
+              .values({
+                userId,
+                lessonId,
+                phrasePrimaryId: phrase1.id,
+                phraseSecondaryId: phrase2.id,
+              } as NewTranslation)
+              .executeTakeFirstOrThrow();
+          }
         });
       })
     );
-    revalidatePath(`/lessons/${lessonId}`, 'page');
   } catch (error) {
     throw Error('Error adding translations to lesson to db');
   }
+  revalidatePath(`/lessons/${lessonId}`, 'page');
 };
 
 export const addTranslationToLesson = async ({

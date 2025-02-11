@@ -21,6 +21,7 @@ interface LessonOptionProps {
   studyLanguage: Iso639LanguageCode;
   level: string;
   subjectId: string | undefined;
+  isSentences: boolean | undefined;
 }
 
 const LessonOption: React.FC<LessonOptionProps> = ({
@@ -29,6 +30,7 @@ const LessonOption: React.FC<LessonOptionProps> = ({
   studyLanguage,
   level,
   subjectId,
+  isSentences,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -73,6 +75,7 @@ const LessonOption: React.FC<LessonOptionProps> = ({
               studyLanguage={studyLanguage}
               userLanguage={userLanguage}
               level={level}
+              isSentences={isSentences}
             />
           </>
         )}

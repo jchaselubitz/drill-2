@@ -9,6 +9,7 @@ interface LessonOptionListProps {
   studyLanguage: Iso639LanguageCode;
   level: string;
   subjectId: string | undefined;
+  isSentences: boolean | undefined;
 }
 
 const LessonOptionList: React.FC<LessonOptionListProps> = ({
@@ -17,6 +18,7 @@ const LessonOptionList: React.FC<LessonOptionListProps> = ({
   studyLanguage,
   level,
   subjectId,
+  isSentences,
 }) => {
   return (
     <div className="flex flex-col gap-4 prose">
@@ -28,6 +30,7 @@ const LessonOptionList: React.FC<LessonOptionListProps> = ({
           userLanguage={userLanguage}
           level={level}
           subjectId={subjectId}
+          isSentences={isSentences}
         />
       ))}
     </div>

@@ -1,33 +1,55 @@
 import { createClient } from '@/utils/supabase/client';
 import { getOpenAiKey, getModelSelection, gptFormatType } from '../helpers/helpersAI';
 import {
-  requestPhraseSuggestions,
+  requestNewPhrases,
   phraseGenerationSystemInstructions,
   phraseResponseChecks,
 } from '../helpers/promptGenerators';
 import { getLangName } from '../lists';
 import { TranslationResponseType, TranslationResponseFormat } from './types_generation';
-import { Iso639LanguageCode } from 'kysely-codegen';
+import { Iso639LanguageCode, TranslationWithPhrase } from 'kysely-codegen';
 
 export const handleGeneratePhrases = async ({
   concept,
   studyLanguage,
   userLanguage,
   level,
+  isSentences,
+  examples,
 }: {
   concept: string;
   studyLanguage: Iso639LanguageCode;
   userLanguage: Iso639LanguageCode;
   level: string | null;
+  isSentences?: boolean | undefined;
+  examples?: (TranslationWithPhrase | undefined)[] | undefined;
 }) => {
   const supabase = createClient();
 
-  const { prompt, format } = requestPhraseSuggestions({
+  const prepExamples = () => {
+    if (!examples) return undefined;
+    const definedExamples = examples.filter((example) => example !== null && example !== undefined);
+    if (definedExamples.length === 0) return undefined;
+    return definedExamples.map((example) => ({
+      phrase_primary: {
+        text: example.phraseBase.text,
+        lang: example.phraseBase.lang,
+      },
+      phrase_secondary: {
+        text: example.phraseTarget.text,
+        lang: example.phraseTarget.lang,
+      },
+    }));
+  };
+
+  const { prompt, format } = requestNewPhrases({
     concept,
     studyLanguage,
     userLanguage,
     level: level ?? '',
     numberOfPhrases: process.env.NEXT_PUBLIC_CONTEXT === 'development' ? 2 : 20,
+    isSentences,
+    examples: prepExamples(),
   });
 
   const messages = [

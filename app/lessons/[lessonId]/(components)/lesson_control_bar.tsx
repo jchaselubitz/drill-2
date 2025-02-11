@@ -4,33 +4,31 @@ import { BaseLesson } from 'kysely-codegen';
 import React, { useState } from 'react';
 import BackButton from '@/components/back_button';
 import { Input } from '@/components/ui/input';
-import { createClient } from '@/utils/supabase/client';
+import { updateLessonTitle } from '@/lib/actions/lessonActions';
 
 interface LessonControlBarProps {
   lesson: BaseLesson;
 }
 
 const LessonControlBar: React.FC<LessonControlBarProps> = ({ lesson }) => {
-  const supabase = createClient();
   const [showTitleEditor, setShowTitleEditor] = useState(false);
 
   const toggleShowTitleEditor = (setting: boolean) => {
     setShowTitleEditor(setting);
   };
 
-  const updateLessonTitle = async (newTitle: string) => {
-    const { error } = await supabase
-      .from('lessons')
-      .update({ title: newTitle })
-      .eq('id', lesson.id);
-    if (error) {
-      throw Error(`Failed to update lesson title: ${error.message}`);
-    }
+  const handleTitleUpdate = async (newTitle: string) => {
+    await updateLessonTitle({
+      lessonId: lesson.id,
+      newTitle,
+    });
   };
 
   return (
-    <div className="md:flex gap-3">
-      <BackButton />
+    <div className="flex gap-3">
+      <div className="hidden md:flex">
+        <BackButton />
+      </div>
       {showTitleEditor ? (
         <Input
           type="text"
@@ -38,7 +36,7 @@ const LessonControlBar: React.FC<LessonControlBarProps> = ({ lesson }) => {
           defaultValue={lesson.title}
           autoFocus
           onBlur={(e) => {
-            updateLessonTitle(e.target.value);
+            handleTitleUpdate(e.target.value);
             toggleShowTitleEditor(false);
           }}
         />

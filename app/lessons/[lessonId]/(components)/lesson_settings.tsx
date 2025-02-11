@@ -1,6 +1,6 @@
 'use client';
 
-import { Iso639LanguageCode, LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
+import { LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
 import React, { useEffect, useState } from 'react';
 import GenerateMorePhrases from '@/components/ai_elements/generate_more_phrases';
 import GeneratePhraseAudio from '@/components/ai_elements/generate_phrase_audio';
@@ -11,8 +11,6 @@ import { hashString } from '@/lib/helpers/helpersDB';
 import { downloadApkg, downloadCSV } from '@/lib/helpers/helpersExport';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
-
-import PhraseList from './phrase_list';
 
 interface LessonSettingsProps {
   lesson: LessonWithTranslations;
@@ -61,6 +59,8 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
     return <div>Loading...</div>;
   }
 
+  const examplesForLLM = translationsWithoutAudio?.slice(0, 2) ?? undefined;
+
   return (
     <div className="flex flex-col w-full">
       <hr className="border-gray-300 my-5" />
@@ -93,6 +93,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
             studyLanguage={studyLanguage}
             userLanguage={userLanguage}
             currentLevel={lesson.level}
+            examples={examplesForLLM}
           />
         }
         {translationsWithoutAudio && translationsWithoutAudio.length > 0 && (
@@ -120,14 +121,6 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
           />
         )}
       </div>
-      <hr className="border-gray-300 my-5" />
-      <PhraseList
-        side1={lesson.sideOne}
-        side2={lesson.sideTwo}
-        translations={translations}
-        bucket={bucket}
-        translationsWithoutAudio={translationsWithoutAudio}
-      />
     </div>
   );
 };

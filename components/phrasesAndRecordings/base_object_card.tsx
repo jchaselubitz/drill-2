@@ -2,12 +2,12 @@ import { Iso639LanguageCode } from 'kysely-codegen';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { deletePhrase } from '@/lib/actions/phraseActions';
 import { getHumanDate } from '@/lib/helpers/helpersDate';
 import { getLangIcon } from '@/lib/lists';
 import { cn } from '@/lib/utils';
 
 import PhraseContextMenu from '../capture_text/phrase_context_menu';
-import { deletePhrase } from '@/lib/actions/phraseActions';
 import DeleteButton from '../specialButtons/delete_button';
 
 interface BaseObjectCardProps {

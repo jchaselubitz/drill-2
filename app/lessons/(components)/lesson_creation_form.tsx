@@ -11,6 +11,13 @@ import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loadin
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserContext } from '@/contexts/user_context';
 import { createBlankLesson } from '@/lib/actions/lessonActions';
@@ -115,6 +122,7 @@ const LessonGenerationForm: FC<LessonGenerationFormProps> = ({
   const [showCreationForm, setShowCreationForm] = useState(startOpen);
   const { userLanguage } = useUserContext();
   const [request, setRequest] = useState('');
+  const [isSentences, setIsSentences] = useState(true);
   const [optionListObject, setOptionListObject] = useState<OptionType[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
@@ -132,6 +140,7 @@ const LessonGenerationForm: FC<LessonGenerationFormProps> = ({
       studyLanguage: subjectLanguage,
       userLanguage: userLanguage,
       level: subjectLevel,
+      isSentences,
     });
     if (!phrasesArray) {
       setIsLoading(false);
@@ -214,6 +223,29 @@ const LessonGenerationForm: FC<LessonGenerationFormProps> = ({
             value={request}
             onChange={(e) => setRequest(e.target.value)}
           />
+          <div className="flex ">
+            <Select
+              onValueChange={(v) => setIsSentences(v === 'true')}
+              defaultValue={isSentences ? 'true' : 'false'}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Create sentences" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Create sentences</SelectItem>
+                <SelectItem value="false">Create words</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {request !== '' && (
+            <LoadingButton
+              buttonState={isLoading ? 'loading' : 'default'}
+              text="Generate Lesson"
+              loadingText="Generating..."
+              onClick={handleGenerateCustomLesson}
+            />
+          )}
+
           {request === '' && (
             <LightSuggestionList
               suggestions={ContentSuggestions}
@@ -221,15 +253,6 @@ const LessonGenerationForm: FC<LessonGenerationFormProps> = ({
               handleGenerateLessonSuggestions={handleGenerateLessonSuggestions}
               includeSuggestionCreator
               isLoading={isLoading}
-            />
-          )}
-
-          {request !== '' && (
-            <LoadingButton
-              buttonState={isLoading ? 'loading' : 'default'}
-              text="Generate Lesson"
-              loadingText="Generating..."
-              onClick={handleGenerateCustomLesson}
             />
           )}
         </form>
@@ -241,6 +264,7 @@ const LessonGenerationForm: FC<LessonGenerationFormProps> = ({
           userLanguage={userLanguage}
           level={subjectLevel}
           subjectId={subjectId}
+          isSentences={isSentences}
         />
       )}
     </div>

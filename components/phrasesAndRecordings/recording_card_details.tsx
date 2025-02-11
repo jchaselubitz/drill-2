@@ -1,7 +1,6 @@
 import { Iso639LanguageCode, PhraseWithTranslations } from 'kysely-codegen';
 import React from 'react';
 import { useUserContext } from '@/contexts/user_context';
-
 import { getContentSuggestions, TranscriptRequestSuggestions } from '@/lib/lists';
 
 import ContentRequest from '../ai_elements/content_request';

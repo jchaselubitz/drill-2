@@ -17,6 +17,7 @@ interface LessonOptionDetailsProps {
   studyLanguage: Iso639LanguageCode;
   userLanguage: Iso639LanguageCode;
   level: string;
+  isSentences: boolean | undefined;
 }
 
 const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
@@ -25,6 +26,7 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
   studyLanguage,
   userLanguage,
   level,
+  isSentences,
 }) => {
   const [saveButtonState, setSaveButtonState] = useState<ButtonLoadingState>('default');
   const [regenButtonState, setRegenButtonState] = useState<ButtonLoadingState>('default');
@@ -42,6 +44,7 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
       studyLanguage,
       userLanguage,
       level: level,
+      isSentences,
     });
 
     if (!phraseArray) {
