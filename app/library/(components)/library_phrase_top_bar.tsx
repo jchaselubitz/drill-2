@@ -2,6 +2,7 @@ import { StarFilledIcon } from '@radix-ui/react-icons';
 import { Iso639LanguageCode, PhraseType, PhraseWithAssociations } from 'kysely-codegen';
 import { Languages, StarIcon, Tag, Trash, XIcon } from 'lucide-react';
 import React, { startTransition, useOptimistic } from 'react';
+import LanguageMenu from '@/components/selectors/language_selector';
 import TagList from '@/components/tags/tag_list';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,7 +29,6 @@ import {
   PhraseListType,
   PhraseTypes,
 } from '@/lib/lists';
-import LanguageMenu from '@/components/selectors/language_selector';
 
 type LibraryPhraseTopBarProps = {
   phrase: PhraseWithAssociations;

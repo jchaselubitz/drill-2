@@ -1,4 +1,5 @@
 import React from 'react';
+import { getHumanDate } from '@/lib/helpers/helpersDate';
 
 interface Episode {
   title: string;
@@ -20,12 +21,14 @@ const EpisodeListItem: React.FC<EpisodeListItemProps> = ({ episode, setEpisodeUR
     setEpisodeURL(audioURL);
   };
 
+  const episodeDate = new Date(date);
+
   return (
-    <button onClick={setURL} className="text-left">
+    <button onClick={setURL} className="text-left w-full">
       <div className="flex rounded-lg border-2 hover:border-gray-500">
         <img className="rounded-md w-16 h-16" src={imageURL} alt={title} />
         <div className="p-2 text-xs">
-          <h3>{date}</h3>
+          <h3>{getHumanDate(episodeDate)}</h3>
           <h3>{title}</h3>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 
 interface PodcastListItemProps {
   podcast: NewMedia;
-  handlePodcastSelect: (podcast: NewMedia) => void;
+  handlePodcastSelect: (feed: string) => void;
   removePodcast: (id: string) => Promise<void>;
 }
 
@@ -18,13 +18,21 @@ const PodcastListItem: React.FC<PodcastListItemProps> = ({
   if (!podcast) return null;
 
   return (
-    <div
-      key={podcast.id}
-      className="relative rounded-md border overflow-hidden shadow-md active:shadow-none"
-    >
-      <button onClick={() => handlePodcastSelect(podcast)} aria-label="load podcast">
-        <img src={podcast.imageUrl ?? ''} alt={podcast.title ?? 'podcast cover image'} />
-        <div className="p-1 text-xs font-medium text-zinc-700">{podcast.title}</div>
+    <div className="relative rounded-md border overflow-hidden shadow-sm active:shadow-lg hover:shadow-lg w-24 h-36">
+      <button
+        onClick={() => handlePodcastSelect(podcast.mediaUrl)}
+        aria-label="load podcast"
+        className="flex flex-col "
+      >
+        <img
+          src={podcast.imageUrl ?? ''}
+          alt={podcast.title ?? 'podcast cover image'}
+          className="h-24 object-cover"
+        />
+
+        <div className="p-1 text-xs text-left font-medium text-zinc-700 line-clamp-2">
+          {podcast.title}
+        </div>
       </button>
       <Button
         size="icon"

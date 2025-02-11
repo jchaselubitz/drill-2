@@ -57,11 +57,11 @@ const MediaReview: React.FC<MediaReviewProps> = ({
   }, [origAudioURL, setAudioDuration]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full">
       <div className="flex gap-2 items-center">
         {origAudioURL && (
           <>
-            <audio src={origAudioURL} controls />
+            <audio src={origAudioURL} controls className="w-full" />
 
             <TrimAudio
               audioResponse={audioResponse}
@@ -72,30 +72,34 @@ const MediaReview: React.FC<MediaReviewProps> = ({
           </>
         )}
       </div>
-
-      {isTranscript ? (
-        <LoadingButton
-          onClick={saveRecording}
-          buttonState={saveButtonState}
-          text={'Save recording'}
-          loadingText={'Saving ...'}
-          successText="Saved"
-          errorText="Error saving"
-        />
-      ) : (
-        <Button
-          className="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={audioDuration > maxDuration}
-          onClick={transcribeRecording}
-        >
-          {transcriptionLoading
-            ? 'Transcribing...'
-            : audioDuration > maxDuration
-              ? `Transcribe (max ${maxDuration} seconds)`
-              : 'Transcribe'}
+      <div className="flex flex-col md:flex-row gap-2 items-center">
+        {isTranscript ? (
+          <LoadingButton
+            className="w-full md:w-fit"
+            onClick={saveRecording}
+            buttonState={saveButtonState}
+            text={'Save recording'}
+            loadingText={'Saving ...'}
+            successText="Saved"
+            errorText="Error saving"
+          />
+        ) : (
+          <Button
+            className=" md:w-fit bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={audioDuration > maxDuration}
+            onClick={transcribeRecording}
+          >
+            {transcriptionLoading
+              ? 'Transcribing...'
+              : audioDuration > maxDuration
+                ? `Transcribe (max ${maxDuration} seconds)`
+                : 'Transcribe'}
+          </Button>
+        )}
+        <Button className="w-full md:w-fit" onClick={resetRecordingButtonState}>
+          Reset
         </Button>
-      )}
-      <Button onClick={resetRecordingButtonState}>Reset</Button>
+      </div>
     </div>
   );
 };

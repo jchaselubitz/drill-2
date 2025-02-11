@@ -116,10 +116,10 @@ const TrimAudio: React.FC<{
         <Button
           variant={'ghost'}
           size="icon"
-          className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-700"
+          className="flex items-center justify-center w-12 h-10 rounded-full border border-gray-700"
           onClick={() => setOpen(true)}
         >
-          <Scissors />
+          Trim
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[425px]">

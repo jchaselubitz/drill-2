@@ -6,8 +6,8 @@ import React, { useEffect } from 'react';
 import { useUserContext } from '@/contexts/user_context';
 import { setUserLanguages } from '@/lib/helpers/helpersUser';
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import LanguageMenu from './selectors/language_selector';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 
 const LanguageChoiceModal: React.FC = () => {
   const { userLanguage, prefLanguage } = useUserContext();

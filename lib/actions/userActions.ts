@@ -23,7 +23,6 @@ export const getProfile = async (): Promise<ProfileWithMedia | null | undefined>
 
   const profileWithMedia = await db
     .selectFrom('profile')
-    .leftJoin('userMedia', 'userMedia.profileId', 'profile.id')
     .select(({ eb }) => [
       'profile.id as id',
       'userLanguage',
@@ -35,9 +34,10 @@ export const getProfile = async (): Promise<ProfileWithMedia | null | undefined>
       jsonArrayFrom(
         eb
           .selectFrom('media')
+          .innerJoin('userMedia', 'userMedia.mediaId', 'media.id')
           .selectAll()
-          .whereRef('userMedia.mediaId', '=', 'media.id')
-          .orderBy('createdAt', 'desc')
+          .whereRef('media.id', '=', 'userMedia.mediaId')
+          .orderBy('media.createdAt', 'desc')
       ).as('media'),
     ])
     .where('profile.id', '=', user.id)

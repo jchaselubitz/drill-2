@@ -169,7 +169,7 @@ const CaptureAudio: FC = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-4 w-full">
       <div className="flex justify-center items-center gap-3 mb-2 w-full">
         <ImportPodcast importPodcast={importPodcast} />
         <UploadButton handleUpload={handleUpload} />
