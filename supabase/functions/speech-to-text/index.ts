@@ -1,5 +1,4 @@
 import OpenAI from 'jsr:@openai/openai';
-// import type { Uploadable } from 'openai/uploads.mjs';
 import { corsHeaders } from '../_shared/cors.ts';
 import { Uploadable } from 'https://deno.land/x/openai@v4.69.0/core.ts';
 

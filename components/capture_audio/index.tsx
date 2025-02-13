@@ -65,9 +65,20 @@ const CaptureAudio: FC = () => {
   const handleUpload = async (file: File) => {
     setTranscript('');
     setRecordingButtonState('disabled');
-    const audioBlob = new Blob([file], { type: 'audio/mp4' });
-    const url = URL.createObjectURL(audioBlob);
-    setAudioResponse({ blob: audioBlob, url: url });
+    const audioFile = new File([file], 'podcast.mp3', { type: 'audio/mpeg' });
+    const formData = new FormData();
+    formData.append('audio', audioFile);
+    const compressResponse = await fetch('/api/compress_audio', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!compressResponse.ok) {
+      throw new Error(`Compression error! status: ${compressResponse.status}`);
+    }
+    const compressedArrayBuffer = await compressResponse.arrayBuffer();
+    const compressedBlob = new Blob([compressedArrayBuffer], { type: 'audio/mpeg' });
+    const url = URL.createObjectURL(compressedBlob);
+    setAudioResponse({ blob: compressedBlob, url: url });
   };
 
   const importPodcast = async (url: string) => {
@@ -85,7 +96,7 @@ const CaptureAudio: FC = () => {
       const audioURL = URL.createObjectURL(audioBlob);
       setAudioResponse({ blob: audioBlob, url: audioURL });
     } catch (error: any) {
-      throw Error('Error fetching podcast:', error);
+      throw new Error('Error processing podcast: ' + error.message);
     } finally {
       setRecordingButtonState('idle');
       setImportingPodcast(false);
@@ -114,12 +125,25 @@ const CaptureAudio: FC = () => {
     const fileName = `${Date.now()}-recording`;
     const bucketName = 'user_recordings';
     if (audioResponse) {
+      const audioFile = new File([audioResponse.blob], 'podcast.mp3', { type: 'audio/mpeg' });
+      const formData = new FormData();
+      formData.append('audio', audioFile);
+      const compressResponse = await fetch('/api/compress_audio', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!compressResponse.ok) {
+        throw new Error(`Compression error! status: ${compressResponse.status}`);
+      }
+      const compressedArrayBuffer = await compressResponse.arrayBuffer();
+      const compressedBlob = new Blob([compressedArrayBuffer], { type: 'audio/mpeg' });
+
       await savePrivateAudioFile({
         fileName,
         path: userId as string,
         supabase: supabase,
         bucketName,
-        audioFile: audioResponse.blob,
+        audioFile: compressedBlob,
       });
     }
     const { data: autoLang, error: langError } = await supabase.functions.invoke('check-language', {
