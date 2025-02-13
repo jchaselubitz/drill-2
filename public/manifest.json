@@ -1,21 +1,35 @@
 {
-	"name": "Drill",
-	"short_name": "Drill",
-	"description": "Generate study content.",
-	"start_url": "/",
-	"display": "standalone",
-	"background_color": "#f2f2f2",
-	"theme_color": "#000C66",
-	"icons": [
-		{
-			"src": "/icons/drill-logo.png",
-			"sizes": "192x192",
-			"type": "image/png"
-		},
-		{
-			"src": "/icons/drill-logo.png",
-			"sizes": "512x512",
-			"type": "image/png"
-		}
-	]
+  "name": "Drill",
+  "short_name": "Drill",
+  "description": "Generate study content.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/splash-images/manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/splash-images/manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/splash-images/manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/splash-images/manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }
