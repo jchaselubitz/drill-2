@@ -1,6 +1,5 @@
 import audioBufferToWav from 'audiobuffer-to-wav';
-import { Scissors } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { Button } from '../ui/button';
 import { LoadingButton } from '../ui/button-loading';

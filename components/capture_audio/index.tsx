@@ -25,7 +25,7 @@ const CaptureAudio: FC = () => {
   const { userId, prefLanguage } = useUserContext();
   const supabase = createClient();
 
-  const [transcriptionLoading, setTranscriptionLoading] = useState<boolean>(false);
+  const [transcriptButtonState, setTranscriptionLoading] = useState<ButtonLoadingState>('default');
   const [transcript, setTranscript] = useState<string>('');
   const [recordingButtonState, setRecordingButtonState] = useState<RecordButtonStateType>('idle');
   const [recordingState, setRecordingState] = useState<RecordAudioResult | null>(null);
@@ -39,7 +39,7 @@ const CaptureAudio: FC = () => {
   const resetRecordingButtonState = () => {
     setRecordingButtonState('idle');
     setRecordingState(null);
-    setTranscriptionLoading(false);
+    setTranscriptionLoading('default');
     setTranscript('');
     setSaveButtonState('default');
     setImportingPodcast(false);
@@ -65,20 +65,9 @@ const CaptureAudio: FC = () => {
   const handleUpload = async (file: File) => {
     setTranscript('');
     setRecordingButtonState('disabled');
-    const audioFile = new File([file], 'podcast.mp3', { type: 'audio/mpeg' });
-    const formData = new FormData();
-    formData.append('audio', audioFile);
-    const compressResponse = await fetch('/api/compress_audio', {
-      method: 'POST',
-      body: formData,
-    });
-    if (!compressResponse.ok) {
-      throw new Error(`Compression error! status: ${compressResponse.status}`);
-    }
-    const compressedArrayBuffer = await compressResponse.arrayBuffer();
-    const compressedBlob = new Blob([compressedArrayBuffer], { type: 'audio/mpeg' });
-    const url = URL.createObjectURL(compressedBlob);
-    setAudioResponse({ blob: compressedBlob, url: url });
+    const audioBlob = new Blob([file], { type: 'audio/mp4' });
+    const url = URL.createObjectURL(audioBlob);
+    setAudioResponse({ blob: audioBlob, url: url });
   };
 
   const importPodcast = async (url: string) => {
@@ -105,17 +94,36 @@ const CaptureAudio: FC = () => {
 
   const transcribeRecording = async () => {
     setRecordingButtonState('transcribing');
-    setTranscriptionLoading(true);
-    const formData = new FormData();
-    // formData.append('userApiKey', undefined);
+    setTranscriptionLoading('loading');
+
     if (!audioResponse) {
       throw Error('No audio response to transcribe');
     }
-    formData.append('audioFile', audioResponse.blob, 'recording.mp4');
-    const { data: transcription } = await supabase.functions.invoke('speech-to-text', {
+    const audioFile = new File([audioResponse.blob], 'podcast.mp3', { type: 'audio/mpeg' });
+    const formData = new FormData();
+    formData.append('audio', audioFile);
+
+    const compressResponse = await fetch('/api/compress_audio', {
+      method: 'POST',
       body: formData,
     });
-    setTranscriptionLoading(false);
+    if (!compressResponse.ok) {
+      throw new Error(`Compression error! status: ${compressResponse.status}`);
+    }
+    const compressedArrayBuffer = await compressResponse.arrayBuffer();
+    const compressedBlob = new Blob([compressedArrayBuffer], { type: 'audio/mpeg' });
+
+    formData.delete('audioFile');
+    formData.append('audioFile', compressedBlob, 'recording.mp4');
+    const { data: transcription, error } = await supabase.functions.invoke('speech-to-text', {
+      body: formData,
+    });
+    if (error) {
+      console.log(error);
+      setTranscriptionLoading('error');
+      throw Error(`Error transcribing recording: ${error}`);
+    }
+    setTranscriptionLoading('success');
     setRecordingButtonState('disabled');
     setTranscript(transcription.data);
   };
@@ -217,7 +225,7 @@ const CaptureAudio: FC = () => {
         <MediaReview
           audioResponse={audioResponse}
           setAudioResponse={setAudioResponse}
-          transcriptionLoading={transcriptionLoading}
+          transcriptButtonState={transcriptButtonState}
           transcribeRecording={transcribeRecording}
           saveRecording={saveRecording}
           resetRecordingButtonState={resetRecordingButtonState}

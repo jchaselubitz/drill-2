@@ -7,7 +7,6 @@ import os from 'os';
 
 export async function POST(req: Request) {
   try {
-    // Parse multipart/form-data
     const formData = await req.formData();
     const fileField = formData.get('audio');
     if (!fileField || !(fileField instanceof File)) {

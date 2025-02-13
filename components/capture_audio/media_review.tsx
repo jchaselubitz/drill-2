@@ -7,7 +7,7 @@ import TrimAudio from './trim_audio';
 interface MediaReviewProps {
   audioResponse: { blob: Blob; url: string };
   setAudioResponse: (audioResponse: { blob: Blob; url: string }) => void;
-  transcriptionLoading: boolean;
+  transcriptButtonState: ButtonLoadingState;
   transcribeRecording: () => Promise<void>;
   saveRecording: () => Promise<void>;
   resetRecordingButtonState: () => void;
@@ -15,12 +15,12 @@ interface MediaReviewProps {
   saveButtonState: ButtonLoadingState;
 }
 
-const maxDuration = 120;
+const maxDuration = 121;
 
 const MediaReview: React.FC<MediaReviewProps> = ({
   audioResponse,
   setAudioResponse,
-  transcriptionLoading,
+  transcriptButtonState,
   transcribeRecording,
   saveRecording,
   resetRecordingButtonState,
@@ -84,17 +84,16 @@ const MediaReview: React.FC<MediaReviewProps> = ({
             errorText="Error saving"
           />
         ) : (
-          <Button
+          <LoadingButton
             className=" md:w-fit bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={audioDuration > maxDuration}
             onClick={transcribeRecording}
-          >
-            {transcriptionLoading
-              ? 'Transcribing...'
-              : audioDuration > maxDuration
-                ? `Transcribe (max ${maxDuration} seconds)`
-                : 'Transcribe'}
-          </Button>
+            buttonState={transcriptButtonState}
+            text={'Transcribe'}
+            loadingText="Transcribing..."
+            successText="Transcribed"
+            errorText="Error transcribing"
+          />
         )}
         <Button className="w-full md:w-fit" onClick={resetRecordingButtonState}>
           Reset

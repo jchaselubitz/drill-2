@@ -10,9 +10,48 @@ Deno.serve(async (req) => {
   if (req.method === 'POST') {
     try {
       const data = await req.formData();
-      // const userApiKey = data.get('userApiKey');
+
+      // const COMPRESS_URL = 'http://localhost:3000/api/compress_audio';
+      // console.log('Attempting to fetch from:', COMPRESS_URL);
+
+      // const testResponse = await fetch('http://localhost:3000/api/compressAudio', {
+      //   method: 'POST',
+      //   body: data,
+      // });
+      // console.log('Test response:', {
+      //   ok: testResponse.ok,
+      //   status: testResponse.status,
+      //   headers: Object.fromEntries(testResponse.headers),
+      // });
+
+      // const compressResponse = await fetch(COMPRESS_URL, {
+      //   method: 'POST',
+      //   body: data,
+      //   headers: {
+      //     // Remove Content-Type header to let the browser set it correctly for FormData
+      //     Origin: 'http://localhost:3000',
+      //   },
+      // });
+
+      // if (!compressResponse.ok) {
+      //   const errorText = await compressResponse.text();
+      //   console.error('Compression failed:', {
+      //     status: compressResponse.status,
+      //     text: errorText,
+      //   });
+      //   throw new Error(`Compression failed: ${errorText}`);
+      // }
+      // console.log('compressResponse', compressResponse);
+      // const compressedArrayBuffer = await compressResponse.arrayBuffer();
+      // const compressedBlob = new Blob([compressedArrayBuffer], { type: 'audio/mpeg' });
+
+      // const audioFile = new File([compressedBlob], 'podcast.mp3', { type: 'audio/mpeg' });
+
       const audioFile = data.get('audioFile');
 
+      // if (!audioFile) {
+      //   throw new Error('No audio file provided');
+      // }
       const openai = new OpenAI({
         apiKey: Deno.env.get('OPENAI_API_KEY'),
       });
