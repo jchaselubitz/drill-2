@@ -65,15 +65,12 @@ export async function createAnonymousUser() {
 
 export async function convertAnonAccount(email: string, name: string) {
   const supabase = createClient();
-  const { error } = await supabase.auth.updateUser(
-    {
-      email,
-      data: {
-        name,
-      },
+  const { error } = await supabase.auth.updateUser({
+    email,
+    data: {
+      name,
     },
-    { emailRedirectTo: `HELLO` }
-  );
+  });
   if (error) {
     console.log(error);
   }
@@ -99,7 +96,7 @@ export async function signInWithEmail({
     email,
     options: {
       shouldCreateUser,
-      emailRedirectTo: `${origin}`,
+      // emailRedirectTo: `${origin}`,
       data: {
         name,
       },
@@ -147,7 +144,7 @@ export const signUp = async ({
     email: inviteEmail ?? (email as string),
     password,
     options: {
-      emailRedirectTo: `${origin}`,
+      // emailRedirectTo: `${origin}`,
       data: {
         name,
         has_password: true,
