@@ -147,7 +147,7 @@ export const signUp = async ({
     email: inviteEmail ?? (email as string),
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/confirm`,
+      emailRedirectTo: `${origin}`,
       data: {
         name,
         has_password: true,
@@ -160,6 +160,7 @@ export const signUp = async ({
   // }
 
   if (error) {
+    console.log(error);
     return redirect(`/login?message=Could not authenticate user${token ? '&code=' + token : ''}`);
   }
 };
