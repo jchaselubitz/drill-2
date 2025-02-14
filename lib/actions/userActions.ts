@@ -99,7 +99,7 @@ export async function signInWithEmail({
     email,
     options: {
       shouldCreateUser,
-      emailRedirectTo: `${origin}/auth/confirm`,
+      emailRedirectTo: `${origin}`,
       data: {
         name,
       },
@@ -147,7 +147,7 @@ export const signUp = async ({
     email: inviteEmail ?? (email as string),
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/confirm`,
+      emailRedirectTo: `${origin}`,
       data: {
         name,
         has_password: true,
