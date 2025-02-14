@@ -37,6 +37,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
 
   if (!isMagicLink) {
     zObject['password'] = z.string().min(6, { message: 'Password must be at least 6 characters.' });
+    // .regex(/[a-zA-Z]/, { message: 'Password must contain at least one letter and one number.' })
+    // .regex(/[0-9]/, { message: 'Password must contain at least one letter and number.' });
   }
 
   if (isCreateAccount) {
@@ -67,6 +69,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
       if (isMagicLink) {
         await signInWithEmail({ email, shouldCreateUser: isCreateAccount, name });
         setSignInButtonState('success');
+        router.push('/check-your-email?email=' + email);
         return;
       } else {
         if (!isCreateAccount && !password) {
@@ -75,7 +78,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
         if (isCreateAccount) {
           await signUp(submission);
           setSignInButtonState('success');
-          return router.push('/confirm-your-email?email=' + email);
+          router.push('/confirm-your-email?email=' + email);
         }
         if (!isCreateAccount) {
           try {

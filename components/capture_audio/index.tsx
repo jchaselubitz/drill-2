@@ -119,7 +119,6 @@ const CaptureAudio: FC = () => {
       body: formData,
     });
     if (error) {
-      console.log(error);
       setTranscriptionLoading('error');
       throw Error(`Error transcribing recording: ${error}`);
     }

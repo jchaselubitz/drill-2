@@ -99,7 +99,7 @@ export async function signInWithEmail({
     email,
     options: {
       shouldCreateUser,
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `/`,
       data: {
         name,
       },
@@ -147,7 +147,7 @@ export const signUp = async ({
     email: inviteEmail ?? (email as string),
     password,
     options: {
-      emailRedirectTo: `${origin}`,
+      emailRedirectTo: `/`,
       data: {
         name,
         has_password: true,
@@ -161,6 +161,12 @@ export const signUp = async ({
 
   if (error) {
     console.log(error);
+    if (error.message.includes('already exists')) {
+      return redirect(`/login?message=Email already in use${token ? '&code=' + token : ''}`);
+    }
+    if (error.message.includes('Password should contain at least one character')) {
+      return redirect(`/login?message=Password should contain at least one letter and one number`);
+    }
     return redirect(`/login?message=Could not authenticate user${token ? '&code=' + token : ''}`);
   }
 };
