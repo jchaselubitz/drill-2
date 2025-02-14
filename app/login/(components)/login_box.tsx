@@ -4,7 +4,6 @@ import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { Youtube } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import ReactPlayer from 'react-player';
 import YouTubePlayer from 'react-player/youtube';
 import { useWindowSize } from 'react-use';
 import { Button } from '@/components/ui/button';

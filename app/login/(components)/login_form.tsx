@@ -27,7 +27,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLink, message }) => {
   const router = useRouter();
-  const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [showCreateAccount, setShowCreateAccount] = useState(true);
   const [signInButtonState, setSignInButtonState] = useState<ButtonLoadingState>('default');
   const isCreateAccount = (!isPasswordReset && !!showCreateAccount) || !!token;
 
