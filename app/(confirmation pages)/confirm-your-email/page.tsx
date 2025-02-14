@@ -3,9 +3,9 @@ import React from 'react';
 export default async function EmailConfirmationPage({
   searchParams,
 }: {
-  searchParams: { email: string };
+  searchParams: Promise<{ email: string }>;
 }) {
-  const { email } = searchParams;
+  const { email } = await searchParams;
   return (
     <div className="flex items-center justify-center w-screen h-screen">
       <div className="flex flex-col items-center w-64 md:w-96 text-center p-3 rounded-lg bg-zinc-100">
