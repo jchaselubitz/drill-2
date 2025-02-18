@@ -81,7 +81,6 @@ const TrimAudio: React.FC<{
 
       const startFrame = Math.round(startTime * audioBuffer.sampleRate);
       const endFrame = Math.round(endTime * audioBuffer.sampleRate);
-      console.log('2');
       const trimmedAudioBuffer = audioContext.createBuffer(
         audioBuffer.numberOfChannels,
         endFrame - startFrame,
@@ -92,27 +91,22 @@ const TrimAudio: React.FC<{
         const trimmingData = audioBuffer.getChannelData(channel).slice(startFrame, endFrame);
         trimmedAudioBuffer.copyToChannel(trimmingData, channel);
       }
-
       const wavArrayBuffer = audioBufferToWav(trimmedAudioBuffer);
       const trimmedAudioBlob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
       return trimmedAudioBlob;
     } catch (e) {
       console.error(e);
       alert('Error decoding audio');
+      return new Blob();
     }
   };
 
   const handleTrim = async () => {
     if (!validateTime()) return;
     setIsTrimming(true);
-    try {
-      const trimmedAudioBlob = await trimAudioBlob();
-      setNewAudioBlob(trimmedAudioBlob);
-      setNewAudioURL(URL.createObjectURL(trimmedAudioBlob));
-    } catch (e) {
-      console.error(e);
-      alert('Error trimming audio');
-    }
+    const trimmedAudioBlob = await trimAudioBlob();
+    setNewAudioBlob(trimmedAudioBlob);
+    setNewAudioURL(URL.createObjectURL(trimmedAudioBlob));
     setIsTrimming(false);
   };
 
