@@ -9,14 +9,10 @@ import os from 'os';
 if (!ffmpegStatic) {
   throw new Error('ffmpeg binary path is null');
 }
-
 if (!fs.existsSync(ffmpegStatic)) {
   throw new Error(`ffmpeg binary not found at: ${ffmpegStatic}`);
-}
-if (ffmpegStatic) {
-  ffmpeg.setFfmpegPath(ffmpegStatic);
 } else {
-  throw new Error(`ffmpeg binary not found at: ${ffmpegStatic}`);
+  ffmpeg.setFfmpegPath(ffmpegStatic);
 }
 
 export async function POST(req: Request) {

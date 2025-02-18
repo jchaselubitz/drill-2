@@ -9,8 +9,6 @@ NEXT_PUBLIC_SITE_URL = 'https://drillapp.xyz'
 NEXT_PUBLIC_CONTEXT = "prod"
 NEXT_PUBLIC_LANGFUSE_HOST="https://cloud.langfuse.com"
 
-
-
 [context.branch-deploy]
 command = "yarn generate-deploy && next build"
 publish = ".next"
@@ -37,3 +35,5 @@ port = 8888
 targetPort = 3000
 context = "dev"
 
+[functions]
+  external_node_modules = ["ffmpeg-static"]
