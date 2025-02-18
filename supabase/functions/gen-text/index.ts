@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
 
     const trace = langfuse.trace({
       name: 'gen-text',
-      // tags: ['production'],
+      tags: [Deno.env.get('LANGFUSE_SECRET_KEY') || 'undefined env'],
     });
 
     const generation = trace.generation({

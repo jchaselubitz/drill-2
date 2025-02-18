@@ -17,7 +17,9 @@ Deno.serve(async (req) => {
 
     const trace = langfuse.trace({
       name: 'speech-to-text',
+      tags: [Deno.env.get('LANGFUSE_SECRET_KEY') || 'undefined env'],
     });
+
     const span = trace.span({
       name: 'transcription',
       input: {
