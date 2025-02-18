@@ -1,9 +1,12 @@
-// app/api/compressAudio/route.ts
+// app/api/compress_audio/route.ts
 import { NextResponse } from 'next/server';
 import ffmpeg from 'fluent-ffmpeg';
+import ffmpegStatic from 'ffmpeg-static';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+
+ffmpeg.setFfmpegPath(ffmpegStatic);
 
 export async function POST(req: Request) {
   try {
