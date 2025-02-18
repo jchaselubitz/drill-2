@@ -115,8 +115,7 @@ const TrimAudio: React.FC<{
       <DialogTrigger asChild>
         <Button
           variant={'ghost'}
-          size="icon"
-          className="w-full  border border-gray-700"
+          className="w-full md:w-fit  border border-gray-700"
           onClick={() => setOpen(true)}
         >
           Trim
