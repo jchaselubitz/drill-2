@@ -9,10 +9,11 @@ import { Label } from '../ui/label';
 
 const TrimAudio: React.FC<{
   maxDuration: number;
+  maxDurationMinutes: number;
   audioResponse: { blob: Blob; url: string };
   setAudioResponse: (audioResponse: { blob: Blob; url: string }) => void;
   audioDuration: number;
-}> = ({ maxDuration, audioResponse, setAudioResponse, audioDuration }) => {
+}> = ({ maxDuration, maxDurationMinutes, audioResponse, setAudioResponse, audioDuration }) => {
   const secondsToClock = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
@@ -115,7 +116,7 @@ const TrimAudio: React.FC<{
         <Button
           variant={'ghost'}
           size="icon"
-          className="flex items-center justify-center w-12 h-10 rounded-full border border-gray-700"
+          className="w-full  border border-gray-700"
           onClick={() => setOpen(true)}
         >
           Trim
@@ -145,22 +146,24 @@ const TrimAudio: React.FC<{
               onBlur={(e) => setEndTime(clockToSeconds(e.target.value))}
             />
           </div>
-          <LoadingButton
-            className="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isTrimming || Math.floor(audioDuration) === newAudioDuration}
-            buttonState={isTrimming ? 'loading' : 'default'}
-            text={'Trim'}
-            loadingText="Trimming..."
-            onClick={handleTrim}
-          />
-          <LoadingButton
-            className="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!newAudioURL}
-            buttonState={'default'}
-            text={'Save'}
-            loadingText="Saving..."
-            onClick={handleSubmit}
-          />
+          <div className="flex flex-row gap-3 items-center mt-2">
+            <LoadingButton
+              className="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isTrimming || Math.floor(audioDuration) === newAudioDuration}
+              buttonState={isTrimming ? 'loading' : 'default'}
+              text={'Trim'}
+              loadingText="Trimming..."
+              onClick={handleTrim}
+            />
+            <LoadingButton
+              className="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!newAudioURL}
+              buttonState={'default'}
+              text={'Save'}
+              loadingText="Saving..."
+              onClick={handleSubmit}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

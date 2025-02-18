@@ -15,7 +15,8 @@ interface MediaReviewProps {
   saveButtonState: ButtonLoadingState;
 }
 
-const maxDuration = 121;
+const maxDuration = 181;
+const maxDurationMinutes = Math.floor(maxDuration / 60);
 
 const MediaReview: React.FC<MediaReviewProps> = ({
   audioResponse,
@@ -60,19 +61,14 @@ const MediaReview: React.FC<MediaReviewProps> = ({
     <div className="flex flex-col gap-2 w-full">
       <div className="flex gap-2 items-center">
         {origAudioURL && (
-          <>
-            <audio src={origAudioURL} controls className="w-full" />
-
-            <TrimAudio
-              audioResponse={audioResponse}
-              setAudioResponse={setAudioResponse}
-              audioDuration={audioDuration}
-              maxDuration={maxDuration}
-            />
-          </>
+          <audio
+            src={origAudioURL}
+            controls
+            style={{ border: '2px', borderRadius: '10px', width: '100%' }}
+          />
         )}
       </div>
-      <div className="flex flex-col md:flex-row gap-2 items-center">
+      <div className="flex  gap-2 items-center">
         {isTranscript ? (
           <LoadingButton
             className="w-full md:w-fit"
@@ -84,16 +80,27 @@ const MediaReview: React.FC<MediaReviewProps> = ({
             errorText="Error saving"
           />
         ) : (
-          <LoadingButton
-            className=" md:w-fit bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={audioDuration > maxDuration}
-            onClick={transcribeRecording}
-            buttonState={transcriptButtonState}
-            text={'Transcribe'}
-            loadingText="Transcribing..."
-            successText="Transcribed"
-            errorText="Error transcribing"
-          />
+          <>
+            <LoadingButton
+              className=" md:w-fit bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={audioDuration > maxDuration}
+              onClick={transcribeRecording}
+              buttonState={transcriptButtonState}
+              text={
+                audioDuration > maxDuration ? `Max ${maxDurationMinutes} minutes` : 'Transcribe'
+              }
+              loadingText="Transcribing..."
+              successText="Transcribed"
+              errorText="Error transcribing"
+            />
+            <TrimAudio
+              audioResponse={audioResponse}
+              setAudioResponse={setAudioResponse}
+              audioDuration={audioDuration}
+              maxDuration={maxDuration}
+              maxDurationMinutes={maxDurationMinutes}
+            />
+          </>
         )}
         <Button className="w-full md:w-fit" onClick={resetRecordingButtonState}>
           Reset
