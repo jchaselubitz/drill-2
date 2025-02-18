@@ -34,13 +34,3 @@ command = "next dev"
 port = 8888
 targetPort = 3000
 context = "dev"
-
-[functions]
-  # Sets a custom directory for Netlify Functions
-  directory = "functions"
-
-  # Specifies `esbuild` for functions bundling
-  node_bundler = "esbuild"
-  
-  # Flags "package-1" as an external node module for all functions
-  external_node_modules = ["fluent-ffmpeg", "ffmpeg-static"]

@@ -12,7 +12,7 @@ const pwaConfig = withPWA({
 
 const nextConfig = {
   ...pwaConfig,
-
+  transpilePackages: ['lamejs'],
   // reactStrictMode: false,
   // logging: {
   //   fetches: {

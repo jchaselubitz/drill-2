@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getOpenAiKey } from './helpersAI';
+import { Mp3Encoder } from '@breezystack/lamejs';
 
 export type GetTextFromSpeechProps = {
   audioFile: Blob;
@@ -179,4 +180,64 @@ export function recordAudio() {
       resolve({ start, stop });
     });
   });
+}
+
+export async function compressAudio(file: File, targetBitrate: number = 64): Promise<Blob> {
+  if (typeof window === 'undefined') {
+    throw new Error('Audio compression can only be done in browser');
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const audioContext = new AudioContext();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  const channels = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const blockSize = 1152;
+  const mp3Data: Int8Array[] = [];
+
+  const floatTo16BitPCM = (input: Float32Array): Int16Array => {
+    const output = new Int16Array(input.length);
+    for (let i = 0; i < input.length; i++) {
+      let s = Math.max(-1, Math.min(1, input[i]));
+      output[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return output;
+  };
+
+  const channelData: Int16Array[] = [];
+  for (let ch = 0; ch < channels; ch++) {
+    channelData.push(floatTo16BitPCM(audioBuffer.getChannelData(ch)));
+  }
+
+  const mp3encoder = new Mp3Encoder(channels, sampleRate, targetBitrate);
+
+  if (channels === 1) {
+    const samples = channelData[0];
+    for (let i = 0; i < samples.length; i += blockSize) {
+      const sampleChunk = samples.subarray(i, i + blockSize);
+      const mp3buf = mp3encoder.encodeBuffer(sampleChunk);
+      if (mp3buf.length > 0) {
+        mp3Data.push(new Int8Array(mp3buf));
+      }
+    }
+  } else {
+    const left = channelData[0];
+    const right = channelData[1];
+    for (let i = 0; i < left.length; i += blockSize) {
+      const leftChunk = left.subarray(i, i + blockSize);
+      const rightChunk = right.subarray(i, i + blockSize);
+      const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+      if (mp3buf.length > 0) {
+        mp3Data.push(new Int8Array(mp3buf));
+      }
+    }
+  }
+
+  const endBuf = mp3encoder.flush();
+  if (endBuf.length > 0) {
+    mp3Data.push(new Int8Array(endBuf));
+  }
+
+  return new Blob(mp3Data, { type: 'audio/mpeg' });
 }

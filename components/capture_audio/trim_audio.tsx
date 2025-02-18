@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 
 import { Button } from '../ui/button';
 import { LoadingButton } from '../ui/button-loading';
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
@@ -121,7 +121,9 @@ const TrimAudio: React.FC<{
           Trim
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[425px]">
+      <DialogContent className="max-w-[425px] md:top-[20%]">
+        <DialogTitle hidden>Trim Audio</DialogTitle>
+
         <div className="rounded-lg  mx-auto bg-white w-full  flex flex-col gap-2" ref={modalRef}>
           {newAudioURL && <audio src={newAudioURL} controls />}
           <div className="flex flex-row gap-3 items-center">
