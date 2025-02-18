@@ -6,9 +6,12 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-ffmpeg.setFfmpegPath(ffmpegStatic);
-
 export async function POST(req: Request) {
+  if (ffmpegStatic) {
+    ffmpeg.setFfmpegPath(ffmpegStatic);
+  } else {
+    return;
+  }
   try {
     const formData = await req.formData();
     const fileField = formData.get('audio');
