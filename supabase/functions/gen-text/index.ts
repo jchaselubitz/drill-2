@@ -34,17 +34,6 @@ Deno.serve(async (req) => {
       stream = false,
     } = modelParams;
 
-    const completion = await openai.chat.completions.create({
-      model: userApiKey ? modelSelection : OpenAiModel.gpt4oMini,
-      messages: messages,
-      response_format: format,
-      presence_penalty,
-      frequency_penalty,
-      temperature,
-      max_tokens,
-      stream,
-    });
-
     const trace = langfuse.trace({
       name: 'gen-text',
       tags: [Deno.env.get('ENVIRONMENT') || 'undefined env'],
@@ -62,6 +51,17 @@ Deno.serve(async (req) => {
         max_tokens,
         stream,
       },
+    });
+
+    const completion = await openai.chat.completions.create({
+      model: userApiKey ? modelSelection : OpenAiModel.gpt4oMini,
+      messages: messages,
+      response_format: format,
+      presence_penalty,
+      frequency_penalty,
+      temperature,
+      max_tokens,
+      stream,
     });
 
     const reply = completion.choices[0].message;

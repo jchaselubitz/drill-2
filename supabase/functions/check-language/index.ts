@@ -40,24 +40,13 @@ Deno.serve(async (req) => {
       stream: false,
     };
 
-    const completion = await openai.chat.completions.create({
-      model: OpenAiModel.gpt4oMini,
-      messages: messages,
-      response_format: modelParams.format,
-      presence_penalty: modelParams.presence_penalty,
-      frequency_penalty: modelParams.frequency_penalty,
-      temperature: modelParams.temperature,
-      max_tokens: modelParams.max_tokens,
-      stream: false,
-    });
-
     const trace = langfuse.trace({
       name: 'check-language',
       tags: [Deno.env.get('ENVIRONMENT') || 'undefined env'],
     });
 
     const generation = trace.generation({
-      name: 'chat-completion',
+      name: 'check-language',
       model: OpenAiModel.gpt4oMini,
       input: messages,
       modelParameters: {
@@ -68,6 +57,17 @@ Deno.serve(async (req) => {
         max_tokens: modelParams.max_tokens,
         stream: false,
       },
+    });
+
+    const completion = await openai.chat.completions.create({
+      model: OpenAiModel.gpt4oMini,
+      messages: messages,
+      response_format: modelParams.format,
+      presence_penalty: modelParams.presence_penalty,
+      frequency_penalty: modelParams.frequency_penalty,
+      temperature: modelParams.temperature,
+      max_tokens: modelParams.max_tokens,
+      stream: false,
     });
 
     const reply = completion.choices[0].message.content;
