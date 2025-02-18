@@ -7,6 +7,8 @@ NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
 NEXT_PUBLIC_SITE_URL = 'https://drillapp.xyz'
 NEXT_PUBLIC_CONTEXT = "prod"
+NEXT_PUBLIC_LANGFUSE_HOST="https://cloud.langfuse.com"
+
 
 
 [context.branch-deploy]
@@ -17,7 +19,7 @@ NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
 NEXT_PUBLIC_SITE_URL = 'https://drillapp.xyz'
 NEXT_PUBLIC_CONTEXT = "branch-deploy"
-
+NEXT_PUBLIC_LANGFUSE_HOST="https://cloud.langfuse.com"
 
 [context.development]
 command = "yarn generate && next build"
@@ -27,7 +29,7 @@ NEXT_PUBLIC_SUPABASE_URL = 'https://fororflyhxeircqexslh.supabase.co'
 NEXT_PUBLIC_SUPABASE_PROJECT_ID = "fororflyhxeircqexslh"
 NEXT_PUBLIC_SITE_URL = 'https://drillapp.xyz'
 NEXT_PUBLIC_CONTEXT = "development"
-
+NEXT_PUBLIC_LANGFUSE_HOST="https://cloud.langfuse.com"
 
 [dev]
 command = "next dev"

@@ -9610,6 +9610,7 @@ __metadata:
     jest-environment-jsdom: "npm:^29.7.0"
     kysely: "npm:^0.27.3"
     kysely-codegen: "npm:^0.16.0"
+    langfuse: "npm:^3.35.2"
     lucide-react: "npm:^0.453.0"
     netlify-cli: "npm:^17.37.2"
     next: "npm:^15.0.3"
@@ -14489,6 +14490,24 @@ __metadata:
   bin:
     lambda-local: build/cli.js
   checksum: 10c0/0f268139d2253feb1bc7493a7308138c012429a033fa8d8c301aa26e21ff54286a949ce75b1385da6c49e3f49c2df7b7a1b466275b4d92807c8f507edbe99407
+  languageName: node
+  linkType: hard
+
+"langfuse-core@npm:^3.35.2":
+  version: 3.35.2
+  resolution: "langfuse-core@npm:3.35.2"
+  dependencies:
+    mustache: "npm:^4.2.0"
+  checksum: 10c0/c36cf5e7788b576316841c615638ba82d44d47f109556b338e4392166a48f4ea42886f237d36cdd98a881c72dc785ea8fad4df816d4dc86f5fa56e95d9b49c9e
+  languageName: node
+  linkType: hard
+
+"langfuse@npm:^3.35.2":
+  version: 3.35.2
+  resolution: "langfuse@npm:3.35.2"
+  dependencies:
+    langfuse-core: "npm:^3.35.2"
+  checksum: 10c0/1268d57881662fc0e04965f07dfb863da3c1b019fe34d90c212a4014e0b9a6346b0d219ab8c1bb7a3bcfbbe1eef5f5a202508f7a33739e588c67c9cb463f3684
   languageName: node
   linkType: hard
 

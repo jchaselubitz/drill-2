@@ -1,6 +1,7 @@
 import OpenAI from 'jsr:@openai/openai';
 import { corsHeaders } from '../_shared/cors.ts';
 import { Uploadable } from 'https://deno.land/x/openai@v4.69.0/core.ts';
+import { Langfuse } from 'https://esm.sh/langfuse';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -8,8 +9,30 @@ Deno.serve(async (req) => {
   }
 
   if (req.method === 'POST') {
+    const langfuse = new Langfuse({
+      secretKey: Deno.env.get('LANGFUSE_SECRET_KEY'),
+      publicKey: Deno.env.get('LANGFUSE_PUBLIC_KEY'),
+      baseUrl: Deno.env.get('LANGFUSE_HOST'),
+    });
+
+    const data = await req.formData();
+
+    const trace = langfuse.trace({
+      name: 'speech-to-text',
+    });
+    const span = trace.span({
+      name: 'transcription',
+      input: {
+        userInput: 'audioFile',
+      },
+    });
+
     try {
-      const data = await req.formData();
+      span.update({
+        metadata: {
+          httpRoute: '/api/speech-to-text',
+        },
+      });
 
       // const COMPRESS_URL = 'http://localhost:3000/api/compress_audio';
       // console.log('Attempting to fetch from:', COMPRESS_URL);
@@ -62,6 +85,17 @@ Deno.serve(async (req) => {
         response_format: 'json',
       });
       const resp = { data: transcription.text };
+
+      span.end({
+        output: {
+          resp,
+        },
+      });
+
+      langfuse.on('error', (error) => {
+        console.error('speech-to-text' + error);
+      });
+      await langfuse.shutdownAsync();
 
       return new Response(JSON.stringify(resp), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
