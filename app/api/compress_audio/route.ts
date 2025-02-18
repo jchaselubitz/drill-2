@@ -1,17 +1,17 @@
 // /api/compress_audio/route.ts
 import { NextResponse } from 'next/server';
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegStatic from 'ffmpeg-static';
+// import ffmpegStatic from 'ffmpeg-static';
 import fs from 'fs';
 
-if (!ffmpegStatic) {
-  throw new Error('ffmpeg binary path is null');
-}
-if (!fs.existsSync(ffmpegStatic)) {
-  throw new Error(`ffmpeg binary not found at: ${ffmpegStatic}`);
-} else {
-  ffmpeg.setFfmpegPath(ffmpegStatic);
-}
+// if (!ffmpegStatic) {
+//   throw new Error('ffmpeg binary path is null');
+// }
+// if (!fs.existsSync(ffmpegStatic)) {
+//   throw new Error(`ffmpeg binary not found at: ${ffmpegStatic}`);
+// } else {
+//   ffmpeg.setFfmpegPath(ffmpegStatic);
+// }
 
 export async function POST(req: Request) {
   try {
