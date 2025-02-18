@@ -105,20 +105,8 @@ const CaptureAudio: FC = () => {
       throw Error('No audio response to transcribe');
     }
     const audioFile = new File([audioResponse.blob], 'podcast.mp3', { type: 'audio/mpeg' });
-    const formData = new FormData();
-    // formData.append('audio', audioFile);
-
-    // const compressResponse = await fetch('/api/compress_audio', {
-    //   method: 'POST',
-    //   body: formData,
-    // });
-    // if (!compressResponse.ok) {
-    //   throw new Error(`Compression error! status: ${compressResponse.status}`);
-    // }
-    // const compressedArrayBuffer = await compressResponse.arrayBuffer();
-    // const compressedBlob = new Blob([compressedArrayBuffer], { type: 'audio/mpeg' });
-
     const compressedBlob = await compressAudio(audioFile);
+    const formData = new FormData();
     formData.append('audioFile', compressedBlob, 'recording.mp4');
     const { data: transcription, error } = await supabase.functions.invoke('speech-to-text', {
       body: formData,
