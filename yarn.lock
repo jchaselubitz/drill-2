@@ -3007,15 +3007,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@netlify/functions@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@netlify/functions@npm:3.0.0"
-  dependencies:
-    "@netlify/serverless-functions-api": "npm:1.30.1"
-  checksum: 10c0/5d47cf2abd056e3984a889cb1efd87123ddf9d68a42642f0c058e0e3040a4a85990d2bf81be755a36609a4f0e8383df60e69cb8a52750d67bc5a35a80d86487e
-  languageName: node
-  linkType: hard
-
 "@netlify/git-utils@npm:^5.1.1":
   version: 5.2.0
   resolution: "@netlify/git-utils@npm:5.2.0"
@@ -3218,16 +3209,6 @@ __metadata:
   dependencies:
     execa: "npm:^6.0.0"
   checksum: 10c0/dd3153b4a2e7e40ea0ebe1c24b1cb5b6044d24706fd3a018e9f87f652a91c97c049819b82cb93b6ab42258ac132d764911cdc38682835a22717b3872dd2185bc
-  languageName: node
-  linkType: hard
-
-"@netlify/serverless-functions-api@npm:1.30.1":
-  version: 1.30.1
-  resolution: "@netlify/serverless-functions-api@npm:1.30.1"
-  dependencies:
-    "@netlify/node-cookies": "npm:^0.1.0"
-    urlpattern-polyfill: "npm:8.0.2"
-  checksum: 10c0/af77cda0c8a17924e60693497e8ce4f6857a5bdd2a517dbdb646010293a75012da36cd373ff1f6845844e12d24be5db0c1cad2b8167f88072ece428218935aeb
   languageName: node
   linkType: hard
 
@@ -9608,7 +9589,6 @@ __metadata:
   dependencies:
     "@hcaptcha/react-hcaptcha": "npm:^1.11.1"
     "@hookform/resolvers": "npm:^3.9.0"
-    "@netlify/functions": "npm:^3.0.0"
     "@radix-ui/react-accordion": "npm:^1.2.1"
     "@radix-ui/react-aspect-ratio": "npm:^1.1.1"
     "@radix-ui/react-avatar": "npm:^1.1.1"
