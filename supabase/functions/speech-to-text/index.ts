@@ -15,8 +15,6 @@ Deno.serve(async (req) => {
       baseUrl: Deno.env.get('LANGFUSE_HOST'),
     });
 
-    const data = await req.formData();
-
     const trace = langfuse.trace({
       name: 'speech-to-text',
     });
@@ -26,6 +24,9 @@ Deno.serve(async (req) => {
         userInput: 'audioFile',
       },
     });
+
+    const data = await req.formData();
+    const compressedBlob = data.get('audioFile') as Blob;
 
     try {
       span.update({
@@ -68,13 +69,11 @@ Deno.serve(async (req) => {
       // const compressedArrayBuffer = await compressResponse.arrayBuffer();
       // const compressedBlob = new Blob([compressedArrayBuffer], { type: 'audio/mpeg' });
 
-      // const audioFile = new File([compressedBlob], 'podcast.mp3', { type: 'audio/mpeg' });
+      const audioFile = new File([compressedBlob], 'podcast.mp3', { type: 'audio/mpeg' });
 
-      const audioFile = data.get('audioFile');
-
-      // if (!audioFile) {
-      //   throw new Error('No audio file provided');
-      // }
+      if (!audioFile) {
+        throw new Error('No audio file provided');
+      }
       const openai = new OpenAI({
         apiKey: Deno.env.get('OPENAI_API_KEY'),
       });

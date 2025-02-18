@@ -1,10 +1,8 @@
-// app/api/compress_audio/route.ts
+// // // app/api/compress_audio/route.ts
 import { NextResponse } from 'next/server';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import fs from 'fs';
-import path from 'path';
-import os from 'os';
 
 if (!ffmpegStatic) {
   throw new Error('ffmpeg binary path is null');
@@ -26,25 +24,25 @@ export async function POST(req: Request) {
     const arrayBuffer = await fileField.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const tempInputPath = path.join(os.tmpdir(), fileField.name);
-    const tempOutputPath = path.join(os.tmpdir(), `compressed-${fileField.name}`);
+    const tmpInputPath = '/tmp/input_audio';
+    const tmpOutputPath = '/tmp/output_audio.mp3';
 
-    fs.writeFileSync(tempInputPath, buffer);
+    fs.writeFileSync(tmpInputPath, buffer);
 
     await new Promise<void>((resolve, reject) => {
-      ffmpeg(tempInputPath)
+      ffmpeg(tmpInputPath)
         .audioBitrate('64k') // Adjust the bitrate as needed
         .on('end', (_stdout, _stderr) => resolve())
         .on('error', (err: Error) => reject(err))
-        .save(tempOutputPath);
+        .save(tmpOutputPath);
     });
 
     // Read the compressed file
-    const compressedData = fs.readFileSync(tempOutputPath);
+    const compressedData = fs.readFileSync(tmpOutputPath);
 
     // Clean up temporary files
-    fs.unlinkSync(tempInputPath);
-    fs.unlinkSync(tempOutputPath);
+    fs.unlinkSync(tmpInputPath);
+    fs.unlinkSync(tmpOutputPath);
 
     // Return the compressed audio as a response
     return new NextResponse(compressedData, {

@@ -36,4 +36,4 @@ targetPort = 3000
 context = "dev"
 
 [functions]
-  external_node_modules = ["ffmpeg-static"]
+  included_files = ["node_modules/ffmpeg-static/ffmpeg"]
