@@ -99,9 +99,14 @@ const TrimAudio: React.FC<{
   const handleTrim = async () => {
     if (!validateTime()) return;
     setIsTrimming(true);
-    const trimmedAudioBlob = await trimAudioBlob();
-    setNewAudioBlob(trimmedAudioBlob);
-    setNewAudioURL(URL.createObjectURL(trimmedAudioBlob));
+    try {
+      const trimmedAudioBlob = await trimAudioBlob();
+      setNewAudioBlob(trimmedAudioBlob);
+      setNewAudioURL(URL.createObjectURL(trimmedAudioBlob));
+    } catch (e) {
+      console.error(e);
+      alert('Error trimming audio');
+    }
     setIsTrimming(false);
   };
 

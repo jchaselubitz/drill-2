@@ -4,7 +4,7 @@ export default async function LoginLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen flex flex-col items-center ">
       {children}
-      <div className="absolute md:fixed bottom-10 md:bottom-20 ">
+      <div className="absolute sm:top-2 md:fixed md:bottom-20 ">
         <DeveloperPlug />
       </div>
     </div>
