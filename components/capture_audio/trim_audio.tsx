@@ -70,33 +70,36 @@ const TrimAudio: React.FC<{
   const trimAudioBlob = async () => {
     console.log('start');
     const audioContext = new (window.AudioContext || window.AudioContext)();
-    console.log('audioContext', audioContext);
-    const arrayBuffer = await origAudioBlob.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    console.log('1');
-    if (endTime === 0 || endTime > audioBuffer.duration) {
-      setEndTime(audioBuffer.duration);
+    try {
+      const arrayBuffer = await origAudioBlob.arrayBuffer();
+      console.log({ arrayBuffer });
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      console.log('1');
+      if (endTime === 0 || endTime > audioBuffer.duration) {
+        setEndTime(audioBuffer.duration);
+      }
+
+      const startFrame = Math.round(startTime * audioBuffer.sampleRate);
+      const endFrame = Math.round(endTime * audioBuffer.sampleRate);
+      console.log('2');
+      const trimmedAudioBuffer = audioContext.createBuffer(
+        audioBuffer.numberOfChannels,
+        endFrame - startFrame,
+        audioBuffer.sampleRate
+      );
+
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+        const trimmingData = audioBuffer.getChannelData(channel).slice(startFrame, endFrame);
+        trimmedAudioBuffer.copyToChannel(trimmingData, channel);
+      }
+
+      const wavArrayBuffer = audioBufferToWav(trimmedAudioBuffer);
+      const trimmedAudioBlob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
+      return trimmedAudioBlob;
+    } catch (e) {
+      console.error(e);
+      alert('Error decoding audio');
     }
-
-    const startFrame = Math.round(startTime * audioBuffer.sampleRate);
-    const endFrame = Math.round(endTime * audioBuffer.sampleRate);
-    console.log('2');
-    const trimmedAudioBuffer = audioContext.createBuffer(
-      audioBuffer.numberOfChannels,
-      endFrame - startFrame,
-      audioBuffer.sampleRate
-    );
-
-    console.log('3');
-    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-      const trimmingData = audioBuffer.getChannelData(channel).slice(startFrame, endFrame);
-      trimmedAudioBuffer.copyToChannel(trimmingData, channel);
-    }
-
-    const wavArrayBuffer = audioBufferToWav(trimmedAudioBuffer);
-    const trimmedAudioBlob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
-    console.log('4');
-    return trimmedAudioBlob;
   };
 
   const handleTrim = async () => {
