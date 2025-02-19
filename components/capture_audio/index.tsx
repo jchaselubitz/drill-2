@@ -49,6 +49,7 @@ const CaptureAudio: FC = () => {
     setSaveButtonState('default');
     setImportingPodcast(false);
     setAudioResponse(null);
+    URL.revokeObjectURL(audioResponse?.url as string);
   };
 
   const startRecording = async () => {
