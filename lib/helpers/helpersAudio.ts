@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getOpenAiKey } from './helpersAI';
 import { Mp3Encoder } from '@breezystack/lamejs';
+import audioBufferToWav from 'audiobuffer-to-wav';
 
 export type GetTextFromSpeechProps = {
   audioFile: Blob;
@@ -182,6 +183,24 @@ export function recordAudio() {
   });
 }
 
+// export async function compressAudio(file: File): Promise<Blob> {
+//   const formData = new FormData();
+//   formData.append('audio', file);
+
+//   const response = await fetch('https://audio-service-production.up.railway.app/compress', {
+//     method: 'POST',
+//     body: formData,
+//   });
+
+//   if (!response.ok) {
+//     throw new Error('Compression failed');
+//   }
+
+//   // We'll receive an MP3 file as the response
+//   const blob = await response.blob();
+//   return blob;
+// }
+
 export async function compressAudio(file: File, targetBitrate: number = 64): Promise<Blob> {
   if (typeof window === 'undefined') {
     throw new Error('Audio compression can only be done in browser');
@@ -241,3 +260,43 @@ export async function compressAudio(file: File, targetBitrate: number = 64): Pro
 
   return new Blob(mp3Data, { type: 'audio/mpeg' });
 }
+
+export const trimAudioBlob = async ({
+  origAudioBlob,
+  startTime,
+  endTime,
+}: {
+  origAudioBlob: Blob;
+  startTime: number;
+  endTime: number;
+}) => {
+  const arrayBuffer = await origAudioBlob.arrayBuffer();
+  const audioContext = new AudioContext();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  if (endTime === 0 || endTime > audioBuffer.duration) {
+    endTime = audioBuffer.duration;
+  }
+
+  const startFrame = Math.round(startTime * audioBuffer.sampleRate);
+  const endFrame = Math.round(endTime * audioBuffer.sampleRate);
+  const duration = endFrame - startFrame;
+
+  // Use OfflineAudioContext to process only the trimmed part
+  const offlineContext = new OfflineAudioContext(
+    audioBuffer.numberOfChannels,
+    duration,
+    audioBuffer.sampleRate
+  );
+
+  const source = offlineContext.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(offlineContext.destination);
+  source.start(0, startTime, endTime - startTime);
+
+  const renderedBuffer = await offlineContext.startRendering();
+
+  // Convert to Blob (as WAV)
+  const wavArrayBuffer = audioBufferToWav(renderedBuffer);
+  return new Blob([wavArrayBuffer], { type: 'audio/wav' });
+};

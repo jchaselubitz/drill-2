@@ -1,4 +1,3 @@
-import audioBufferToWav from 'audiobuffer-to-wav';
 import React, { useRef, useState } from 'react';
 
 import { Button } from '../ui/button';
@@ -6,6 +5,7 @@ import { LoadingButton } from '../ui/button-loading';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { trimAudioBlob } from '@/lib/helpers/helpersAudio';
 
 const TrimAudio: React.FC<{
   maxDuration: number;
@@ -67,34 +67,14 @@ const TrimAudio: React.FC<{
     return true;
   };
 
-  const trimAudioBlob = async () => {
-    const audioContext = new (window.AudioContext || window.AudioContext)();
-    const arrayBuffer = await origAudioBlob.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    if (endTime === 0 || endTime > audioBuffer.duration) {
-      setEndTime(audioBuffer.duration);
-    }
-    const startFrame = Math.round(startTime * audioBuffer.sampleRate);
-    const endFrame = Math.round(endTime * audioBuffer.sampleRate);
-    const trimmedAudioBuffer = audioContext.createBuffer(
-      audioBuffer.numberOfChannels,
-      endFrame - startFrame,
-      audioBuffer.sampleRate
-    );
-
-    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-      const trimmingData = audioBuffer.getChannelData(channel).slice(startFrame, endFrame);
-      trimmedAudioBuffer.copyToChannel(trimmingData, channel);
-    }
-    const wavArrayBuffer = audioBufferToWav(trimmedAudioBuffer);
-    const trimmedAudioBlob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
-    return trimmedAudioBlob;
-  };
-
   const handleTrim = async () => {
     if (!validateTime()) return;
     setIsTrimming(true);
-    const trimmedAudioBlob = await trimAudioBlob();
+    const trimmedAudioBlob = await trimAudioBlob({
+      origAudioBlob: origAudioBlob,
+      startTime,
+      endTime,
+    });
     setNewAudioBlob(trimmedAudioBlob);
     setNewAudioURL(URL.createObjectURL(trimmedAudioBlob));
     setIsTrimming(false);
@@ -119,8 +99,11 @@ const TrimAudio: React.FC<{
       <DialogContent className="max-w-[425px] md:top-[20%]">
         <DialogTitle hidden>Trim Audio</DialogTitle>
 
-        <div className="rounded-lg  mx-auto bg-white w-full  flex flex-col gap-2" ref={modalRef}>
-          {newAudioURL && <audio src={newAudioURL} controls />}
+        <div
+          className="rounded-lg  mx-auto bg-white w-full  flex flex-col gap-4 mt-4"
+          ref={modalRef}
+        >
+          {newAudioURL && <audio src={newAudioURL} controls style={{ width: '100%' }} />}
           <div className="flex flex-row gap-3 items-center">
             <Label>Start:</Label>
             <Input
