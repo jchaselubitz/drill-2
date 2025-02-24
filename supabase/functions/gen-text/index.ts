@@ -43,8 +43,8 @@ Deno.serve(async (req) => {
       name: 'chat-completion',
       model: userApiKey ? modelSelection : OpenAiModel.gpt4oMini,
       input: messages,
+      metadata: format,
       modelParameters: {
-        response_format: format,
         presence_penalty,
         frequency_penalty,
         temperature,
