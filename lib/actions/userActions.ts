@@ -134,8 +134,6 @@ export const signUp = async ({
   inviteEmail?: string;
 }) => {
   const supabase = createClient();
-  const headersList = await headers();
-  const origin = headersList.get('origin');
   if (!inviteEmail && !email) {
     throw Error('/login?message=Missing required fields');
   }

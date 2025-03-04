@@ -13,7 +13,7 @@
     "create-migration": "supabase db diff --use-migra -f local_schema",
     "ngrok": "ngrok http --domain=romantic-pig-living.ngrok-free.app 3000",
     "ngrok:server": "ngrok http --domain=romantic-pig-living.ngrok-free.app 54321",
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "devnet": "netlify dev",
     "build-dev": "netlify build --context=development",
     "build-branch": "netlify build --context=branch-deploy",
@@ -38,6 +38,7 @@
     "seedsync": "npx @snaplet/seed sync"
   },
   "dependencies": {
+    "@babel/standalone": "^7.26.9",
     "@breezystack/lamejs": "^1.2.7",
     "@hcaptcha/react-hcaptcha": "^1.11.1",
     "@hookform/resolvers": "^3.9.0",
@@ -94,6 +95,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-safe-area": "^0.6.0",
     "vaul": "^1.1.2",
+    "webpack": "^5.98.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -103,6 +105,7 @@
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/audiobuffer-to-wav": "^1",
+    "@types/babel__standalone": "^7",
     "@types/bcryptjs": "^2",
     "@types/fluent-ffmpeg": "^2",
     "@types/jest": "^29.5.14",
@@ -129,7 +132,7 @@
     "tailwindcss": "^3.4.1",
     "tree-cli": "^0.6.7",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   },
   "packageManager": "yarn@4.6.0"
 }

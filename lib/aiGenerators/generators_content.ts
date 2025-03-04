@@ -104,7 +104,7 @@ export const generateTranslation = async ({
   const modelParams = {
     format: TranslationResponseFormat,
     max_tokens: 1000,
-    temperature: 0.9,
+    temperature: 0.2,
   };
 
   const preferredLang = getLangName(prefLanguage) ?? null;
@@ -147,7 +147,7 @@ export const generateNestedList = async ({
   const modelParams = {
     format: { type: 'json_object' } as gptFormatType,
     max_tokens: 1000,
-    temperature: 0.9,
+    temperature: 0.2,
   };
 
   let messages = [

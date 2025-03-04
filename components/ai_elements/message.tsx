@@ -28,10 +28,10 @@ interface MessageProps {
 const Message: React.FC<MessageProps> = ({ message, lang }) => {
   const role = message.role;
 
-  const normalizedContent = { type: 'message', data: message.content };
-
   const content = (
-    checkJson(message.content) ? JSON.parse(message.content) : normalizedContent
+    checkJson(message.content)
+      ? JSON.parse(message.content)
+      : { type: 'message', data: message.content }
   ) as EnrichedContent;
 
   return (

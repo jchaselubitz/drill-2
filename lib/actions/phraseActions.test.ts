@@ -244,7 +244,7 @@ describe('Phrase Management Functions', () => {
           output_text: 'Hola',
           output_lang: 'es',
         },
-        source: 'test-source',
+        source: 'chat',
       });
 
       expect(mockTransaction).toHaveBeenCalled();

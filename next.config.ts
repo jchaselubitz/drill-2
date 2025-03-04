@@ -1,5 +1,6 @@
 // Import the necessary modules
 import withPWA from 'next-pwa';
+import type { Configuration } from 'webpack';
 /** @type {NextConfig} */
 
 const pwaConfig = withPWA({
@@ -13,6 +14,12 @@ const pwaConfig = withPWA({
 const nextConfig = {
   ...pwaConfig,
   transpilePackages: ['lamejs'],
+  webpack: (config: Configuration) => {
+    if (config.module?.parser?.javascript) {
+      config.module.parser.javascript.dynamicImportMode = 'eager';
+    }
+    return config;
+  },
   // reactStrictMode: false,
   // logging: {
   //   fetches: {
