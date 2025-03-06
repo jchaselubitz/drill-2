@@ -214,7 +214,9 @@ export const addPhrase = async ({
     data: { user },
   } = await supabase.auth.getUser();
   const userId = user?.id;
-
+  if (!text) {
+    throw new Error('Text is required');
+  }
   const phraseAsArray = text.split(' ');
   const type = rawType === 'phrase' && phraseAsArray.length < 1 ? 'word' : rawType;
 
@@ -492,7 +494,7 @@ export type ExplanationResponseType = {
   explanation: string;
 };
 
-type AddTranslationProps = {
+export type AddTranslationProps = {
   primaryPhraseIds?: string[];
   genResponse: TranslationResponseType;
   source: SourceOptionType;

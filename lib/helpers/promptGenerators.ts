@@ -129,26 +129,4 @@ export const requestNewPhrases = ({
 
 // ==== Component Request ====
 
-type functionType = {
-  code: string;
-  purpose: string;
-};
-
-export const componentRequestPrompt = ({
-  functions,
-  types,
-}: {
-  functions: functionType[];
-  types: string[];
-}): string => {
-  const prompt = `Consider this information about my code:
-
-  Relevant types include: [${types}]
-  Accessible functions include: [${functions}]
-  
- .
-  
-  `;
-  return prompt;
-};
 // ==== Tutor Prompts ====

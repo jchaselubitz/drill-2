@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
+import { trimAudioBlob } from '@/lib/helpers/helpersAudio';
 
 import { Button } from '../ui/button';
 import { LoadingButton } from '../ui/button-loading';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { trimAudioBlob } from '@/lib/helpers/helpersAudio';
 
 const TrimAudio: React.FC<{
   maxDuration: number;
