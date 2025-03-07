@@ -1,0 +1,18 @@
+{
+  "ignoredSymbols": ["useState", "useEffect", "useRef", "useCallback", "useMemo"],
+  "defaultSourceFile": "app/experimental/utils/componentDependencies.ts",
+  "outputPath": "supabase/functions/_shared/symbol_definitions.ts",
+  "designSources": {
+    "css": "app/globals.css",
+    "tailwind": {
+      "config": "tailwind.config.ts",
+      "version": "3.4.1"
+    },
+    "other": [
+      {
+        "name": "shadcn/ui",
+        "path": "components.json"
+      }
+    ]
+  }
+}

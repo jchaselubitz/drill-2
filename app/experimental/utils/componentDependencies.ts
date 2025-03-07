@@ -1,12 +1,5 @@
 // This file exports all the functions and utilities that should be available to dynamic components
-import {
-  Kysely,
-  PostgresDialect,
-  CamelCasePlugin,
-  Selectable,
-  Insertable,
-  Updateable,
-} from 'kysely';
+import { Selectable } from 'kysely';
 import { getLessons } from '@/lib/actions/lessonActions';
 import { getSubjects } from '@/lib/actions/lessonActions';
 import {
@@ -72,9 +65,6 @@ export {
   useRef,
   useCallback,
   useMemo,
-  getLessons,
-  getSubjects,
-  getPhrases,
 };
 
 export type {

@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { CopyBlock, dracula } from 'react-code-blocks';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+
 interface CodeBlockProps {
   code: string;
   language?: string;
@@ -49,7 +50,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
           language={language}
           showLineNumbers={showLineNumbers}
           theme={dracula}
-          codeBlock={true}
+          codeBlock
           customStyle={{
             borderRadius: '0.5rem',
             fontSize: '0.9rem',

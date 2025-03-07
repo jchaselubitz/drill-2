@@ -1,22 +1,20 @@
-import { functionDefinitions, typeDefinitions } from './symbol_definitions.ts';
+import { functionDefinitions, typeDefinitions, designDefinitions } from './symbol_definitions.ts';
 
-export const createSystemPrompt = (dependencies: string, css: string) => {
+export const createSystemPrompt = (dependencies: string) => {
   return `Your job is to return a working React component paired with the appropriate data. This component should accept the data as props. Any execution of functions MUST be done through user interaction.
  
- Here is a list of functions you can use:
+ Here are functions you can use:
  ${JSON.stringify(functionDefinitions.map((symbol) => `${symbol.symbol} (${symbol.type}): ${symbol.definition}`))} 
-
- Here is a list of types you can use:
+ Here are types you can use:
  ${JSON.stringify(typeDefinitions.map((symbol) => `${symbol.symbol} (${symbol.type}): ${symbol.definition}`))} 
-
- Here is the css for the component:
- ${css}
+ Design sources:
+ ${JSON.stringify(designDefinitions.map((symbol) => `${symbol.name}: ${symbol.content}`))} 
 
  Every response must include exactly three key/value pairs:
 
 - **componentType**: a string representing the type of component
 - **props**: the data for the component
-- **react_node**: a React component using tailwindcss v3 for design. Should be full-width. Use safe parsing of props and include a fallback if no props are provided. It should take the form of a string containing EXACTLY this format:
+- **react_node**: a React component using the design sources. Should be full-width. Use safe parsing of props and include a fallback if no props are provided. It should take the form of a string containing EXACTLY this format:
 \`\`\`
 (dependencies, props) => {
 const { ${dependencies} } = dependencies;

@@ -2,15 +2,24 @@
 
 import path from 'path';
 import fs from 'fs';
-import { Project, Node, Type, TypeFormatFlags, Symbol as TsMorphSymbol, ts } from 'ts-morph';
+import { Project, Node, Type, TypeFormatFlags, ts } from 'ts-morph';
 import { symbolExpander } from './symbolExpander';
 
-const IGNORED_SYMBOLS = ['useState', 'useEffect', 'useRef', 'useCallback', 'useMemo'] as const;
+// Load config
+const configPath = path.join(__dirname, 'config.json');
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
+const IGNORED_SYMBOLS = config.ignoredSymbols as string[];
 
 interface SymbolInfo {
   symbol: string;
   type: 'function' | 'type' | 'interface' | 'value';
   definition: string;
+}
+
+interface DesignSource {
+  name: string;
+  content: string;
 }
 
 function getFullTypeDefinition(type: Type, sourceFile: Node): string {
@@ -53,11 +62,60 @@ function getFullTypeDefinition(type: Type, sourceFile: Node): string {
   return `{\n  ${propertyDefinitions.join(';\n  ')};\n}`;
 }
 
+function readFileContent(filePath: string): string {
+  try {
+    return fs.readFileSync(path.join(process.cwd(), filePath), 'utf8');
+  } catch (error) {
+    console.warn(`Warning: Could not read file at ${filePath}`);
+    return '';
+  }
+}
+
+function getDesignDefinitions(): DesignSource[] {
+  const designSources: DesignSource[] = [];
+
+  // Add CSS
+  if (config.designSources.css) {
+    designSources.push({
+      name: 'css',
+      content: readFileContent(config.designSources.css),
+    });
+  }
+
+  // Add Tailwind config
+  if (config.designSources.tailwind?.config) {
+    designSources.push({
+      name: 'tailwind',
+      content: readFileContent(config.designSources.tailwind.config),
+    });
+  }
+
+  // Add Tailwind version
+  if (config.designSources.tailwind?.version) {
+    designSources.push({
+      name: 'tailwindVersion',
+      content: config.designSources.tailwind.version,
+    });
+  }
+
+  // Add other sources
+  if (config.designSources.other) {
+    config.designSources.other.forEach((source: { name: string; path: string }) => {
+      designSources.push({
+        name: source.name,
+        content: readFileContent(source.path),
+      });
+    });
+  }
+
+  return designSources;
+}
+
 function extractExportsFromFile(filePath: string): {
   functionDefinitions: SymbolInfo[];
   typeDefinitions: SymbolInfo[];
 } {
-  const fPath = filePath ? filePath : 'app/experimental/utils/componentDependencies.ts';
+  const fPath = filePath ? filePath : config.defaultSourceFile;
   const project = new Project({
     tsConfigFilePath: path.join(process.cwd(), 'tsconfig.json'),
   });
@@ -118,8 +176,10 @@ function extractExportsFromFile(filePath: string): {
 function generateSymbolDefinitions(sourceFilePath: string) {
   console.log(`Extracting exports from: ${sourceFilePath}`);
   const { functionDefinitions, typeDefinitions } = extractExportsFromFile(sourceFilePath);
+  const designDefinitions = getDesignDefinitions();
+
   console.log(
-    `Found ${functionDefinitions.length} functions and ${typeDefinitions.length} types to process`
+    `Found ${functionDefinitions.length} functions, ${typeDefinitions.length} types, and ${designDefinitions.length} design sources to process`
   );
 
   // Create the output file content
@@ -131,12 +191,15 @@ export const functionDefinitions = ${JSON.stringify(functionDefinitions, null, 2
 
 export const typeDefinitions = ${JSON.stringify(typeDefinitions, null, 2)} as const;
 
+export const designDefinitions = ${JSON.stringify(designDefinitions, null, 2)} as const;
+
 export type FunctionDefinition = typeof functionDefinitions[number];
 export type TypeDefinition = typeof typeDefinitions[number];
+export type DesignDefinition = typeof designDefinitions[number];
 `;
 
   // Ensure the directory exists
-  const outputPath = path.join(process.cwd(), 'supabase/functions/_shared/symbol_definitions.ts');
+  const outputPath = path.join(process.cwd(), config.outputPath);
   const outputDir = path.dirname(outputPath);
 
   if (!fs.existsSync(outputDir)) {
@@ -147,17 +210,17 @@ export type TypeDefinition = typeof typeDefinitions[number];
   fs.writeFileSync(outputPath, fileContent, 'utf8');
   console.log(`✓ Symbol definitions written to: ${outputPath}`);
   console.log(
-    `Processed ${functionDefinitions.length} functions and ${typeDefinitions.length} types`
+    `Processed ${functionDefinitions.length} functions, ${typeDefinitions.length} types, and ${designDefinitions.length} design sources`
   );
 }
 
-// Default to componentDependencies.ts if no file is specified
-const sourceFilePath = process.argv[2] || 'app/experimental/utils/componentDependencies.ts';
+// Default to config's defaultSourceFile if no file is specified
+const sourceFilePath = process.argv[2] || config.defaultSourceFile;
 
 if (!fs.existsSync(sourceFilePath)) {
   console.error(`Error: File not found: ${sourceFilePath}`);
   console.error('Usage: yarn gen:symbols [fPath]');
-  console.error('Default: app/experimental/utils/componentDependencies.ts');
+  console.error(`Default: ${config.defaultSourceFile}`);
   process.exit(1);
 }
 
