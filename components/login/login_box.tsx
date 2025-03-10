@@ -46,69 +46,66 @@ export default function LoginBox({
 
   return (
     <div className="animate-in items-center flex flex-col w-full px-2 sm:max-w-md justify-center">
-      {isSignUp && (
-        <>
-          <div className="mb-10 w-full flex flex-col items-center">
-            <Button
-              className="mb-4 w-full bg-slate-700 hover:bg-slate-600 font-semibold gap-2"
-              variant="default"
-              size="lg"
-              onClick={() => {
-                isMobile ? router.push(DemoVideoURL) : setIsOpen(true);
-              }}
-            >
-              Watch the tutorial <div>📺</div>
-            </Button>
+      <div className="mb-10 w-full flex flex-col items-center">
+        <Button
+          className="mb-4 w-full bg-slate-700 hover:bg-slate-600 font-semibold gap-2"
+          variant="default"
+          size="lg"
+          onClick={() => {
+            isMobile ? router.push(DemoVideoURL) : setIsOpen(true);
+          }}
+        >
+          Watch the tutorial <div>📺</div>
+        </Button>
 
-            <Button
-              className="mb-4 w-full  bg-emerald-700 hover:bg-emerald-600 font-semibold"
-              variant="default"
-              size="lg"
-              onClick={() => setShowCaptcha(!showCaptcha)}
-            >
-              Try it before creating an account <div>🎉</div>
-            </Button>
-            {showCaptcha && (
-              <div className="mb-4">
-                <HCaptcha sitekey={captchaKey} onVerify={handleAnonymousSignIn} />
-              </div>
-            )}
+        <Button
+          className="mb-4 w-full  bg-emerald-700 hover:bg-emerald-600 font-semibold"
+          variant="default"
+          size="lg"
+          onClick={() => setShowCaptcha(!showCaptcha)}
+        >
+          Try it before creating an account <div>🎉</div>
+        </Button>
+        {showCaptcha && (
+          <div className="mb-4">
+            <HCaptcha sitekey={captchaKey} onVerify={handleAnonymousSignIn} />
           </div>
-          <Drawer open={isOpen} onOpenChange={setIsOpen}>
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Learn about Drill.</DrawerTitle>
-                {/* <DrawerDescription>This action cannot be undone.</DrawerDescription> */}
-              </DrawerHeader>
-              <div className="mx-auto my-10">
-                <a href={DemoVideoURL} target="_blank" rel="noreferrer">
-                  <Button
-                    className="mb-4 w-full border-slate-700 hover:bg-slate-100 font-semibold gap-2"
-                    variant="outline"
-                    size="lg"
-                  >
-                    Open in Youtube <Youtube />
-                  </Button>
-                </a>
-                <YouTubePlayer
-                  url="https://youtu.be/uilJL5JW-2g"
-                  width="1000px"
-                  height={'600px'}
-                  controls
-                  playsinline={true}
-                />
-              </div>
-              <DrawerFooter>
-                <DrawerClose className="w-full">
-                  <Button variant="secondary" className="w-full">
-                    close
-                  </Button>
-                </DrawerClose>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
-        </>
-      )}
+        )}
+      </div>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Learn about Drill.</DrawerTitle>
+            {/* <DrawerDescription>This action cannot be undone.</DrawerDescription> */}
+          </DrawerHeader>
+          <div className="mx-auto my-10">
+            <a href={DemoVideoURL} target="_blank" rel="noreferrer">
+              <Button
+                className="mb-4 w-full border-slate-700 hover:bg-slate-100 font-semibold gap-2"
+                variant="outline"
+                size="lg"
+              >
+                Open in Youtube <Youtube />
+              </Button>
+            </a>
+            <YouTubePlayer
+              url="https://youtu.be/uilJL5JW-2g"
+              width="1000px"
+              height={'600px'}
+              controls
+              playsinline={true}
+            />
+          </div>
+          <DrawerFooter>
+            <DrawerClose className="w-full">
+              <Button variant="secondary" className="w-full">
+                close
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+
       <Tabs
         defaultValue={form ?? 'magic'}
         className="flex flex-col h-full w-full"
