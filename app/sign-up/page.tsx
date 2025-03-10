@@ -10,7 +10,7 @@ export default async function Login({
   return (
     <div className="flex flex-row h-screen w-full">
       <div className="animate-in  flex flex-col items-center justify-center w-full">
-        <LoginBox token={token} message={message} form={form} />
+        <LoginBox token={token} message={message} form={form} isSignUp />
       </div>
     </div>
   );

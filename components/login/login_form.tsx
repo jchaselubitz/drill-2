@@ -23,13 +23,19 @@ interface LoginFormProps {
   isPasswordReset?: boolean;
   isMagicLink?: boolean;
   message?: string;
+  isSignUp?: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLink, message }) => {
+const LoginForm: React.FC<LoginFormProps> = ({
+  token,
+  isPasswordReset,
+  isMagicLink,
+  message,
+  isSignUp,
+}) => {
   const router = useRouter();
-  const [showCreateAccount, setShowCreateAccount] = useState(true);
+
   const [signInButtonState, setSignInButtonState] = useState<ButtonLoadingState>('default');
-  const isCreateAccount = (!isPasswordReset && !!showCreateAccount) || !!token;
 
   const zObject = {
     email: z.string().email(),
@@ -41,7 +47,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
     // .regex(/[0-9]/, { message: 'Password must contain at least one letter and number.' });
   }
 
-  if (isCreateAccount) {
+  if (isSignUp) {
     zObject['name'] = z.string().min(3, { message: 'Name must be at least 2 characters.' });
   }
   const FormSchema = z.object(zObject);
@@ -67,20 +73,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
 
     try {
       if (isMagicLink) {
-        await signInWithEmail({ email, shouldCreateUser: isCreateAccount, name });
+        await signInWithEmail({ email, shouldCreateUser: isSignUp, name });
         setSignInButtonState('success');
         router.push('/check-your-email?email=' + email);
         return;
       } else {
-        if (!isCreateAccount && !password) {
+        if (!isSignUp && !password) {
           setSignInButtonState('error');
         }
-        if (isCreateAccount) {
+        if (isSignUp) {
           await signUp(submission);
           setSignInButtonState('success');
           router.push('/confirm-your-email?email=' + email);
         }
-        if (!isCreateAccount) {
+        if (!isSignUp) {
           try {
             await signIn({ email, password });
             setSignInButtonState('success');
@@ -106,10 +112,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
   const buttonText = isPasswordReset
     ? 'Update'
     : isMagicLink
-      ? isCreateAccount
+      ? isSignUp
         ? 'Send account creation link'
         : 'Send login link'
-      : isCreateAccount
+      : isSignUp
         ? 'Create account with password'
         : 'Sign in with password';
 
@@ -148,7 +154,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
             />
           </div>
         )}
-        {isCreateAccount && (
+        {isSignUp && (
           <div className={fieldClass}>
             <FormField
               control={form.control}
@@ -176,22 +182,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ token, isPasswordReset, isMagicLi
               signInButtonState === 'success'
             }
             text={buttonText}
-            loadingText={isCreateAccount ? 'Creating ...' : 'Logging in ...'}
+            loadingText={isSignUp ? 'Creating ...' : 'Logging in ...'}
             successText={isMagicLink ? 'Check your email for a login link' : 'Loading ...'}
             errorText="Error"
           />
         </div>
       </form>
       <Button
-        variant="link"
-        className="text-sm justify-start pl-0"
+        variant={isSignUp ? 'link' : 'outline'}
+        className="text-sm justify-start  mt-2"
         onClick={(e) => {
           e.preventDefault();
           setSignInButtonState('default');
-          setShowCreateAccount(!showCreateAccount);
+          isSignUp ? router.push('/login') : router.push('/sign-up');
         }}
       >
-        {isCreateAccount ? 'Sign in to an existing account' : 'Create a new account'}
+        {isSignUp ? 'Sign in to an existing account' : 'Create a new account'}
       </Button>
       {message && (
         <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">{message}</p>
