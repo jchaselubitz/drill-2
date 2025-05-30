@@ -32,7 +32,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
           <TopicPrompt topic={topic} prompt={prompt} relevantPhrases={relevantPhrases} />
         </div>
       ))}
-      {prompts && <Separator />}
+
       <TopicPromptForm
         topic={topic}
         relevantPhrases={relevantPhrases}

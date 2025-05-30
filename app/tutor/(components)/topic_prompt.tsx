@@ -35,6 +35,7 @@ const TopicPrompt: React.FC<TopicPromptProps> = ({ topic, prompt, relevantPhrase
   const { selectedPromptAndCorrection, setSelectedPromptAndCorrection } = useTutorContext();
   const selectedCorrection = selectedPromptAndCorrection?.correctionId?.toString();
   const selectedPrompt = selectedPromptAndCorrection?.promptId;
+  const isSelected = selectedPrompt === prompt.id;
 
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
   const [shortenButtonState, setShortenButtonState] = useState<ButtonLoadingState>('default');
@@ -121,11 +122,14 @@ const TopicPrompt: React.FC<TopicPromptProps> = ({ topic, prompt, relevantPhrase
     <div
       className={cn(
         'flex flex-col w-full border border-slate-100 rounded-lg cursor-pointer hover:shadow-lg',
-        selectedPrompt === promptId && ' bg-white shadow-md '
+        isSelected && 'shadow-md bg-slate-100 '
       )}
     >
       <div className="relative flex flex-col ">
-        <div className="bg-slate-100 p-2 pb-4 rounded-lg " onClick={handleOpenClick}>
+        <div
+          className={cn('bg-slate-50 p-2 pb-4 rounded-lg ', isSelected && 'bg-slate-100')}
+          onClick={handleOpenClick}
+        >
           <span className="text-slate-800 block italic">
             <Stars color={'#64748b'} size={18} className="float-left mr-2 flex-shrink-0" />
             <span className="text-sm font-medium break-words ">{promptText}</span>
