@@ -440,3 +440,73 @@ export const addTranslationToLesson = async ({
     throw Error('Error adding translation to lesson to db');
   }
 };
+
+export const deleteLesson = async (lessonId: string) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return;
+  }
+  const userId = user.id;
+  try {
+    await db.transaction().execute(async (trx) => {
+      // Get all translations for this lesson
+      const translations = await trx
+        .selectFrom('translation')
+        .select(['id', 'phrasePrimaryId', 'phraseSecondaryId'])
+        .where('lessonId', '=', lessonId)
+        .where('userId', '=', userId)
+        .execute();
+      const phraseIds = [
+        ...new Set(
+          translations
+            .map((t) => [t.phrasePrimaryId, t.phraseSecondaryId])
+            .flat()
+            .filter(Boolean)
+        ),
+      ];
+      // Delete translations for this lesson
+      await trx
+        .deleteFrom('translation')
+        .where('lessonId', '=', lessonId)
+        .where('userId', '=', userId)
+        .execute();
+      // Delete phrases (assume phrases are unique to this lesson)
+      if (phraseIds.length > 0) {
+        await trx
+          .deleteFrom('phrase')
+          .where('userId', '=', userId)
+          .where((eb) => eb('id', 'in', phraseIds))
+          .execute();
+      }
+      // Delete the lesson
+      await trx
+        .deleteFrom('lesson')
+        .where('id', '=', lessonId)
+        .where('userId', '=', userId)
+        .execute();
+    });
+  } catch (error) {
+    throw Error('Error deleting lesson and associated data');
+  }
+  revalidatePath('/lessons', 'page');
+};
+
+export const deleteLessonOnly = async (lessonId: string) => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return;
+  }
+  const userId = user.id;
+  try {
+    await db.deleteFrom('lesson').where('id', '=', lessonId).where('userId', '=', userId).execute();
+  } catch (error) {
+    throw Error('Error deleting lesson');
+  }
+  revalidatePath('/lessons', 'page');
+};

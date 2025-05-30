@@ -2,7 +2,7 @@
 
 import { Iso639LanguageCode } from 'kysely-codegen';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { addSubjectLessonWithTranslations } from '@/lib/actions/lessonActions';
@@ -10,6 +10,7 @@ import { handleGeneratePhrases } from '@/lib/aiGenerators/generators_content';
 import { getLangName } from '@/lib/lists';
 
 import { OptionType } from './lesson_option';
+import { useRouter } from 'next/navigation';
 
 interface LessonOptionDetailsProps {
   option: OptionType;
@@ -30,7 +31,7 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
 }) => {
   const [saveButtonState, setSaveButtonState] = useState<ButtonLoadingState>('default');
   const [regenButtonState, setRegenButtonState] = useState<ButtonLoadingState>('default');
-
+  const router = useRouter();
   const [phraseArray, setPhraseArray] = useState(option.phrases ?? []);
   const [lessonLink, setLessonLink] = useState<string | null>(null);
 
@@ -70,8 +71,9 @@ const LessonOptionDetails: React.FC<LessonOptionDetailsProps> = ({
       });
 
       if (dbData) {
-        setLessonLink(`/lessons/${dbData.lessonId}`);
-
+        const lessonLink = `/lessons/${dbData.lessonId}`;
+        setLessonLink(lessonLink);
+        router.push(lessonLink);
         setSaveButtonState('success');
       }
     } catch {
