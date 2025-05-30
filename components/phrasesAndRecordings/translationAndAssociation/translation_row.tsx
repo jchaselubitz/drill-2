@@ -36,7 +36,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   phraseLang,
 }) => {
   const router = useRouter();
-  const bucket = 'text_to_speech';
+  const bucket = 'text-to-speech';
   const { setSelectedPhrasePage } = useLibraryContext();
 
   const { userLessons } = useLessonsContext();

@@ -18,7 +18,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
     return <div>Lesson not found</div>;
   }
 
-  const bucket = 'text_to_speech';
+  const bucket = 'text-to-speech';
   const fileList = (await getFileList({ supabase, bucket })).map((file) => file.name);
 
   const withoutAudio = await Promise.all(

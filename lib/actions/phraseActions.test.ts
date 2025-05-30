@@ -283,7 +283,7 @@ describe('Phrase Management Functions', () => {
       expect(mockWhere).toHaveBeenCalledTimes(2); // For 'id' and 'userId'
       expect(mockReturning).toHaveBeenCalledWith('filename');
       expect(mockExecute).toHaveBeenCalled();
-      expect(mockSupabase.storage.from).toHaveBeenCalledWith('user_recordings');
+      expect(mockSupabase.storage.from).toHaveBeenCalledWith('user-recordings');
       expect(storage.remove).toHaveBeenCalledWith(['user-id/file.mp3']);
       expect(revalidatePath).toHaveBeenCalledWith('/library', 'page');
     });

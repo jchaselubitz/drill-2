@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
-  const bucket = 'text_to_speech';
+  const bucket = 'text-to-speech';
 
   const data = await req.json();
   const lessonId = data.lessonId;

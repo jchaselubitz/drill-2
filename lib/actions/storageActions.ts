@@ -76,7 +76,7 @@ export async function uploadProfileImage({
     throw new Error('Unauthorized');
   }
 
-  const bucket = 'user_images';
+  const bucket = 'user-images';
   if (oldImageUrl) {
     await deleteFile({ bucket, url: oldImageUrl, folderPath: profileId });
   }
@@ -88,7 +88,6 @@ export async function uploadProfileImage({
     path: `${profileId}/${fileName}`,
   });
 
-  console.log(data, error);
   if (!data) return null;
 
   return getPublicFile({ bucket, path: data?.path });
@@ -108,7 +107,7 @@ export async function deleteProfileImage({ profileId, url }: { profileId: string
     throw new Error('Unauthorized');
   }
 
-  const bucket = 'user_images';
+  const bucket = 'user-images';
   await deleteFile({ bucket, url, folderPath: profileId });
   revalidatePath('/[organizationId]/settings/profile', 'page');
 }

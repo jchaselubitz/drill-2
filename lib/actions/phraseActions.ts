@@ -634,7 +634,7 @@ export const deletePhrase = async (phraseId: string) => {
     if (deletedPhrase.length > 0) {
       const filename = deletedPhrase[0].filename;
       if (filename) {
-        await supabase.storage.from('user_recordings').remove([`${userId}/${filename}`]);
+        await supabase.storage.from('user-recordings').remove([`${userId}/${filename}`]);
       }
     }
   } catch (error) {

@@ -91,7 +91,7 @@ export async function uploadFeedbackImage({
   const fileForUpload = file.get('image') as File;
   try {
     const response = await uploadFile({
-      bucket: 'feedback_images',
+      bucket: 'feedback-images',
       file: fileForUpload,
       path: `${feedbackId}/${fileName}`,
     });
@@ -105,7 +105,7 @@ export async function uploadFeedbackImage({
 export async function getFeedbackImages({ feedbackId }: { feedbackId: string }) {
   const supabase = createClient();
   const { data: imageList, error: imageListError } = await supabase.storage
-    .from('feedback_images')
+    .from('feedback-images')
     .list(`${feedbackId}`);
 
   if (imageListError) {
@@ -120,7 +120,7 @@ export async function getFeedbackImages({ feedbackId }: { feedbackId: string }) 
   if (imagePathList.length < 1) return [];
 
   const { data, error } = await supabase.storage
-    .from('feedback_images')
+    .from('feedback-images')
     .createSignedUrls(imagePathList, 3600);
 
   if (error) {

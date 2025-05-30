@@ -16,7 +16,7 @@ interface AssociationRowProps {
 }
 
 const AssociationRow: React.FC<AssociationRowProps> = ({ associatedPhrase, navigateToPhrase }) => {
-  const bucket = 'text_to_speech';
+  const bucket = 'text-to-speech';
   const { setSelectedPhrasePage } = useLibraryContext();
 
   const handlePhraseClick = () => {

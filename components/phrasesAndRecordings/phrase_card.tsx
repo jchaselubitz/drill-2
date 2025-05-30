@@ -12,7 +12,7 @@ interface PhraseCardProps {
 }
 
 const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
-  const bucket = 'text_to_speech';
+  const bucket = 'text-to-speech';
   const router = useRouter();
 
   const setSelectedPhrase = (id: string) => {

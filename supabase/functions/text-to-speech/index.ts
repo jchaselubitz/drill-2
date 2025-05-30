@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
   const userApiKey = data.userApiKey;
   const text = data.text;
   const fileName = data.fileName;
-  const bucketName = 'text_to_speech';
+  const bucketName = 'text-to-speech';
   // Try to get image from Supabase Storage CDN.
 
   const trace = langfuse.trace({

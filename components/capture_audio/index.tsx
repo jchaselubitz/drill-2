@@ -124,7 +124,7 @@ const CaptureAudio: FC = () => {
   const saveRecording = async () => {
     setSaveButtonState('loading');
     const fileName = `${Date.now()}-recording`;
-    const bucketName = 'user_recordings';
+    const bucketName = 'user-recordings';
     if (audioResponse) {
       const audioFile = new File([audioResponse.blob], 'podcast.mp3', { type: 'audio/mpeg' });
       const compressedBlob = await compressAudio(audioFile);

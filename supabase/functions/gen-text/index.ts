@@ -64,6 +64,8 @@ Deno.serve(async (req) => {
       stream,
     });
 
+    console.log(completion);
+
     const reply = completion.choices[0].message;
 
     generation.end({
@@ -80,6 +82,7 @@ Deno.serve(async (req) => {
       status: 200,
     });
   } catch (error) {
+    console.log(error);
     return new Response(JSON.stringify({ error: error }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,

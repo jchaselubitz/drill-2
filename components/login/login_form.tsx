@@ -200,7 +200,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
         {isSignUp ? 'Sign in to an existing account' : 'Create a new account'}
       </Button>
       {message && (
-        <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">{message}</p>
+        <div className="rounded-lg border border-red-700 mt-4 p-2 bg-foreground/10 text-red-700 opacity-80 text-center">
+          {message}
+        </div>
       )}
     </Form>
   );

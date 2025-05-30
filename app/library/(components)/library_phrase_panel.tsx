@@ -37,7 +37,7 @@ const LibraryPhrasePanel: React.FC<LibraryPhrasePanelProps> = ({ phrase, userTag
                 <TtsButton
                   className="flex-shrink-0 "
                   text={phrase.text}
-                  bucket="text_to_speech"
+                  bucket="text-to-speech"
                   lacksAudio={false}
                 />
               </div>

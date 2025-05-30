@@ -32,7 +32,7 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
   const translations = lesson.translations;
   const studyLanguage = lesson.sideTwo;
 
-  const bucket = 'text_to_speech';
+  const bucket = 'text-to-speech';
 
   useEffect(() => {
     const getTranslationsWithoutAudio = async () => {

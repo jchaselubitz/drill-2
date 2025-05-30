@@ -33,7 +33,7 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ phrase }) => {
     setIsPlaying(true);
     const audio = await playSavedAudio({
       supabase,
-      bucket: 'user_recordings',
+      bucket: 'user-recordings',
       fileName: `${userId}/${phrase.filename}`,
       setIsPlayingFalse,
     });

@@ -29,7 +29,7 @@ const RecordingPlayButton: React.FC<RecordingPlayButtonProps> = ({ phrase }) => 
     setIsPlaying(true);
     const audio = await playSavedAudio({
       supabase,
-      bucket: 'user_recordings',
+      bucket: 'user-recordings',
       fileName: `${userId}/${phrase.filename}`,
       setIsPlayingFalse,
     });

@@ -123,7 +123,7 @@ export const LibraryColumns: ColumnDef<PhraseWithAssociations>[] = [
         {row.original.type === 'recording' ? (
           <RecordingPlayButton phrase={row.original} />
         ) : (
-          <TtsButton text={row.original.text} bucket={'text_to_speech'} lacksAudio={false} />
+          <TtsButton text={row.original.text} bucket={'text-to-speech'} lacksAudio={false} />
         )}
       </div>
     ),

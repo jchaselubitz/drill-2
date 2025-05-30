@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
         const phrases = [t.phrase_primary_id, t.phrase_secondary_id];
         const side1 = phrases.find((p) => p.lang === lesson.side_one) as Phrase;
         const side2 = phrases.find((p) => p.lang === lesson.side_two) as Phrase;
-        const fileUrl = await getUrl(side2.text as string, 'text_to_speech', supabase);
+        const fileUrl = await getUrl(side2.text as string, 'text-to-speech', supabase);
 
         return {
           [side1.lang as string]: side2.text,
