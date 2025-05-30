@@ -2,7 +2,6 @@
 
 import { TutorTopicWithCorrections } from 'kysely-codegen';
 import React, { useEffect } from 'react';
-import { Separator } from '@/components/ui/separator';
 
 import TopicPrompt from './topic_prompt';
 import TopicPromptForm from './topic_prompt_form';

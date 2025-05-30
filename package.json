@@ -90,6 +90,7 @@
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.0",
     "resend": "^4.1.2",
+    "swr": "^2.3.3",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-safe-area": "^0.6.0",
