@@ -1,7 +1,9 @@
+'use client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import ResponsiveLayout from '../responsive_layout';
 import { LibraryTableSkeleton } from './(components)/library_table';
+import { useSelectedLayoutSegment } from 'next/navigation';
 
 export const TaskPanelSkeleton = () => {
   return (
@@ -56,20 +58,23 @@ export const TaskPanelSkeleton = () => {
   );
 };
 
-export default async function LessonLoading() {
+export default function LibraryLoading() {
+  const segment = useSelectedLayoutSegment();
+  console.log(segment);
+
   return (
-    <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
-      <div className="flex flex-col items-center gap-4 w-full">
-        <ResponsiveLayout
-          detailPanelActive={true}
-          panel1={
-            <div className=" w-full">
-              <LibraryTableSkeleton />
-            </div>
-          }
-          panel2={<TaskPanelSkeleton />}
-        />
-      </div>
-    </div>
+    // <div className="min-h-screen md:p-4 pb-20 gap-16 p-2 w-full">
+    //  <div className="flex flex-col items-center gap-4 w-full">
+    <ResponsiveLayout
+      detailPanelActive={true}
+      panel1={
+        <div className=" w-full">
+          <LibraryTableSkeleton />
+        </div>
+      }
+      panel2={<TaskPanelSkeleton />}
+    />
+    // </div>
+    // </div>
   );
 }
