@@ -116,13 +116,13 @@ export const requestNewPhrases = ({
 
   const prompt = `You are helping a student study ${getLangName(
     studyLanguage
-  )} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). You are creating flashcards, with ${getLangName(
+  )} at level ${level} (according to the Common European Framework of Reference for Languages). You are creating flashcards, with ${getLangName(
     userLanguage
   )} on side 1 and ${getLangName(
     studyLanguage
   )} on side 2. ${examples ? exampleComponent : phraseTypeComponent} in ${getLangName(
     studyLanguage
-  )}. You should return  ${numberOfPhrases} items. The format of the JSON should be as follows: {${userLanguage}: "item", ${studyLanguage}: "item"}.`;
+  )}. You should return  ${numberOfPhrases} items. The format of the JSON should be as follows: {${userLanguage}: "item", ${studyLanguage}: "item"}. Do not include any labels or hints indicating. Remember that the user is quizzing themselves.`;
 
   return { prompt, format: aiResponseFormat };
 };

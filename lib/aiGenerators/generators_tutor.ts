@@ -108,7 +108,7 @@ export const reviewUserParagraphSubmission = async ({
 
     {
       role: 'user',
-      content: `Review the paragraph I wrote and repeat it back to me, but with correct grammar, using Markdown to indicate changes. Try to keep it as close the original in language and structure as possible so I can learn from my mistakes. Explain your feedback as bullet points. I want to understand the language's specific grammar rules, so instead of saying something is "correct" or "proper", explain the rule that makes it so.`,
+      content: `Review the paragraph I wrote and repeat it back to me, but with correct grammar, using Markdown to indicate changes. Try to keep it as close the original in language and structure as possible so I can learn from my mistakes. Explain your feedback as bullet points. I want to understand the language's specific grammar rules, so instead of saying something is "correct" or "proper", explain the rule that makes it so. It is particularly important to understand why my sentence is wrong, and how to fix it.`,
     },
     {
       role: 'user',
