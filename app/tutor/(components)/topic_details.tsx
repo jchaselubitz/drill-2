@@ -1,6 +1,6 @@
 'use client';
 
-import { TutorTopicWithCorrections } from 'kysely-codegen';
+import { BaseCorrection, TutorTopicWithCorrections } from 'kysely-codegen';
 import React, { useEffect } from 'react';
 
 import TopicPrompt from './topic_prompt';
@@ -17,10 +17,21 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
   const prompts = topic.prompts;
 
   const lastPrompt = prompts[prompts.length - 1];
+
+  const mostRecentCorrection = prompts
+    .flatMap((p) => p.corrections)
+    .sort(
+      (a: BaseCorrection, b: BaseCorrection) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )[0];
+
+  const promptId = mostRecentCorrection?.tutorPromptId ?? lastPrompt.id;
+  const correctionId = mostRecentCorrection?.id;
+
   useEffect(() => {
     setSelectedPromptAndCorrection({
-      promptId: lastPrompt.id,
-      correctionId: null,
+      promptId: promptId,
+      correctionId: correctionId ?? null,
     });
   }, [lastPrompt]);
 

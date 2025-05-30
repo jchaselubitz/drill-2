@@ -192,7 +192,7 @@ const TopicPrompt: React.FC<TopicPromptProps> = ({ topic, prompt, relevantPhrase
                   <div className="flex flex-col gap-2">
                     {corrections.map((existingCorrection, index) => (
                       <AccordionItem
-                        className="w-full border-b-0 rounded-lg  hover:border px-4  data-[state=open]:bg-zinc-100 data-[state=open]:shadow-lg data-[state=open]:border-0"
+                        className="w-full border-b-0 rounded-lg  border px-4 hover:bg-zinc-50 data-[state=open]:bg-zinc-50 opacity-100 data-[state=open]:shadow-lg data-[state=open]:border-0"
                         value={existingCorrection.id.toString()}
                         key={existingCorrection.id.toString()}
                       >
