@@ -106,7 +106,7 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
               type="submit"
               onClick={form.handleSubmit(handleResponseChange)}
               buttonState={submitState}
-              text={'Submit'}
+              text={'Submit for corrections'}
               loadingText={'Correcting ...'}
               successText={'Corrected'}
               errorText={'An error occurred'}
@@ -120,4 +120,4 @@ const GrammarCorrectionForm: React.FC<GrammarCorrectionFormProps> = ({ className
 
 export default GrammarCorrectionForm;
 
-const testGermanText = `Eine Freund von mir sprecht viel und ist sehr laut. Sie ist sehr nett und hilfsbereit. Sie ist auch sehr lustig und wir lachen oft zusammen. Sie ist sehr gut in Mathe und hilft mir oft mit meinen Hausaufgaben. Sie ist auch sehr gut in Sport und spielt Fußball. Sie ist sehr sportlich und geht oft ins Fitnessstudio.`;
+// const testGermanText = `Eine Freund von mir sprecht viel und ist sehr laut. Sie ist sehr nett und hilfsbereit. Sie ist auch sehr lustig und wir lachen oft zusammen. Sie ist sehr gut in Mathe und hilft mir oft mit meinen Hausaufgaben. Sie ist auch sehr gut in Sport und spielt Fußball. Sie ist sehr sportlich und geht oft ins Fitnessstudio.`;

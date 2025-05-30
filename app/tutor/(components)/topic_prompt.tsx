@@ -31,12 +31,7 @@ interface TopicPromptProps {
   relevantPhrases: any;
 }
 
-const TopicPrompt: React.FC<TopicPromptProps> = ({
-  topic,
-  prompt,
-
-  relevantPhrases,
-}) => {
+const TopicPrompt: React.FC<TopicPromptProps> = ({ topic, prompt, relevantPhrases }) => {
   const { selectedPromptAndCorrection, setSelectedPromptAndCorrection } = useTutorContext();
   const selectedCorrection = selectedPromptAndCorrection?.correctionId?.toString();
   const selectedPrompt = selectedPromptAndCorrection?.promptId;
@@ -125,7 +120,7 @@ const TopicPrompt: React.FC<TopicPromptProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col w-full border border-slate-100 rounded-lg cursor-pointer',
+        'flex flex-col w-full border border-slate-100 rounded-lg cursor-pointer hover:shadow-lg',
         selectedPrompt === promptId && ' bg-white shadow-md '
       )}
     >

@@ -13,9 +13,14 @@ import { cn } from '@/lib/utils';
 interface TopicPromptFormProps {
   topic: TutorTopicWithCorrections;
   relevantPhrases: any;
+  promptsLength: number;
 }
 
-const TopicPromptForm: React.FC<TopicPromptFormProps> = ({ topic, relevantPhrases }) => {
+const TopicPromptForm: React.FC<TopicPromptFormProps> = ({
+  topic,
+  relevantPhrases,
+  promptsLength,
+}) => {
   const { setSelectedPromptAndCorrection } = useTutorContext();
   const [buttonState, setButtonState] = useState<ButtonLoadingState>('default');
   const { id: topicId, lang: topicLanguage, level, instructions } = topic;
@@ -56,7 +61,7 @@ const TopicPromptForm: React.FC<TopicPromptFormProps> = ({ topic, relevantPhrase
             onClick={handleSetNewPrompt}
             className={cn('w-fit bg-gradient-to-r from-blue-600 to-cyan-600')}
             buttonState={buttonState}
-            text={'Generate prompt'}
+            text={promptsLength > 0 ? 'Generate another prompt' : 'Generate prompt'}
             loadingText={'Generating ...'}
             errorText="Something went wrong"
           />
