@@ -22,6 +22,7 @@ interface LessonOptionProps {
   level: string;
   subjectId: string | undefined;
   isSentences: boolean | undefined;
+  startOpen: boolean;
 }
 
 const LessonOption: React.FC<LessonOptionProps> = ({
@@ -31,8 +32,9 @@ const LessonOption: React.FC<LessonOptionProps> = ({
   level,
   subjectId,
   isSentences,
+  startOpen,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(startOpen);
 
   const handleSelected = () => {
     setIsOpen(!isOpen);

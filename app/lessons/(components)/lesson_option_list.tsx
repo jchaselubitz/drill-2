@@ -20,6 +20,7 @@ const LessonOptionList: React.FC<LessonOptionListProps> = ({
   subjectId,
   isSentences,
 }) => {
+  const lessonLength = options.length;
   return (
     <div className="flex flex-col gap-4 prose">
       {options.map((option, i) => (
@@ -31,6 +32,7 @@ const LessonOptionList: React.FC<LessonOptionListProps> = ({
           level={level}
           subjectId={subjectId}
           isSentences={isSentences}
+          startOpen={lessonLength < 2}
         />
       ))}
     </div>
