@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     },
   });
   const mp3 = await openai.audio.speech.create({
-    model: 'tts-1',
+    model: 'gpt-4o-mini-tts',
     voice: 'alloy',
     input: text,
   });
