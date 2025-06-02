@@ -231,11 +231,13 @@ export const Languages = [
 ].sort((a, b) => a.name.localeCompare(b.name));
 
 export const getLangName = (langCode: string | undefined | null) => {
-  return Languages.find((lang) => lang.value === langCode)?.name ?? '';
+  return Languages.find((lang) => lang.value.toString() === langCode)?.name ?? '';
 };
 
 export const getLangValue = (langName: string) => {
-  return Languages.find((lang) => lang.name === langName)?.value ?? null;
+  return (
+    Languages.find((lang) => lang.name.toLowerCase() === langName.toLowerCase())?.value ?? null
+  );
 };
 
 export const getLangIcon = (langCode: string | null) => {

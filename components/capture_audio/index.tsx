@@ -19,6 +19,8 @@ import ImportPodcast from './import_podcast';
 import MediaReview from './media_review';
 import RecordButton, { RecordButtonStateType } from './record_button';
 import UploadButton from './upload_button';
+import * as Sentry from '@sentry/nextjs';
+import { getLangValue, getLangName } from '@/lib/lists';
 
 type AudioResponse = {
   blob: Blob;
@@ -30,13 +32,21 @@ const CaptureAudio: FC = () => {
   const supabase = createClient();
 
   const [transcriptButtonState, setTranscriptionLoading] = useState<ButtonLoadingState>('default');
-  const [transcript, setTranscript] = useState<string>('');
+  const [transcript, setTranscript] = useState<{
+    text: string;
+    language: Iso639LanguageCode | null;
+  }>({
+    text: '',
+    language: null,
+  });
   const [recordingButtonState, setRecordingButtonState] = useState<RecordButtonStateType>('idle');
   const [recordingState, setRecordingState] = useState<RecordAudioResult | null>(null);
   const [audioResponse, setAudioResponse] = useState<AudioResponse | undefined | null>(null);
   const [selectedLang, setSelectedLang] = useState<Iso639LanguageCode | '' | 'auto'>('');
 
   const [saveButtonState, setSaveButtonState] = useState<ButtonLoadingState>('default');
+  const [saveTranscriptButtonState, setSaveTranscriptButtonState] =
+    useState<ButtonLoadingState>('default');
   // const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [importingPodcast, setImportingPodcast] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -46,8 +56,9 @@ const CaptureAudio: FC = () => {
     setRecordingButtonState('idle');
     setRecordingState(null);
     setTranscriptionLoading('default');
-    setTranscript('');
+    setTranscript({ text: '', language: null });
     setSaveButtonState('default');
+    setSaveTranscriptButtonState('default');
     setImportingPodcast(false);
     setAudioResponse(null);
     URL.revokeObjectURL(audioResponse?.url as string);
@@ -70,7 +81,7 @@ const CaptureAudio: FC = () => {
   };
 
   const handleUpload = async (file: File) => {
-    setTranscript('');
+    resetRecordingButtonState();
     setRecordingButtonState('disabled');
     const audioBlob = new Blob([file], { type: 'audio/mp4' });
     const url = URL.createObjectURL(audioBlob);
@@ -78,7 +89,7 @@ const CaptureAudio: FC = () => {
   };
 
   const importPodcast = async (url: string) => {
-    setTranscript('');
+    setTranscript({ text: '', language: null });
     setImportingPodcast(true);
     setAudioResponse(null);
     setImportProgress(5); // Started
@@ -148,7 +159,51 @@ const CaptureAudio: FC = () => {
     }
     setTranscriptionLoading('success');
     setRecordingButtonState('disabled');
-    setTranscript(transcription.data);
+
+    if (transcription.language) {
+      // setSelectedLang(getLangValue(transcription.language) as Iso639LanguageCode);
+      setTranscript({
+        text: transcription.text,
+        language: getLangValue(transcription.language) as Iso639LanguageCode,
+      });
+    }
+  };
+
+  const saveTranscript = async (fileName?: string) => {
+    setSaveTranscriptButtonState('loading');
+    const useAuto = selectedLang === '' || selectedLang === 'auto';
+    const lang = !useAuto ? selectedLang : (transcript.language ?? prefLanguage);
+
+    if (!lang) {
+      setSaveTranscriptButtonState('error');
+      alert('Could not determine language');
+      return;
+    }
+
+    try {
+      await addPhrase({
+        text: transcript.text,
+        filename: fileName ?? null,
+        lang,
+        type: 'recording',
+        source: 'home',
+      });
+      setSaveTranscriptButtonState('success');
+      return;
+    } catch (error) {
+      setSaveTranscriptButtonState('error');
+      if (error instanceof Error) {
+        if (error.message.includes('duplicate key value violates unique constraint')) {
+          setSaveTranscriptButtonState('success');
+          alert('You have already saved this phrase');
+          return;
+        }
+        Sentry.captureException(error);
+      }
+      throw Error(`Error saving recording: ${error}`);
+    } finally {
+      resetRecordingButtonState();
+    }
   };
 
   const saveRecording = async () => {
@@ -168,36 +223,7 @@ const CaptureAudio: FC = () => {
         setUploadProgress,
       });
     }
-
-    const { data: autoLang, error: langError } = await supabase.functions.invoke('check-language', {
-      body: {
-        text: transcript,
-        format: LangCheckStructure,
-      },
-    });
-    if (langError) {
-      setSaveButtonState('error');
-      throw Error(`Error checking language: ${langError}`);
-    }
-    const useAuto = selectedLang === '' || selectedLang === 'auto';
-    const lang = !useAuto ? selectedLang : (JSON.parse(autoLang)?.lng ?? prefLanguage);
-
-    try {
-      await addPhrase({
-        text: transcript,
-        filename: fileName,
-        lang,
-        type: 'recording',
-        source: 'home',
-      });
-      setSaveButtonState('success');
-      resetRecordingButtonState();
-      return;
-    } catch (error) {
-      setSaveButtonState('error');
-      resetRecordingButtonState();
-      throw Error(`Error saving recording: ${error}`);
-    }
+    await saveTranscript(fileName);
   };
 
   const handleClick = () => {
@@ -250,13 +276,24 @@ const CaptureAudio: FC = () => {
           transcriptButtonState={transcriptButtonState}
           transcribeRecording={transcribeRecording}
           saveRecording={saveRecording}
+          saveTranscript={saveTranscript}
           resetRecordingButtonState={resetRecordingButtonState}
-          isTranscript={transcript !== ''}
+          isTranscript={transcript.text !== ''}
           saveButtonState={saveButtonState}
+          saveTranscriptButtonState={saveTranscriptButtonState}
         />
       ) : null}
 
-      {transcript && <div className="flex mt-6 rounded-lg bg-gray-200 p-6">{transcript}</div>}
+      {transcript.text && (
+        <div className="flex flex-col mt-6 rounded-lg bg-gray-200 p-6">
+          <span>{transcript.text}</span>
+          {transcript.language && (
+            <span className="mt-2 text-sm text-gray-600">
+              Detected language: {getLangName(transcript.language ?? '')}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 };

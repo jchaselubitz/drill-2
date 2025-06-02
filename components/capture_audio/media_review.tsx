@@ -10,12 +10,14 @@ interface MediaReviewProps {
   transcriptButtonState: ButtonLoadingState;
   transcribeRecording: () => Promise<void>;
   saveRecording: () => Promise<void>;
+  saveTranscript: (fileName?: string) => Promise<void>;
   resetRecordingButtonState: () => void;
   isTranscript: boolean;
   saveButtonState: ButtonLoadingState;
+  saveTranscriptButtonState: ButtonLoadingState;
 }
 
-const maxDuration = 240;
+const maxDuration = 241;
 const maxDurationMinutes = Math.floor(maxDuration / 60);
 
 const MediaReview: React.FC<MediaReviewProps> = ({
@@ -27,6 +29,8 @@ const MediaReview: React.FC<MediaReviewProps> = ({
   resetRecordingButtonState,
   isTranscript,
   saveButtonState,
+  saveTranscript,
+  saveTranscriptButtonState,
 }) => {
   const [audioDuration, setAudioDuration] = useState(0);
 
@@ -70,15 +74,26 @@ const MediaReview: React.FC<MediaReviewProps> = ({
       </div>
       <div className="flex  gap-2 items-center">
         {isTranscript ? (
-          <LoadingButton
-            className="w-full md:w-fit"
-            onClick={saveRecording}
-            buttonState={saveButtonState}
-            text={'Save recording'}
-            loadingText={'Saving ...'}
-            successText="Saved"
-            errorText="Error saving"
-          />
+          <>
+            <LoadingButton
+              className="w-full md:w-fit"
+              onClick={saveRecording}
+              buttonState={saveButtonState}
+              text={'Save recording'}
+              loadingText={'Saving ...'}
+              successText="Saved"
+              errorText="Error saving"
+            />
+            <LoadingButton
+              className="w-full md:w-fit"
+              onClick={() => saveTranscript()}
+              buttonState={saveTranscriptButtonState}
+              text={'Save text only'}
+              loadingText={'Saving ...'}
+              successText="Saved"
+              errorText="Error saving"
+            />
+          </>
         ) : (
           <>
             <LoadingButton

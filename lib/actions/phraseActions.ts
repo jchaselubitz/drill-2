@@ -205,7 +205,7 @@ export const addPhrase = async ({
   text: string;
   lang: Iso639LanguageCode;
   source?: string;
-  filename?: string;
+  filename?: string | null;
   type: PhraseType;
   associationId?: string;
 }) => {
