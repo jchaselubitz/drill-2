@@ -286,12 +286,12 @@ const CaptureAudio: FC = () => {
 
       {transcript.text && (
         <div className="flex flex-col mt-6 rounded-lg bg-gray-200 p-6">
-          <span>{transcript.text}</span>
           {transcript.language && (
-            <span className="mt-2 text-sm text-gray-600">
+            <span className="mb-2 text-sm text-gray-600">
               Detected language: {getLangName(transcript.language ?? '')}
             </span>
           )}
+          <span>{transcript.text}</span>
         </div>
       )}
     </div>
