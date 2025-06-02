@@ -61,7 +61,12 @@ const TrimAudio: React.FC<{
     }
 
     if (endTime - startTime > maxDuration) {
-      alert(`Trimmed audio cannot exceed ${maxDuration} minutes`);
+      alert(`Trimmed audio cannot exceed ${maxDurationMinutes} minutes`);
+      return false;
+    }
+
+    if (startTime < 0 || endTime > audioDuration) {
+      alert('Start and end times must be within the audio duration');
       return false;
     }
     return true;

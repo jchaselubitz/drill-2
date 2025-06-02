@@ -17,6 +17,7 @@ interface MediaReviewProps {
 
 const maxDuration = 181;
 const maxDurationMinutes = Math.floor(maxDuration / 60);
+console.log(maxDurationMinutes);
 
 const MediaReview: React.FC<MediaReviewProps> = ({
   audioResponse,

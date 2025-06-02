@@ -179,7 +179,7 @@ const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
           <div className="flex flex-row gap-3 w-fit  overflow-x-scroll">
             {podcasts?.map((podcast) => (
               <PodcastListItem
-                key={podcast.id}
+                key={`${podcast.id} - ${podcast.title}`}
                 podcast={podcast}
                 handlePodcastSelect={handlePodcastSelect}
                 removePodcast={removePodcast}

@@ -25,7 +25,7 @@ const TopicDetails: React.FC<TopicDetailsProps> = ({ topic, relevantPhrases }) =
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )[0];
 
-  const promptId = mostRecentCorrection?.tutorPromptId ?? lastPrompt.id;
+  const promptId = mostRecentCorrection?.tutorPromptId ?? lastPrompt?.id ?? null;
   const correctionId = mostRecentCorrection?.id;
 
   useEffect(() => {
