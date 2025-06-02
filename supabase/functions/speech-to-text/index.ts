@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
 
       const transcription = await openai.audio.transcriptions.create({
         file: audioFile as Uploadable,
-        model: 'whisper-1',
+        model: 'gpt-4o-mini-transcribe',
         response_format: 'json',
       });
       const resp = { data: transcription.text };

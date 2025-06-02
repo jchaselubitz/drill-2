@@ -12,12 +12,14 @@ import { Separator } from '../ui/separator';
 import EpisodeListItem from './episode_list_item';
 import PodcastListItem from './podcast_list_item';
 import PodcastSearchResult, { Podcast } from './podcast_search_result';
+import ProgressButton from './progress_button';
 
 type ImportPodcastProps = {
   importPodcast: (url: string) => void;
+  progress: number;
 };
 
-const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
+const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast, progress }) => {
   const { media } = useUserContext();
   const [podcasts, setPodcasts] = useState<BaseMedia[] | NewMedia[]>(media ?? []);
   const [isOpen, setIsOpen] = useState(false);
@@ -109,12 +111,13 @@ const ImportPodcast: FC<ImportPodcastProps> = ({ importPodcast }) => {
       }}
     >
       <DialogTrigger asChild>
-        <button
-          className="p-0 flex items-center justify-center w-10 h-10 rounded-full border border-gray-700"
+        <ProgressButton
+          progress={progress}
           onClick={() => setIsOpen(true)}
+          aria-label="Import Podcast"
         >
           <PodcastIcon />
-        </button>
+        </ProgressButton>
       </DialogTrigger>
 
       <DialogContent className="flex flex-col max-w-[425px]  max-h-[90%] md:max-h-[70%] h-full">

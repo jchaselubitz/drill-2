@@ -2,6 +2,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { getOpenAiKey } from './helpersAI';
 import { Mp3Encoder } from '@breezystack/lamejs';
 import audioBufferToWav from 'audiobuffer-to-wav';
+import * as Sentry from '@sentry/nextjs';
+const tus = require('tus-js-client');
 
 export type GetTextFromSpeechProps = {
   audioFile: Blob;
@@ -125,6 +127,7 @@ export type SaveAudioFileProps = {
   supabase: SupabaseClient<any, 'public', any>;
   bucketName: string;
   setIsloadingFalse?: () => void;
+  setUploadProgress?: (progress: number) => void;
 };
 
 export async function savePrivateAudioFile({
@@ -134,16 +137,73 @@ export async function savePrivateAudioFile({
   bucketName,
   audioFile,
   setIsloadingFalse,
+  setUploadProgress,
 }: SaveAudioFileProps) {
-  const { data, error } = await supabase.storage
-    .from(bucketName)
-    .upload(`${path}/${fileName}`, audioFile);
+  const projectURL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const endpoint = `${projectURL}/storage/v1/upload/resumable`;
 
-  if (error) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const file = new File([audioFile], fileName, { type: 'audio/mpeg' });
+  try {
+    new Promise<void>(async (resolve, reject) => {
+      var upload = new tus.Upload(file, {
+        endpoint,
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: {
+          authorization: `Bearer ${session?.access_token}`,
+          'x-upsert': 'true', // optionally set upsert to true to overwrite existing files
+        },
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true, // Important if you want to allow re-uploading the same file https://github.com/tus/tus-js-client/blob/main/docs/api.md#removefingerprintonsuccess
+        metadata: {
+          bucketName: bucketName,
+          objectName: `${path}/${fileName}`,
+          contentType: 'image/png',
+          cacheControl: 3600,
+        },
+        chunkSize: 6 * 1024 * 1024, // NOTE: it must be set to 6MB (for now) do not change it
+        onError: function (error: any) {
+          console.log('Failed because: ' + error);
+          reject(error);
+        },
+        onProgress: function (bytesUploaded: number, bytesTotal: number) {
+          var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
+          setUploadProgress && setUploadProgress(Number(percentage));
+          console.log(bytesUploaded, bytesTotal, percentage + '%');
+        },
+        onSuccess: function () {
+          // console.log('Download %s from %s', upload.file.name, upload.url);
+          resolve();
+        },
+      });
+      // Check if there are any previous uploads to continue.
+      return upload.findPreviousUploads().then(function (previousUploads: any) {
+        // Found previous uploads so we select the first one.
+        if (previousUploads.length) {
+          upload.resumeFromPreviousUpload(previousUploads[0]);
+        }
+        // Start the upload
+        upload.start();
+      });
+    });
+  } catch (error) {
     setIsloadingFalse && setIsloadingFalse();
-    throw error;
+    console.log('error', error);
+    Sentry.captureException(error);
   }
-  return data;
+
+  // const { data, error } = await supabase.storage
+  //   .from(bucketName)
+  //   .upload(`${path}/${fileName}`, audioFile);
+
+  // if (error) {
+  //   setIsloadingFalse && setIsloadingFalse();
+  //   throw error;
+  // }
+  // return data;
 }
 
 export interface RecordAudioResult {

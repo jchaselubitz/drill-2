@@ -2,7 +2,7 @@
 
 import { Iso639LanguageCode } from 'kysely-codegen';
 import { Languages, Stars } from 'lucide-react';
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useRef, useEffect } from 'react';
 import { useUserContext } from '@/contexts/user_context';
 import { addPhrase } from '@/lib/actions/phraseActions';
 import { LangCheckStructure } from '@/lib/aiGenerators/types_generation';
@@ -13,7 +13,6 @@ import {
   savePrivateAudioFile,
 } from '@/lib/helpers/helpersAudio';
 import { createClient } from '@/utils/supabase/client';
-
 import LanguageMenu from '../selectors/language_selector';
 import { ButtonLoadingState } from '../ui/button-loading';
 import ImportPodcast from './import_podcast';
@@ -40,6 +39,8 @@ const CaptureAudio: FC = () => {
   const [saveButtonState, setSaveButtonState] = useState<ButtonLoadingState>('default');
   // const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [importingPodcast, setImportingPodcast] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [importProgress, setImportProgress] = useState<number>(0); // 0 to 100
 
   const resetRecordingButtonState = () => {
     setRecordingButtonState('idle');
@@ -80,17 +81,46 @@ const CaptureAudio: FC = () => {
     setTranscript('');
     setImportingPodcast(true);
     setAudioResponse(null);
+    setImportProgress(5); // Started
     try {
       setRecordingButtonState('disabled');
+      setImportProgress(10); // Fetching
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBlob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+      const contentLength = response.headers.get('content-length');
+      if (!contentLength || !response.body) {
+        // fallback to old method if content-length is not provided or body is null
+        setImportProgress(11); // Downloading
+        const arrayBuffer = await response.arrayBuffer();
+        setImportProgress(90); // Processing
+        const audioBlob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+        const audioURL = URL.createObjectURL(audioBlob);
+        setAudioResponse({ blob: audioBlob, url: audioURL });
+        setImportProgress(100); // Done
+        return;
+      }
+
+      setImportProgress(30); // Start streaming
+      const total = parseInt(contentLength, 10);
+      let loaded = 0;
+      const reader = response.body.getReader();
+      const chunks = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        loaded += value.length;
+        setImportProgress(Math.min(99, Math.round((loaded / total) * 100)));
+      }
+      setImportProgress(99); // Finalizing
+      const audioBlob = new Blob(chunks, { type: 'audio/mpeg' });
       const audioURL = URL.createObjectURL(audioBlob);
       setAudioResponse({ blob: audioBlob, url: audioURL });
+      setImportProgress(100); // Done
     } catch (error: any) {
+      setImportProgress(0); // Reset on error
       throw new Error('Error processing podcast: ' + error.message);
     } finally {
       setRecordingButtonState('idle');
@@ -135,8 +165,10 @@ const CaptureAudio: FC = () => {
         supabase: supabase,
         bucketName,
         audioFile: compressedBlob,
+        setUploadProgress,
       });
     }
+
     const { data: autoLang, error: langError } = await supabase.functions.invoke('check-language', {
       body: {
         text: transcript,
@@ -186,7 +218,7 @@ const CaptureAudio: FC = () => {
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex justify-center items-center gap-3 mb-2 w-full">
-        <ImportPodcast importPodcast={importPodcast} />
+        <ImportPodcast importPodcast={importPodcast} progress={importProgress} />
         <UploadButton handleUpload={handleUpload} />
         <RecordButton recordingButtonState={recordingButtonState} handleClick={handleClick} />
 
@@ -202,9 +234,16 @@ const CaptureAudio: FC = () => {
           onClick={handleLangSelection}
         />
       </div>
-      {importingPodcast ? (
-        <div>Importing podcast...</div>
-      ) : audioResponse ? (
+      {/* {importingPodcast && (
+        <div className="w-full flex flex-col items-center my-2">
+          <Progress
+            value={importProgress}
+            className="w-2/3"
+            barClassName="bg-gradient-to-r from-blue-600 to-cyan-600"
+          />
+        </div>
+      )} */}
+      {!importingPodcast && audioResponse ? (
         <MediaReview
           audioResponse={audioResponse}
           setAudioResponse={setAudioResponse}

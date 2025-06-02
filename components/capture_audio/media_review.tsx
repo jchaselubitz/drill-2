@@ -15,9 +15,8 @@ interface MediaReviewProps {
   saveButtonState: ButtonLoadingState;
 }
 
-const maxDuration = 181;
+const maxDuration = 240;
 const maxDurationMinutes = Math.floor(maxDuration / 60);
-console.log(maxDurationMinutes);
 
 const MediaReview: React.FC<MediaReviewProps> = ({
   audioResponse,
