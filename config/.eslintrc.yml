@@ -6,7 +6,6 @@ env:
 extends:
   - eslint:recommended
   - plugin:react/recommended
-  - next
 parser: "@typescript-eslint/parser"
 parserOptions:
   ecmaFeatures:
@@ -19,7 +18,7 @@ plugins:
   - prettier
   - react
   - "@typescript-eslint/eslint-plugin"
-  - simple-import-sort
+  - sort-imports-es6-autofix
   - react-hooks
 rules:
   prettier/prettier:
@@ -33,12 +32,12 @@ rules:
   eol-last: error
   no-multiple-empty-lines: error
   radix: error
-  eqeqeq: ["error"]
+  eqeqeq: error
   no-undef: 0        # https://github.com/eslint/typescript-eslint-parser/issues/416
   no-unused-vars: 0  # https://github.com/eslint/typescript-eslint-parser/issues/457
-  simple-import-sort/imports: ["error", { "groups": [["^\\u0000", "^@?\\w", "^[^.]"]] }]
+  sort-imports-es6-autofix/sort-imports-es6: [error, { "ignoreCase": true, "memberSyntaxSortOrder": ["none", "all", "single", "multiple"] }]
   react-hooks/rules-of-hooks: "error"
   react-hooks/exhaustive-deps: "error"
-  no-console: "error"
+  no-console: "warn"
 globals:
   process: readonly

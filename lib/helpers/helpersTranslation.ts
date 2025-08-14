@@ -1,6 +1,6 @@
 import { BasePhrase } from 'kysely-codegen';
 
-type Lesson = {
+export type Lesson = {
   id: string;
   title: string;
   // translation: Translation[];

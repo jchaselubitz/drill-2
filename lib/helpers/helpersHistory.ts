@@ -1,6 +1,6 @@
 import { addHistory } from '../actions/actionsHistory';
 import { generateHistory } from '../aiGenerators/generators_history';
-import { ChatMessage } from '../aiGenerators/types_generation';
+import { ChatMessage, ExistingHistoryType } from '../aiGenerators/types_generation';
 
 import { BaseHistory, Iso639LanguageCode } from 'kysely-codegen';
 
@@ -18,12 +18,11 @@ export async function processHistory({
   try {
     const { insights, vocabulary, concepts } = await generateHistory({
       messages: messages.filter((m) => m.role === 'assistant'),
-      existingHistory,
+      existingHistory: existingHistory as ExistingHistoryType | undefined,
       lang: learningLang,
       markedOnly,
     });
 
-    console.log(vocabulary);
     await addHistory({
       insights,
       vocabulary,

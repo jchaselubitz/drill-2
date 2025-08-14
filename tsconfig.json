@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -20,10 +21,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
-    },
-    "typeRoots": ["./node_modules/@types", "./types"]
+      "@/*": ["./*"],
+      "kysely-codegen": ["./types/kysely-codegen"]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next.config.ts", "types/**/*.d.ts"],
-  "exclude": ["node_modules" , "supabase/functions/**/*.ts"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts",  "__tests__/**/*", "types/**/*.d.ts"],
+  "exclude": ["node_modules", "supabase/functions/**/*"]
 }

@@ -30,7 +30,7 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
     return [];
   }
   return (await db
-    .selectFrom('subject' as never)
+    .selectFrom('subject')
     .select([
       'subject.id',
       'subject.name',
@@ -51,6 +51,9 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
             'lesson.reviewDate',
             'lesson.reviewDeck',
             'lesson.subjectId',
+            'lesson.sideOne',
+            'lesson.sideTwo',
+            'lesson.level',
           ])
           //@ts-ignore
           .whereRef('lesson.subjectId', '=', 'subject.id')
@@ -95,7 +98,7 @@ export const getLessonList = async (): Promise<LessonListType[]> => {
     return [];
   }
   return (await db
-    .selectFrom('lesson' as never)
+    .selectFrom('lesson')
     .select(['id', 'title', 'sideOne', 'sideTwo'])
     .where('userId', '=', user.id)
     .execute()) as LessonListType[];
@@ -112,24 +115,23 @@ export const getLessons = async (lessonId?: string): Promise<LessonWithTranslati
     return [];
   }
   let lessons = db
-    .selectFrom('lesson' as never)
+    .selectFrom('lesson')
     .selectAll()
-
     .where('lesson.userId', '=', user.id)
     .leftJoin('subject', 'lesson.subjectId', 'subject.id')
     .select(({ eb }) => [
-      'lesson.id',
-      'lesson.title',
-      'lesson.shortDescription',
-      'lesson.subjectId',
-      'lesson.userId',
-      'lesson.content',
-      'lesson.createdAt',
-      'lesson.recordingUrl',
-      'lesson.reviewDate',
-      'lesson.reviewDeck',
-      'lesson.sideOne',
-      'lesson.sideTwo',
+      'lesson.id as id',
+      'lesson.title as title',
+      'lesson.shortDescription as shortDescription',
+      'lesson.subjectId as subjectId',
+      'lesson.userId as userId',
+      'lesson.content as content',
+      'lesson.createdAt as createdAt',
+      'lesson.recordingUrl as recordingUrl',
+      'lesson.reviewDate as reviewDate',
+      'lesson.reviewDeck as reviewDeck',
+      'lesson.sideOne as sideOne',
+      'lesson.sideTwo as sideTwo',
       'subject.level as level',
       'subject.lang as lang',
       jsonArrayFrom(
@@ -170,11 +172,20 @@ export const getLessons = async (lessonId?: string): Promise<LessonWithTranslati
   const lessonWithTranslationsArray = response.map((lesson) => ({
     ...lesson,
     level: lesson.level,
-    translations: lesson.translations.map((translation: BaseTranslation) => ({
-      ...translation,
-      phraseBase: sortLessonTranslation(translation, lesson).base,
-      phraseTarget: sortLessonTranslation(translation, lesson).target,
-    })),
+    lang: lesson.lang,
+    translations: lesson.translations.map((translation: BaseTranslation) => {
+      const lessonForSorting = {
+        id: lesson.id,
+        title: lesson.title,
+        sideOne: lesson.sideOne,
+        sideTwo: lesson.sideTwo,
+      };
+      return {
+        ...translation,
+        phraseBase: sortLessonTranslation(translation, lessonForSorting).base,
+        phraseTarget: sortLessonTranslation(translation, lessonForSorting).target,
+      };
+    }),
   }));
 
   return lessonWithTranslationsArray;

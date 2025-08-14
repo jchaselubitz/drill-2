@@ -60,7 +60,7 @@ export default async function Settings() {
                   </p>
                 </div>
                 <div>
-                  {h.concepts?.map((c) => {
+                  {h.concepts?.map((c: string) => {
                     return (
                       <div key={c} className="font-medium">
                         {c}
