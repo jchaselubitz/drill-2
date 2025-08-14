@@ -273,7 +273,7 @@ export async function compressAudio(file: File, targetBitrate: number = 64): Pro
   const channels = audioBuffer.numberOfChannels;
   const sampleRate = audioBuffer.sampleRate;
   const blockSize = 1152;
-  const mp3Data: Int8Array[] = [];
+  const mp3Data: Uint8Array[] = [];
 
   const floatTo16BitPCM = (input: Float32Array): Int16Array => {
     const output = new Int16Array(input.length);
@@ -297,7 +297,7 @@ export async function compressAudio(file: File, targetBitrate: number = 64): Pro
       const sampleChunk = samples.subarray(i, i + blockSize);
       const mp3buf = mp3encoder.encodeBuffer(sampleChunk);
       if (mp3buf.length > 0) {
-        mp3Data.push(new Int8Array(mp3buf));
+        mp3Data.push(new Uint8Array(mp3buf));
       }
     }
   } else {
@@ -308,14 +308,14 @@ export async function compressAudio(file: File, targetBitrate: number = 64): Pro
       const rightChunk = right.subarray(i, i + blockSize);
       const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
       if (mp3buf.length > 0) {
-        mp3Data.push(new Int8Array(mp3buf));
+        mp3Data.push(new Uint8Array(mp3buf));
       }
     }
   }
 
   const endBuf = mp3encoder.flush();
   if (endBuf.length > 0) {
-    mp3Data.push(new Int8Array(endBuf));
+    mp3Data.push(new Uint8Array(endBuf));
   }
 
   return new Blob(mp3Data, { type: 'audio/mpeg' });
