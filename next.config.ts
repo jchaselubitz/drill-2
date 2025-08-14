@@ -7,13 +7,39 @@ const pwaConfig = withPWA({
   dest: 'public',
   register: true,
   disable: process.env.NEXT_PUBLIC_CONTEXT === 'development',
-  // skipWaiting: false,
-  // cacheOnFrontEndNav: true,
+  skipWaiting: true,
+  buildExcludes: [/middleware-manifest\.json$/],
+  sw: '/sw.js',
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'offlineCache',
+        expiration: {
+          maxEntries: 200,
+        },
+      },
+    },
+  ],
 });
 
 const nextConfig = {
   ...pwaConfig,
   transpilePackages: ['lamejs'],
+  serverExternalPackages: ['@sentry/nextjs'],
+  experimental: {
+    // Optimize for modern browsers to reduce polyfills
+    optimizePackageImports: [
+      '@radix-ui/react-icons',
+      'lucide-react',
+      'date-fns',
+      '@tiptap/react', // Add your heavy dependencies
+      '@tiptap/starter-kit',
+      '@supabase/supabase-js',
+    ],
+  },
+
   // reactStrictMode: false,
   // logging: {
   //   fetches: {

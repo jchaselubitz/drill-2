@@ -5102,7 +5102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/minimatch@npm:*":
+"@types/minimatch@npm:*, @types/minimatch@npm:^5.1.2":
   version: 5.1.2
   resolution: "@types/minimatch@npm:5.1.2"
   checksum: 10c0/83cf1c11748891b714e129de0585af4c55dd4c2cafb1f1d5233d79246e5e1e19d1b5ad9e8db449667b3ffa2b6c80125c429dbee1054e9efb45758dbc4e118562
@@ -7703,6 +7703,7 @@ __metadata:
     "@types/bcryptjs": "npm:^2"
     "@types/fluent-ffmpeg": "npm:^2"
     "@types/jest": "npm:^29.5.14"
+    "@types/minimatch": "npm:^5.1.2"
     "@types/next-pwa": "npm:^5.6.9"
     "@types/node": "npm:^20"
     "@types/pg": "npm:^8.15.5"
@@ -7733,6 +7734,7 @@ __metadata:
     kysely-codegen: "npm:^0.18.5"
     langfuse: "npm:^3.35.2"
     lucide-react: "npm:^0.453.0"
+    minimatch: "npm:^9.0.5"
     next: "npm:^15.4.6"
     next-pwa: "npm:^5.6.0"
     next-themes: "npm:^0.3.0"
@@ -12226,7 +12228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^9.0.0, minimatch@npm:^9.0.3, minimatch@npm:^9.0.4":
+"minimatch@npm:^9.0.0, minimatch@npm:^9.0.3, minimatch@npm:^9.0.4, minimatch@npm:^9.0.5":
   version: 9.0.5
   resolution: "minimatch@npm:9.0.5"
   dependencies:
