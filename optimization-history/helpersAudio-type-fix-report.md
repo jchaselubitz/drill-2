@@ -11,11 +11,14 @@ Type error: Argument of type 'Int8Array<ArrayBufferLike>[]' is not assignable to
 The issue was caused by the `@breezystack/lamejs` library returning `Int8Array<ArrayBufferLike>` which is not compatible with the `Blob` constructor's expected `BlobPart[]` type. The `ArrayBufferLike` type includes `SharedArrayBuffer` which is not compatible with `ArrayBuffer` required by `BlobPart`.
 
 ## Solution Applied
-Changed the type declaration and constructor calls from `Int8Array` to `Uint8Array` in the `compressAudio` function:
+Applied a two-step fix to resolve the TypeScript compatibility issue:
 
 1. **Type declaration change**: `const mp3Data: Int8Array[] = [];` → `const mp3Data: Uint8Array[] = [];`
 2. **Constructor calls**: `new Int8Array(mp3buf)` → `new Uint8Array(mp3buf)` (3 instances)
 3. **Constructor calls**: `new Int8Array(endBuf)` → `new Uint8Array(endBuf)` (1 instance)
+4. **Type assertion**: `new Blob(mp3Data, { type: 'audio/mpeg' })` → `new Blob(mp3Data as BlobPart[], { type: 'audio/mpeg' })`
+
+The final type assertion was necessary because the `@breezystack/lamejs` library returns `Uint8Array<ArrayBufferLike>` which still contains the problematic `ArrayBufferLike` type that includes `SharedArrayBuffer`.
 
 ## Files Modified
 - `lib/helpers/helpersAudio.ts`

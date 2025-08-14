@@ -318,7 +318,7 @@ export async function compressAudio(file: File, targetBitrate: number = 64): Pro
     mp3Data.push(new Uint8Array(endBuf));
   }
 
-  return new Blob(mp3Data, { type: 'audio/mpeg' });
+  return new Blob(mp3Data as BlobPart[], { type: 'audio/mpeg' });
 }
 
 export const trimAudioBlob = async ({
