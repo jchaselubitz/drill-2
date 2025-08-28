@@ -17,6 +17,7 @@ import { getProfile } from '@/lib/actions/userActions';
 import { DemoVideoURL } from '@/lib/helpers/helpersMarketing';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
+import { Analytics } from '@vercel/analytics/next';
 
 import { CreateDialog } from './(components)/create_dialog';
 import { NavService } from './(components)/nav_service';
@@ -316,6 +317,7 @@ export default async function RootLayout({
         )}
         <Toaster />
         {/* </ThemeProvider> */}
+        <Analytics />
       </body>
     </html>
   );

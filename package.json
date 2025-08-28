@@ -68,6 +68,7 @@
     "@testing-library/dom": "^10.4.0",
     "@uppy/core": "^4.4.6",
     "@uppy/tus": "^4.2.2",
+    "@vercel/analytics": "^1.5.0",
     "audiobuffer-to-wav": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "browser-image-compression": "^2.0.2",
