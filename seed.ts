@@ -3,7 +3,7 @@ import { createSeedClient } from '@snaplet/seed';
 import { hash } from 'bcryptjs'; // Import bcrypt for hashing
 
 async function main() {
-  const seed = await createSeedClient({ dryRun: true });
+  const seed = await createSeedClient({ dryRun: false });
   await seed.$resetDatabase();
   const plainPassword = '123456';
   const hashedPassword = await hash(plainPassword, 10); // Hash the password with bcrypt
