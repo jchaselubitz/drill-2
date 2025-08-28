@@ -53,7 +53,6 @@ export const getSubjects = async (): Promise<SubjectWithLessons[]> => {
             'lesson.subjectId',
             'lesson.sideOne',
             'lesson.sideTwo',
-            'lesson.level',
           ])
           //@ts-ignore
           .whereRef('lesson.subjectId', '=', 'subject.id')

@@ -63,7 +63,7 @@ declare module 'kysely-codegen' {
     sideOne: Iso639LanguageCode;
     sideTwo: Iso639LanguageCode;
   };
-  export type BaseLesson = Selectable<Lesson> & { level: string | null };
+  export type BaseLesson = Selectable<Lesson>;
   export type LessonWithTranslations = BaseLesson & {
     translations: TranslationWithPhrase[];
     level: string | null;
