@@ -1,7 +1,7 @@
 import { OpenAI } from 'https://deno.land/x/openai@v4.69.0/mod.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { Langfuse } from 'https://esm.sh/langfuse';
-import { supabaseServiceRole } from '../_shared/supabaseAdmin.ts';
+import { supabaseServiceRole } from '../_shared/supabase.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
