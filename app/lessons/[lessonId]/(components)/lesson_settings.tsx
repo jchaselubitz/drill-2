@@ -4,7 +4,7 @@ import { LessonWithTranslations, TranslationWithPhrase } from 'kysely-codegen';
 import React, { useEffect, useState } from 'react';
 import GenerateMorePhrases from '@/components/ai_elements/generate_more_phrases';
 import GeneratePhraseAudio from '@/components/ai_elements/generate_phrase_audio';
-import { Button } from '@/components/ui/button';
+import { ButtonLoadingState, LoadingButton } from '@/components/ui/button-loading';
 import { useUserContext } from '@/contexts/user_context';
 import { getFileList } from '@/lib/helpers/helpersAudio';
 import { hashString } from '@/lib/helpers/helpersDB';
@@ -22,12 +22,12 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
   translationsWithoutAudio: twa,
 }) => {
   const supabase = createClient();
+  const [buttonStateCSV, setButtonStateCSV] = useState<ButtonLoadingState>('default');
+  const [buttonStateAPKG, setButtonStateAPKG] = useState<ButtonLoadingState>('default');
   const { userLanguage } = useUserContext();
   const [translationsWithoutAudio, setTranslationsWithoutAudio] = useState<
     (TranslationWithPhrase | undefined)[] | undefined
   >(twa);
-  const [loadingCSV, setLoadingCSV] = useState(false);
-  const [loadingAPKG, setLoadingAPKG] = useState(false);
 
   const translations = lesson.translations;
   const studyLanguage = lesson.sideTwo;
@@ -66,24 +66,29 @@ const LessonSettings: React.FC<LessonSettingsProps> = ({
       <hr className="border-gray-300 my-5" />
       <div className="flex flex-col md:flex-row w-full items-center justify-around gap-3">
         <div className="flex gap-2 w-full">
-          <Button
+          <LoadingButton
             className={cn(baseButtonClass, ' bg-blue-600 text-white')}
             onClick={() => {
-              setLoadingCSV(true);
-              downloadCSV(lesson, () => setLoadingCSV(false));
+              downloadCSV({ lesson, setLoadingState: setButtonStateCSV });
             }}
-          >
-            {loadingCSV ? 'Downloading' : 'Download CSV'}
-          </Button>
-          <Button
+            buttonState={buttonStateCSV}
+            text="Download CSV"
+            loadingText="Downloading..."
+            successText="Downloaded"
+            errorText="Error downloading"
+          />
+
+          <LoadingButton
             className={cn(baseButtonClass, ' bg-blue-600 text-white')}
             onClick={() => {
-              setLoadingAPKG(true);
-              downloadApkg({ lesson, setLoadingFalse: () => setLoadingAPKG(false) });
+              downloadApkg({ lesson, setLoadingState: setButtonStateAPKG });
             }}
-          >
-            {loadingAPKG ? 'Downloading' : 'Download Anki Deck'}
-          </Button>
+            buttonState={buttonStateAPKG}
+            text="Download Anki Deck"
+            loadingText="Downloading..."
+            successText="Downloaded"
+            errorText="Error downloading"
+          />
         </div>
         {
           <GenerateMorePhrases
