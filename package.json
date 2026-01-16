@@ -81,7 +81,7 @@
     "langfuse": "^3.35.2",
     "lucide-react": "^0.453.0",
     "minimatch": "^9.0.5",
-    "next": "^15.4.6",
+    "next": "15.4.8",
     "next-pwa": "^5.6.0",
     "next-themes": "^0.3.0",
     "pg": "^8.16.3",
