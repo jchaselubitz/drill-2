@@ -14,22 +14,23 @@ export default function PrivacyPage() {
             Drill AI
           </p>
           <h1 className="text-3xl font-semibold tracking-tight">Privacy Policy</h1>
-          <p className="text-base text-muted-foreground">Last updated: January 16, 2025</p>
+          <p className="text-base text-muted-foreground">Last updated: November 25, 2026</p>
         </header>
 
         <section className="rounded-xl border border-border/60 bg-background p-6">
           <h2 className="text-lg font-medium">Overview</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Drill AI is designed with your privacy in mind. We do not track individual users or
-            collect personal information. Your data stays on your device.
+            This policy describes how the Drill mobile app handles your study data and how our
+            website uses analytics.
           </p>
         </section>
 
         <section className="rounded-xl border border-border/60 bg-background p-6">
           <h2 className="text-lg font-medium">Data Storage</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            All your learning data, progress, and preferences are stored locally on your device. We
-            do not have access to this data, and it is never transmitted to our servers.
+            The Drill mobile app stores your study library, lesson history, preferences, and
+            downloaded pronunciation clips on your device. AI features send the text and study
+            context needed for your request to the services described below.
           </p>
         </section>
 
@@ -49,13 +50,12 @@ export default function PrivacyPage() {
         </section>
 
         <section className="rounded-xl border border-border/60 bg-background p-6">
-          <h2 className="text-lg font-medium">What We Do Not Collect</h2>
+          <h2 className="text-lg font-medium">Mobile Data Drill Does Not Collect</h2>
           <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-muted-foreground">
-            <li>Personal identification information</li>
             <li>Email addresses (unless you contact support)</li>
             <li>Location data</li>
-            <li>Usage data from the mobile app</li>
-            <li>Learning progress or performance data</li>
+            <li>In-app analytics events</li>
+            <li>Your full study library or lesson history</li>
           </ul>
         </section>
 
@@ -74,9 +74,31 @@ export default function PrivacyPage() {
             </a>
             .
           </p>
+        </section>
+
+        <section className="rounded-xl border border-border/60 bg-background p-6">
+          <h2 className="text-lg font-medium">Mobile AI Features</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Starting with version 1.2.0, Drill asks for your permission before sharing content with
+            third-party AI services. When you use AI features, the app sends your request directly
+            to OpenRouter, which routes it to Google&apos;s Gemini models. Requests may include
+            writing attempts, phrases, and related study context used to generate feedback, language
+            analysis, translations, or spoken pronunciation. Pronunciation requests send text and
+            return generated audio.
+          </p>
           <p className="mt-3 text-sm text-muted-foreground">
-            This app uses Google Gemini language models to power AI features. Your interactions with
-            these features are subject to{' '}
+            Drill requests zero data retention for the content it sends through OpenRouter. You can
+            turn off access to third-party AI in the app&apos;s Settings. For details about how the
+            providers handle data, see the{' '}
+            <a
+              href="https://openrouter.ai/privacy/"
+              className="font-medium text-primary underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              OpenRouter Privacy Policy
+            </a>{' '}
+            and{' '}
             <a
               href="https://policies.google.com/privacy"
               className="font-medium text-primary underline-offset-4 hover:underline"
